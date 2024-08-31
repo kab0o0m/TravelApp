@@ -1,8 +1,11 @@
 import React from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity, Alert } from "react-native";
 import Homescreen from "../assets/Homescreen.png";
+import { useNavigation } from "@react-navigation/native";
 
 const Homepage = () => {
+  const navigation = useNavigation();
+
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
@@ -15,7 +18,7 @@ const Homepage = () => {
         <Image source={Homescreen} style={styles.image} />
       </View>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={() => Alert.alert("Button pressed")}>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Login")}>
           <Text style={styles.buttonText}>Get Started</Text>
         </TouchableOpacity>
       </View>
