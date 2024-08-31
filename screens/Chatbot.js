@@ -9,7 +9,6 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
-import axios from "axios";
 import { Button, Card } from "react-native-paper";
 import Groq from "groq-sdk";
 import { GROQ_API_KEY } from "@env";
@@ -32,15 +31,36 @@ const Chatbot = () => {
       });
       const response = await groq.chat.completions.create({
         messages: [
-          { role: "system", content: "You are a travel agent" },
+          { role: "system", content: "You are a travel planner" },
           { role: "user", content: input },
         ],
         model: "llama3-8b-8192",
       });
 
-      const aiMessage = response.choices[0].message.content;
+      const messages = response.choices[0].message.content;
+      const words = messages.split(" ");
+      let currentMessage = "";
 
-      setMessages([...messages, { text: input, from: "user" }, { text: aiMessage, from: "ai" }]);
+      // Initialize AI message in the chat history
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { text: "", from: "ai" }, // Start with an empty AI message
+      ]);
+
+      // Update the AI message incrementally by word
+      for (const word of words) {
+        currentMessage += word + " ";
+
+        // Update the last message in the chat history (AI's message)
+        setMessages((prevMessages) => {
+          const updatedMessages = [...prevMessages];
+          updatedMessages[updatedMessages.length - 1].text = currentMessage.trim();
+          return updatedMessages;
+        });
+
+        // Small delay to simulate typing effect (optional)
+        await new Promise((resolve) => setTimeout(resolve, 50));
+      }
     } catch (error) {
       console.error("Error fetching response:", error);
     }
@@ -108,6 +128,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderTopWidth: 1,
     borderTopColor: "#ddd",
+    paddingBottom: 50,
   },
   input: {
     flex: 1,
