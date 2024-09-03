@@ -11,13 +11,29 @@ import {
 } from "react-native";
 import { Button, Card } from "react-native-paper";
 import Groq from "groq-sdk";
-import { GROQ_API_KEY } from "@env";
+import axios from "axios";
 
 const Chatbot = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
+  const [weather, setWeather] = useState(null);
+
+  const getWeather = async () => {
+    const options = {
+      method: "GET",
+      url: "https://api-open.data.gov.sg/v2/real-time/api/twenty-four-hr-forecast",
+    };
+
+    try {
+      const { data } = await axios.request(options);
+      setWeather(data.data.records[0].general);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const handleSend = async () => {
+    getWeather();
     if (input.trim() === "") return;
 
     // Add user message to the chat history
@@ -26,17 +42,19 @@ const Chatbot = () => {
 
     try {
       const groq = new Groq({
-        apiKey: { GROQ_API_KEY },
+        apiKey: "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",
         dangerouslyAllowBrowser: true,
       });
       const response = await groq.chat.completions.create({
         messages: [
-          { role: "system", content: "You are a travel planner" },
+          {
+            role: "system",
+            content: `You are only a Singapore travel planner, do not entertain any other queries about other countries. The current weather in Singapore is ${weather} to help you with the response. You are use temperature and precipitation to help the user plan the trip.`,
+          },
           { role: "user", content: input },
         ],
         model: "llama3-8b-8192",
       });
-
       const messages = response.choices[0].message.content;
       const words = messages.split(" ");
       let currentMessage = "";
