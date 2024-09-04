@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,15 +8,27 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  Image,
 } from "react-native";
-import { Button, Card } from "react-native-paper";
+import { Card } from "react-native-paper";
 import Groq from "groq-sdk";
 import axios from "axios";
+import ArrowUp from "../assets/ArrowUp.png";
+import FrogHead from "../assets/FrogHead.png";
+import ArrowLeft from "../assets/ArrowLeft.png";
+import { useNavigation } from "@react-navigation/native";
 
 const Chatbot = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [weather, setWeather] = useState(null);
+  const navigation = useNavigation();
+
+  const initialMessage = "Hi, I'm Froggie, how can i help you today?";
+
+  useEffect(() => {
+    setMessages([...messages, { text: initialMessage, from: "ai" }]);
+  }, []);
 
   const getWeather = async () => {
     const options = {
@@ -66,7 +78,6 @@ const Chatbot = () => {
         date: parsedContent.match(/Date: '(.+?)'/)?.[1] || null,
         time: parsedContent.match(/Time: '(.+?)'/)?.[1] || null,
       };
-      console.log(parsedData);
 
       const words = messages.split(" ");
       let currentMessage = "";
@@ -103,6 +114,14 @@ const Chatbot = () => {
       <ScrollView
         contentContainerStyle={styles.messagesContainer}
         ref={(ref) => ref?.scrollToEnd({ animated: true })}>
+        <View style={styles.topContainer}>
+          <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate("Login")}>
+            <Image source={ArrowLeft} />
+          </TouchableOpacity>
+          <Image source={FrogHead} />
+          <Text style={styles.frogTitle}>Frog Assistant</Text>
+          <Text style={styles.frogDescription}>Your trusted frog ai</Text>
+        </View>
         {messages.map((message, index) => (
           <Card key={index} style={message.from === "user" ? styles.userMessage : styles.aiMessage}>
             <Text style={styles.messageText}>{message.text}</Text>
@@ -115,11 +134,11 @@ const Chatbot = () => {
           style={styles.input}
           value={input}
           onChangeText={setInput}
-          placeholder="Type a message..."
+          placeholder="Enter your message here!"
           placeholderTextColor="#888"
         />
         <TouchableOpacity style={styles.sendButton} onPress={handleSend}>
-          <Text style={styles.sendButtonText}>Send</Text>
+          <Image source={ArrowUp} />
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
@@ -129,26 +148,38 @@ const Chatbot = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f4f4f4",
+    backgroundColor: "#fff",
   },
   messagesContainer: {
-    padding: 10,
+    padding: 20,
     flexGrow: 1,
     justifyContent: "flex-end",
+    paddingTop: 50,
+    paddingBottom: 20,
   },
   userMessage: {
     alignSelf: "flex-end",
     backgroundColor: "#cce5ff",
-    margin: 5,
-    padding: 10,
-    borderRadius: 5,
+    marginRight: 20,
+    marginLeft: 10,
+    marginTop: 15,
+    padding: 15,
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+    borderBottomRightRadius: 0,
+    borderBottomLeftRadius: 25,
   },
   aiMessage: {
     alignSelf: "flex-start",
     backgroundColor: "#e2e3e5",
-    margin: 5,
-    padding: 10,
-    borderRadius: 5,
+    marginRight: 20,
+    marginLeft: 10,
+    marginTop: 15,
+    padding: 15,
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+    borderBottomRightRadius: 25,
+    borderRadiusBottomRight: 0,
   },
   messageText: {
     fontSize: 16,
@@ -156,26 +187,60 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: "row",
     padding: 10,
-    borderTopWidth: 1,
-    borderTopColor: "#ddd",
-    paddingBottom: 50,
+    height: 80,
+    marginLeft: 15,
+    marginBottom: 10,
   },
   input: {
     flex: 1,
-    backgroundColor: "#fff",
-    padding: 10,
-    borderRadius: 5,
+    backgroundColor: "#3A4646",
+    padding: 20,
+    borderRadius: 30,
     marginRight: 10,
-    fontSize: 16,
+    fontSize: 20,
+    color: "#FFF",
+    paddingLeft: 20,
   },
   sendButton: {
-    backgroundColor: "#007bff",
+    position: "absolute",
+    right: 30,
+    top: 20,
+    backgroundColor: "#D9D9D9",
     padding: 10,
-    borderRadius: 5,
+    height: 40,
+    width: 40,
+    borderRadius: "50%",
+    justifyContent: "center",
+    alignContent: "center",
   },
   sendButtonText: {
     color: "#fff",
     fontSize: 16,
+  },
+  topContainer: {
+    alignItems: "center",
+    paddingTop: 20,
+    paddingBottom: 20,
+    backgroundColor: "#FFF",
+  },
+  frogTitle: {
+    fontSize: 30,
+    padding: 5,
+  },
+  frogDescription: {
+    fontSize: 15,
+  },
+  backButton: {
+    position: "absolute",
+    left: 20,
+    top: 30,
+    backgroundColor: "#D9D9D9",
+    paddingLeft: 6,
+    height: 40,
+    width: 40,
+    borderRadius: "50%",
+    justifyContent: "center",
+    alignContent: "center",
   },
 });
 
