@@ -12,7 +12,9 @@ import {
   SafeAreaView,
   TouchableWithoutFeedback,
   Keyboard,
+  Image,
 } from "react-native";
+import LoginImage from "../assets/LoginImage.png";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -31,7 +33,7 @@ const Login = () => {
   };
 
   const dismissKeyboard = () => {
-    Keyboard.dismiss(); // Dismiss the keyboard
+    Keyboard.dismiss();
   };
 
   return (
@@ -39,12 +41,14 @@ const Login = () => {
       <KeyboardAvoidingView style={styles.container} behavior="padding">
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           <View style={styles.headerContainer}>
-            <Text style={styles.header}>WELCOME</Text>
+            <Text style={styles.header}>WELCOME BACK</Text>
           </View>
           <View style={styles.cornerContainer}>
-            <Text style={styles.appName}>Mapp!t</Text>
+            <Text style={styles.subHeader}>Mapp!t</Text>
           </View>
-
+          <View>
+            <Image source={LoginImage} style={styles.image} />
+          </View>
           <View style={styles.loginContainer}>
             <Text style={styles.login}>Login</Text>
 
@@ -72,7 +76,7 @@ export default Login;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#006D77",
+    backgroundColor: "#FFF",
   },
   cornerContainer: {
     position: "absolute",
@@ -89,19 +93,12 @@ const styles = StyleSheet.create({
     marginTop: 100,
   },
   header: {
-    color: "#FFFFFF",
-    fontSize: 50,
+    fontSize: 40,
     fontWeight: "bold",
-    marginTop: 50,
+    width: 250,
+    
   },
-  button: {
-    backgroundColor: "#C1CB9C",
-    paddingVertical: 15,
-    borderRadius: 30,
-    width: "100%",
-    alignItems: "center",
-    marginTop: 20,
-  },
+  subHeader: {},
   buttonText: {
     color: "#FFFFFF",
     fontSize: 18,

@@ -1,13 +1,5 @@
 import React from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-  Alert,
-  ImageBackground,
-} from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, ImageBackground } from "react-native";
 import Startpagebackground from "../assets/Startpagebackground.png";
 import { useNavigation } from "@react-navigation/native";
 
