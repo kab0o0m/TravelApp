@@ -49,13 +49,25 @@ const Chatbot = () => {
         messages: [
           {
             role: "system",
-            content: `You are only a Singapore travel planner, do not entertain any other queries about other countries. The current weather in Singapore is ${weather} to help you with the response. You are use temperature and precipitation to help the user plan the trip.`,
+            content: `You are only a Singapore travel planner, do not entertain any other queries about other countries. The current weather in Singapore is ${weather} to help you with the response. You are use temperature and precipitation to help the user plan the trip. If user wants to schedule a timing, use this format Event: , Date: , Time: `,
           },
           { role: "user", content: input },
         ],
         model: "llama3-8b-8192",
       });
       const messages = response.choices[0].message.content;
+      const parsedContent = response.choices[0].message.content;
+
+      // You may need to parse the content to extract specific details like date, time, and title
+      // This is an example assuming the response is structured like: "Event: 'Meeting with John', Date: '2023-09-10', Time: '15:00'"
+
+      const parsedData = {
+        title: parsedContent.match(/Event: '(.+?)'/)?.[1] || "Untitled Event",
+        date: parsedContent.match(/Date: '(.+?)'/)?.[1] || null,
+        time: parsedContent.match(/Time: '(.+?)'/)?.[1] || null,
+      };
+      console.log(parsedData);
+
       const words = messages.split(" ");
       let currentMessage = "";
 
