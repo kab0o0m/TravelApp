@@ -1,14 +1,53 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, ImageBackground } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ImageBackground,
+  Image,
+  Modal,
+} from "react-native";
 import Startpagebackground from "../assets/Startpagebackground.png";
 import { useNavigation } from "@react-navigation/native";
+import { useState } from "react";
+import Chatbot from "./Chatbot";
+import FrogIcon from "../assets/FrogHead.png";
+import ArrowLeft from "../assets/ArrowLeft.png";
 
 const Homepage = () => {
   const navigation = useNavigation();
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const toggleModal = () => {
+    setModalVisible(!modalVisible);
+  };
 
   return (
     <View style={styles.container}>
       <ImageBackground source={Startpagebackground} style={styles.backgroundImage}>
+        <TouchableOpacity style={styles.iconContainer} onPress={toggleModal}>
+          <Image source={FrogIcon} style={styles.icon} />
+        </TouchableOpacity>
+
+        {/* Modal to show the Chatbot */}
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={toggleModal}>
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContainer}>
+              {/* Close button */}
+              <TouchableOpacity onPress={toggleModal} style={styles.closeButton}>
+                <Image source={ArrowLeft} />
+              </TouchableOpacity>
+
+              {/* Chatbot Component */}
+              <Chatbot />
+            </View>
+          </View>
+        </Modal>
         <View style={styles.headerContainer}>
           <Text style={styles.header}>EXPLORE THE WORLD</Text>
           <Text style={styles.subHeader}>Mapp!t</Text>
@@ -73,5 +112,44 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     textAlign: "center",
+  },
+  icon: {
+    height: 40,
+    width: 40,
+  },
+  iconContainer: {
+    position: "absolute",
+    backgroundColor: "#D9D9D9",
+    padding: 10,
+    borderRadius: "50%",
+    zIndex: 999,
+    right: 30,
+    bottom: 200,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent background
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContainer: {
+    width: "100%",
+    height: "100%",
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: 20,
+  },
+  closeButton: {
+    position: "absolute",
+    top: 80,
+    left: 30,
+    zIndex: 999,
+    padding: 15,
+    backgroundColor: "#D9D9D9",
+    borderRadius: "50%",
+  },
+  closeButtonText: {
+    fontSize: 20,
+    fontWeight: "bold",
   },
 });

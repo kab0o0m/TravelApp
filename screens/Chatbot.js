@@ -122,9 +122,7 @@ const Chatbot = () => {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}>
       <View style={styles.topContainer}>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate("Login")}>
-          <Image source={ArrowLeft} />
-        </TouchableOpacity>
+        
         <Image source={FrogHead} />
         <Text style={styles.frogTitle}>Frog Assistant</Text>
         <Text style={styles.frogDescription}>Your trusted frog ai</Text>
