@@ -16,7 +16,6 @@ import Groq from "groq-sdk";
 import axios from "axios";
 import ArrowUp from "../assets/ArrowUp.png";
 import FrogHead from "../assets/FrogHead.png";
-import ArrowLeft from "../assets/ArrowLeft.png";
 import { useNavigation } from "@react-navigation/native";
 
 const Chatbot = () => {
@@ -25,14 +24,30 @@ const Chatbot = () => {
   const [temperatureHigh, setTemperatureHigh] = useState(null);
   const [temperatureLow, setTemperatureLow] = useState(null);
   const [forecast, setForecast] = useState(null);
-  const navigation = useNavigation();
+  const [date, setDate] = useState(null);
 
   const initialMessage = "Hi, I'm Froggie, how can i help you today?";
 
   useEffect(() => {
+    getDate();
     getWeather();
     setMessages([...messages, { text: initialMessage, from: "ai" }]);
   }, []);
+
+  const getDate = () => {
+    const date = new Date();
+    const options = {
+      timeZone: "Asia/Singapore",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    };
+    const sgtDate = date.toLocaleString("en-SG", options);
+    console.log(sgtDate);
+    setDate(sgtDate);
+  };
 
   const getWeather = async () => {
     const options = {
@@ -56,7 +71,7 @@ const Chatbot = () => {
 
   const handleSend = async () => {
     if (input.trim() === "") return;
-
+    getDate();
     // Add user message to the chat history
     setMessages([...messages, { text: input, from: "user" }]);
     setInput("");
@@ -70,7 +85,7 @@ const Chatbot = () => {
         messages: [
           {
             role: "system",
-            content: `You are a Singapore travel planner. Do not answer queries unrelated to Singapore. The current temperature is high: ${temperatureHigh}, low: ${temperatureLow}, with a forecast of ${forecast}. Use these weather details (high, low, and forecast) to help the user plan their trip. Always include the current weather in your response and avoid providing uncertain or false information. Format any scheduling requests as follows: Event: , Date: , Time: . Do not use markdown in your response.`,
+            content: `You are a Singapore travel planner. Do not answer queries unrelated to Singapore. Today's date is: ${date}.The current temperature is high: ${temperatureHigh}, low: ${temperatureLow}, with a forecast of ${forecast}. Use these weather details (high, low, and forecast) to help the user plan their trip. Always include the current weather in your response and avoid providing uncertain or false information. Format any scheduling requests as follows: Event: '', Date: 'DD-MM-YYYY', Time: '13:30'. Do not use markdown in your response.`,
           },
           { role: "user", content: input },
         ],
@@ -122,7 +137,6 @@ const Chatbot = () => {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}>
       <View style={styles.topContainer}>
-        
         <Image source={FrogHead} />
         <Text style={styles.frogTitle}>Frog Assistant</Text>
         <Text style={styles.frogDescription}>Your trusted frog ai</Text>
