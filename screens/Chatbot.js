@@ -9,6 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Image,
+  Keyboard,
 } from "react-native";
 import { Card } from "react-native-paper";
 import Groq from "groq-sdk";
@@ -21,12 +22,15 @@ import { useNavigation } from "@react-navigation/native";
 const Chatbot = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-  const [weather, setWeather] = useState(null);
+  const [temperatureHigh, setTemperatureHigh] = useState(null);
+  const [temperatureLow, setTemperatureLow] = useState(null);
+  const [forecast, setForecast] = useState(null);
   const navigation = useNavigation();
 
   const initialMessage = "Hi, I'm Froggie, how can i help you today?";
 
   useEffect(() => {
+    getWeather();
     setMessages([...messages, { text: initialMessage, from: "ai" }]);
   }, []);
 
@@ -38,14 +42,19 @@ const Chatbot = () => {
 
     try {
       const { data } = await axios.request(options);
-      setWeather(data.data.records[0].general);
+      setTemperatureHigh(data.data.records[0].general.temperature.high);
+      setTemperatureLow(data.data.records[0].general.temperature.low);
+      setForecast(data.data.records[0].general.forecast.text);
     } catch (error) {
       console.error(error);
     }
   };
 
+  const dismissKeyboard = () => {
+    Keyboard.dismiss();
+  };
+
   const handleSend = async () => {
-    getWeather();
     if (input.trim() === "") return;
 
     // Add user message to the chat history
@@ -61,7 +70,7 @@ const Chatbot = () => {
         messages: [
           {
             role: "system",
-            content: `You are only a Singapore travel planner, do not entertain any other queries about other countries. The current weather in Singapore is ${weather} to help you with the response. You are use temperature and precipitation to help the user plan the trip. If user wants to schedule a timing, use this format Event: , Date: , Time: `,
+            content: `You are a Singapore travel planner. Do not answer queries unrelated to Singapore. The current temperature is high: ${temperatureHigh}, low: ${temperatureLow}, with a forecast of ${forecast}. Use these weather details (high, low, and forecast) to help the user plan their trip. Always include the current weather in your response and avoid providing uncertain or false information. Format any scheduling requests as follows: Event: , Date: , Time: . Do not use markdown in your response.`,
           },
           { role: "user", content: input },
         ],
@@ -88,6 +97,7 @@ const Chatbot = () => {
         { text: "", from: "ai" }, // Start with an empty AI message
       ]);
 
+      dismissKeyboard();
       // Update the AI message incrementally by word
       for (const word of words) {
         currentMessage += word + " ";
@@ -111,22 +121,26 @@ const Chatbot = () => {
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}>
+      <View style={styles.topContainer}>
+        <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate("Login")}>
+          <Image source={ArrowLeft} />
+        </TouchableOpacity>
+        <Image source={FrogHead} />
+        <Text style={styles.frogTitle}>Frog Assistant</Text>
+        <Text style={styles.frogDescription}>Your trusted frog ai</Text>
+      </View>
       <ScrollView
         contentContainerStyle={styles.messagesContainer}
         ref={(ref) => ref?.scrollToEnd({ animated: true })}>
-        <View style={styles.topContainer}>
-          <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate("Login")}>
-            <Image source={ArrowLeft} />
-          </TouchableOpacity>
-          <Image source={FrogHead} />
-          <Text style={styles.frogTitle}>Frog Assistant</Text>
-          <Text style={styles.frogDescription}>Your trusted frog ai</Text>
+        <View>
+          {messages.map((message, index) => (
+            <Card
+              key={index}
+              style={message.from === "user" ? styles.userMessage : styles.aiMessage}>
+              <Text style={styles.messageText}>{message.text}</Text>
+            </Card>
+          ))}
         </View>
-        {messages.map((message, index) => (
-          <Card key={index} style={message.from === "user" ? styles.userMessage : styles.aiMessage}>
-            <Text style={styles.messageText}>{message.text}</Text>
-          </Card>
-        ))}
       </ScrollView>
 
       <View style={styles.inputContainer}>
@@ -189,7 +203,7 @@ const styles = StyleSheet.create({
     padding: 10,
     height: 80,
     marginLeft: 15,
-    marginBottom: 10,
+    marginBottom: 20,
   },
   input: {
     flex: 1,
@@ -200,6 +214,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: "#FFF",
     paddingLeft: 20,
+    paddingRight: 70,
   },
   sendButton: {
     position: "absolute",
@@ -219,7 +234,7 @@ const styles = StyleSheet.create({
   },
   topContainer: {
     alignItems: "center",
-    paddingTop: 20,
+    paddingTop: 70,
     paddingBottom: 20,
     backgroundColor: "#FFF",
   },
@@ -232,8 +247,8 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: "absolute",
-    left: 20,
-    top: 30,
+    left: 40,
+    top: 70,
     backgroundColor: "#D9D9D9",
     paddingLeft: 6,
     height: 40,

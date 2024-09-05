@@ -9,7 +9,7 @@ export default function App() {
   const Stack = createNativeStackNavigator();
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Homepage">
+      <Stack.Navigator initialRouteName="Chatbot">
         <Stack.Screen name="Homepage" component={Homepage} options={{ headerShown: false }} />
         <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
         <Stack.Screen name="Chatbot" component={Chatbot} options={{ headerShown: false }} />
