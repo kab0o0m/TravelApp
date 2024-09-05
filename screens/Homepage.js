@@ -14,6 +14,8 @@ import { useState } from "react";
 import Chatbot from "./Chatbot";
 import FrogIcon from "../assets/FrogHead.png";
 import ArrowLeft from "../assets/ArrowLeft.png";
+import plane from "../assets/Plane.png";
+import background from "../assets/background.png";
 
 const Homepage = () => {
   const navigation = useNavigation();
@@ -30,7 +32,6 @@ const Homepage = () => {
           <Image source={FrogIcon} style={styles.icon} />
         </TouchableOpacity>
 
-        {/* Modal to show the Chatbot */}
         <Modal
           animationType="slide"
           transparent={true}
@@ -38,16 +39,15 @@ const Homepage = () => {
           onRequestClose={toggleModal}>
           <View style={styles.modalOverlay}>
             <View style={styles.modalContainer}>
-              {/* Close button */}
               <TouchableOpacity onPress={toggleModal} style={styles.closeButton}>
                 <Image source={ArrowLeft} />
               </TouchableOpacity>
 
-              {/* Chatbot Component */}
               <Chatbot />
             </View>
           </View>
         </Modal>
+
         <View style={styles.headerContainer}>
           <Text style={styles.header}>EXPLORE THE WORLD</Text>
           <Text style={styles.subHeader}>Mapp!t</Text>
@@ -151,5 +151,10 @@ const styles = StyleSheet.create({
   closeButtonText: {
     fontSize: 20,
     fontWeight: "bold",
+  },
+  plane: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
