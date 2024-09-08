@@ -76,6 +76,14 @@ const Chatbot = () => {
     setMessages([...messages, { text: input, from: "user" }]);
     setInput("");
 
+    const groqMessages = messages.map((message) => ({
+      role: message.from === "user" ? "user" : "assistant",
+      content: message.text,
+    }));
+
+    // Add the current user input as the latest message in the chat history
+    groqMessages.push({ role: "user", content: input });
+
     try {
       const groq = new Groq({
         apiKey: "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",
@@ -88,7 +96,9 @@ const Chatbot = () => {
             content: `You are a Singapore travel planner. Do not answer queries unrelated to Singapore. Today's date is: ${date}.The current temperature is high: ${temperatureHigh}, low: ${temperatureLow}, with a forecast of ${forecast}. Use these weather details (high, low, and forecast) to help the user plan their trip. Always include the current weather in your response and avoid providing uncertain or false information. Format any scheduling requests as follows: Event: '', Date: 'DD-MM-YYYY', Time: '13:30'. Do not use markdown in your response.`,
           },
           { role: "user", content: input },
+          ...groqMessages,
         ],
+
         model: "llama3-8b-8192",
       });
       const messages = response.choices[0].message.content;
