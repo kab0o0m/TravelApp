@@ -69,6 +69,18 @@ const Chatbot = () => {
     Keyboard.dismiss();
   };
 
+  const extractEventDetails = (aiResponse) => {
+    const eventMatch = aiResponse.match(/Event: (.+?),/);
+    const dateMatch = aiResponse.match(/Date: (\d{2}-\d{2}-\d{4})/);
+    const timeMatch = aiResponse.match(/Time: (.+?)(?:$|\.)/);
+
+    return {
+      event: eventMatch ? eventMatch[1].trim() : "Untitled Event",
+      date: dateMatch ? dateMatch[1] : null,
+      time: timeMatch ? timeMatch[1].trim() : null,
+    };
+  };
+
   const handleSend = async () => {
     if (input.trim() === "") return;
     getDate();
@@ -93,7 +105,7 @@ const Chatbot = () => {
         messages: [
           {
             role: "system",
-            content: `You are a Singapore travel planner. Do not answer queries unrelated to Singapore. Today's date is: ${date}.The current temperature is high: ${temperatureHigh}, low: ${temperatureLow}, with a forecast of ${forecast}. Use these weather details (high, low, and forecast) to help the user plan their trip. Always include the current weather in your response and avoid providing uncertain or false information. Format any scheduling requests as follows: Event: '', Date: 'DD-MM-YYYY', Time: '13:30'. Do not use markdown in your response.`,
+            content: `You are a Singapore travel planner. Do not answer queries unrelated to Singapore. Today's date is: ${date}.The current temperature is high: ${temperatureHigh}, low: ${temperatureLow}, with a forecast of ${forecast}. Use these weather details (high, low, and forecast) to help the user plan their trip. Always include the current weather in your response and avoid providing uncertain or false information. Format any scheduling requests as follows: Event: '', Date: 'DD-MM-YYYY',  Time: 24-hour clock. Do not use markdown in your response.`,
           },
           { role: "user", content: input },
           ...groqMessages,
@@ -102,16 +114,9 @@ const Chatbot = () => {
         model: "llama3-8b-8192",
       });
       const messages = response.choices[0].message.content;
-      const parsedContent = response.choices[0].message.content;
-
-      // You may need to parse the content to extract specific details like date, time, and title
-      // This is an example assuming the response is structured like: "Event: 'Meeting with John', Date: '2023-09-10', Time: '15:00'"
-
-      const parsedData = {
-        title: parsedContent.match(/Event: '(.+?)'/)?.[1] || "Untitled Event",
-        date: parsedContent.match(/Date: '(.+?)'/)?.[1] || null,
-        time: parsedContent.match(/Time: '(.+?)'/)?.[1] || null,
-      };
+      console.log(messages);
+      const parsedData = extractEventDetails(messages);
+      console.log(parsedData);
 
       const words = messages.split(" ");
       let currentMessage = "";
