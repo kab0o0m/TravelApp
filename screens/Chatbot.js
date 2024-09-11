@@ -21,8 +21,6 @@ import { useNavigation } from "@react-navigation/native";
 const Chatbot = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-  const [temperatureHigh, setTemperatureHigh] = useState(null);
-  const [temperatureLow, setTemperatureLow] = useState(null);
   const [forecast, setForecast] = useState(null);
   const [date, setDate] = useState(null);
 
@@ -49,17 +47,36 @@ const Chatbot = () => {
     setDate(sgtDate);
   };
 
+  const transformData = (apiResponse) => {
+    // Extract area metadata into an easy-to-reference format
+    const areaMetadata = apiResponse.data.area_metadata.reduce((acc, area) => {
+      acc[area.name] = {
+        latitude: area.label_location.latitude,
+        longitude: area.label_location.longitude,
+      };
+      return acc;
+    }, {});
+
+    // Combine forecasts with area metadata
+    const forecasts = apiResponse.data.items[0].forecasts;
+
+    return forecasts.map((forecast) => ({
+      location: forecast.area,
+      weather_forecast: forecast.forecast,
+    }));
+  };
+
   const getWeather = async () => {
     const options = {
       method: "GET",
-      url: "https://api-open.data.gov.sg/v2/real-time/api/twenty-four-hr-forecast",
+      url: "https://api-open.data.gov.sg/v2/real-time/api/two-hr-forecast",
     };
 
     try {
       const { data } = await axios.request(options);
-      setTemperatureHigh(data.data.records[0].general.temperature.high);
-      setTemperatureLow(data.data.records[0].general.temperature.low);
-      setForecast(data.data.records[0].general.forecast.text);
+      const transformedData = transformData(data);
+
+      setForecast(transformedData);
     } catch (error) {
       console.error(error);
     }
@@ -96,6 +113,14 @@ const Chatbot = () => {
     // Add the current user input as the latest message in the chat history
     groqMessages.push({ role: "user", content: input });
 
+    const formatForecastData = (forecast) => {
+      return forecast.map((f) => `${f.location}: ${f.weather_forecast}`).join(", ");
+    };
+
+    // Inside your `handleSend` function
+    const forecastString = formatForecastData(forecast);
+    console.log(forecastString);
+
     try {
       const groq = new Groq({
         apiKey: "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",
@@ -105,7 +130,7 @@ const Chatbot = () => {
         messages: [
           {
             role: "system",
-            content: `You are a Singapore travel planner. Do not answer queries unrelated to Singapore. Today's date is: ${date}.The current temperature is high: ${temperatureHigh}, low: ${temperatureLow}, with a forecast of ${forecast}. Use these weather details (high, low, and forecast) to help the user plan their trip. Always include the current weather in your response and avoid providing uncertain or false information. Format any scheduling requests as follows: Event: '', Date: 'DD-MM-YYYY',  Time: 24-hour clock. Do not use markdown in your response.`,
+            content: `You are a Singapore travel planner to help users plan their day. Do not answer queries unrelated to Singapore. Today's date is: ${date}.The current forecast is: ${forecastString}. Only use forecast given, do not add in additional details such as temperature. Use the weather condition to give recommendations about the place that the user asks. Always include the current weather in your response and avoid providing uncertain or false information. Format any scheduling requests as follows: Event: '', Date: 'DD-MM-YYYY',  Time: 24-hour clock. Do not use markdown in your response.`,
           },
           { role: "user", content: input },
           ...groqMessages,
@@ -114,9 +139,7 @@ const Chatbot = () => {
         model: "llama3-8b-8192",
       });
       const messages = response.choices[0].message.content;
-      console.log(messages);
       const parsedData = extractEventDetails(messages);
-      console.log(parsedData);
 
       const words = messages.split(" ");
       let currentMessage = "";
