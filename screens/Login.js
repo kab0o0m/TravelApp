@@ -3,20 +3,22 @@ import {
   View,
   Text,
   StyleSheet,
-  TextInput,
-  TouchableOpacity,
   Alert,
   KeyboardAvoidingView,
   Image,
   Dimensions,
   TouchableWithoutFeedback,
   Keyboard,
+  TouchableOpacity,
 } from "react-native";
-import Icon from 'react-native-vector-icons/FontAwesome'; // Import FontAwesome icons
+
+import { useNavigation } from '@react-navigation/native';
 import LoginImage from "../assets/LoginImage.png";
 import VectorBackground from "../assets/Vector-1.png";
 import InputField from '../components/InputField.js';
 import PasswordField from '../components/PasswordField.js';
+import Button from '../components/Button'; // Import the Button component
+import { useFonts, Nunito_400Regular, Nunito_700Bold } from '@expo-google-fonts/nunito';
 
 const { width: screenWidth } = Dimensions.get("window");
 const { height: screenHeight } = Dimensions.get("window");
@@ -24,7 +26,17 @@ const { height: screenHeight } = Dimensions.get("window");
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [passwordVisible, setPasswordVisible] = useState(false);
+
+  const navigation = useNavigation();
+
+  const [fontsLoaded] = useFonts({
+    Nunito_400Regular,
+    Nunito_700Bold,
+  });
+
+  if (!fontsLoaded) {
+    return null; // You can add a loading spinner or screen here if needed
+  }
 
   const handleLogin = () => {
     if (!email || !password) {
@@ -34,10 +46,6 @@ const Login = () => {
 
     // Perform login logic here
     Alert.alert("Success", "Logged in successfully");
-  };
-
-  const togglePasswordVisibility = () => {
-    setPasswordVisible(!passwordVisible);
   };
 
   const dismissKeyboard = () => {
@@ -64,12 +72,9 @@ const Login = () => {
         </View>
 
         <View style={styles.loginContainer}>
-          <Text style={styles.login}>Login</Text>
-
           {/* Email Field */}
           <InputField
             label="Email"
-            placeholder="Enter your email"
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
@@ -77,10 +82,12 @@ const Login = () => {
 
           {/* Password Field */}
           <PasswordField
+            label="Password"
             value={password}
             onChangeText={setPassword}
           />
 
+          {/* Forgot Password */}
           <TouchableOpacity
             style={styles.forgotPasswordContainer}
             onPress={() => Alert.alert("Forgot Password", "Password recovery logic here")}
@@ -88,9 +95,26 @@ const Login = () => {
             <Text style={styles.forgotPassword}>Forgot Password?</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.button} onPress={handleLogin}>
-            <Text style={styles.buttonText}>Login</Text>
-          </TouchableOpacity>
+          {/* Login Button */}
+          <Button 
+            title="Login" 
+            onPress={handleLogin} 
+            backgroundColor="#F47966"
+            textColor="#FFFFFF"
+            paddingVertical={15}
+            borderRadius={25}
+          />
+
+          {/* Registration Text */}
+          <View style={styles.registrationContainer}>
+            <TouchableOpacity onPress={() => navigation.navigate("Register")}>
+              <Text style={styles.registrationText}>
+                Don’t have an account?{" "}
+                <Text style={styles.registerLink}>Register Here</Text>
+              </Text>
+            </TouchableOpacity>
+          </View>
+          
         </View>
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
@@ -107,92 +131,76 @@ const styles = StyleSheet.create({
   cornerContainer: {
     position: "absolute",
     width: screenWidth * 0.2,  // Adjust width relative to screen width
-    marginLeft: screenWidth*0.8,
-    marginVertical: screenHeight*0.05,
+    marginLeft: screenWidth * 0.75,
+    marginVertical: screenHeight * 0.05,
   },
   headerContainer: {
     alignItems: "center",
-    marginTop: screenHeight*0.1,
-    height: screenHeight*0.2,
-    width: screenWidth*0.7,
-
+    marginTop: screenHeight * 0.1, // Reduced margin to bring header closer
+    height: screenHeight * 0.15,
+    width: screenWidth * 0.7,
   },
   header: {
-    fontSize: 40,
-    fontWeight: "bold",
-    
+    fontSize: 40, // Increase font size slightly for better visibility
+    color: "#006D77",
+    fontFamily: "Nunito_700Bold", // Bold font family
+    textShadowColor: "#006D77", // Darker shadow for a thicker appearance
+    textShadowOffset: { width: 1, height: 1 }, // Shadow offset
+    textShadowRadius: 5, // Shadow radius to make text appear thicker
   },
-  subHeader: {},
-  buttonText: {
-    color: "#FFFFFF",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  input: {
-    height: 60,
-    borderColor: "#DDDDDD",
-    borderWidth: 1,
-    borderRadius: 5,
-    paddingHorizontal: 10,
-    marginBottom: 12,
-    flex: 1,
-  },
-  passwordInput: {
-    paddingRight: 40, // Space for the eye icon
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: "600",
-    marginBottom: 5,
-    color: "#333333",
-  },
-  login: {
-    fontSize: 24,
-    marginBottom: 20,
-    textAlign: "center",
-    color: "#FFF",
-  },
-  loginContainer: {
-    width: "100%",
-    paddingBottom: 200, // Space for the keyboard
-    paddingHorizontal: 20,
-  },
-  imageContainer: {
-    width: screenWidth * 0.8,  // Adjust width relative to screen width
-    height: screenWidth * 0.6, // Adjust height relative to screen width
-    justifyContent: "center", // Center the image inside the container
-    marginHorizontal: screenWidth * 0.1,
-  },
-  image: {
-    width: "100%",  // Make the image fill the width of the container
-    height: "100%", // Make the image fill the height of the container
-  },
-  cornerImage: {
-    position: "absolute", // Ensures the image is positioned absolutely in the corner
-    top: 0, // Aligns it to the top of the screen
-    right: 0, // Aligns it to the right of the screen
-    width: screenWidth * 0.4, // Set the width of the image
-    height: screenHeight * 0.3, // Set the height relative to the screen
-    zIndex: -1, // Ensures the image is behind the text
-  },
-  passwordContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    position: 'relative', // Ensure the container is positioned relative to its normal position
-    marginBottom: 12,
-  },
-  eyeIcon: {
-    position: 'absolute',
-    right: 10,
-    top: '50%', // Center the icon vertically
-    transform: [{ translateY: -10 }], // Adjust for vertical centering
+  subHeader: {
+    color: "#006D77",
+    fontSize: 20,
+    fontFamily: "Nunito_700Bold", // Bold font family
+    textShadowColor: "#006D77", // Darker shadow for a thicker appearance
+    textShadowOffset: { width: 0.5, height: 0.5 }, // Shadow offset
+    textShadowRadius: 1, // Shadow radius to make text appear thicker
   },
   forgotPasswordContainer: {
-    marginTop: 10,
     alignItems: 'flex-end',
+    marginBottom: 10,
   },
   forgotPassword: {
     fontSize: 14,
-    color: '#007BFF',
+    color: '#006D77',
+    fontFamily: 'Nunito_400Regular',
+  },
+  loginContainer: {
+    height: screenHeight * 0.4,
+    paddingHorizontal: screenHeight * 0.05,
+    justifyContent: 'center', // Center content vertically
+  },
+  imageContainer: {
+    width: screenWidth * 0.8,
+    height: screenHeight * 0.3, 
+    justifyContent: "center",
+    marginHorizontal: screenWidth * 0.1,
+    marginBottom: screenHeight * 0.02
+  },
+  image: {
+    width: "100%",
+    height: "100%",
+    resizeMode: "cover",
+  },
+  cornerImage: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    width: screenWidth * 0.4,
+    height: screenHeight * 0.3,
+    zIndex: -1,
+  },
+  registrationContainer: {
+    marginTop: 10,
+    alignItems: 'center',
+  },
+  registrationText: {
+    fontSize: 14,
+    color: '#333333',
+    fontFamily: 'Nunito_400Regular',
+  },
+  registerLink: {
+    color: '#006D77',
+    fontFamily: 'Nunito_700Bold',
   },
 });

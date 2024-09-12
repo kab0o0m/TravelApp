@@ -1,10 +1,9 @@
-// components/InputField.js
 import React from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
 
-const InputField = ({ label, placeholder, secureTextEntry, value, onChangeText, style }) => {
+const InputField = ({ label, placeholder, secureTextEntry, value, onChangeText, style, marginBottom, flex }) => {
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { marginBottom: marginBottom || 12, ...(flex !== undefined ? { flex } : {}) }]}>
       <Text style={styles.label}>{label}</Text>
       <TextInput
         style={[styles.input, style]}
@@ -19,20 +18,21 @@ const InputField = ({ label, placeholder, secureTextEntry, value, onChangeText, 
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 12,
+    flex: 0, // Default flex value if not specified
   },
   label: {
-    fontSize: 16,
+    fontSize: 14, // Adjust font size
     fontWeight: '600',
-    marginBottom: 5,
-    color: '#333333',
+    marginBottom: 4, // Adjust margin
+    color: '#006D77',
   },
   input: {
-    height: 60,
+    height: 45, // Adjust height
     borderColor: '#DDDDDD',
     borderWidth: 1,
     borderRadius: 5,
-    paddingHorizontal: 10,
+    paddingHorizontal: 8, // Adjust padding
+    fontFamily: 'Nunito_400Regular',
   },
 });
 

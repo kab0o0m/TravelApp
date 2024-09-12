@@ -1,10 +1,9 @@
-// components/PasswordField.js
 import React, { useState } from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import InputField from './components/InputField.js';
+import InputField from '../components/InputField.js';
 
-const PasswordField = ({ value, onChangeText }) => {
+const PasswordField = ({ label = "Password", value, onChangeText, marginBottom = 0 }) => {
   const [passwordVisible, setPasswordVisible] = useState(false);
 
   const togglePasswordVisibility = () => {
@@ -12,10 +11,9 @@ const PasswordField = ({ value, onChangeText }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { marginBottom }]}>
       <InputField
-        label="Password"
-        placeholder="Enter your password"
+        label={label}
         secureTextEntry={!passwordVisible}
         value={value}
         onChangeText={onChangeText}
@@ -25,7 +23,7 @@ const PasswordField = ({ value, onChangeText }) => {
         style={styles.eyeIcon}
         onPress={togglePasswordVisibility}
       >
-        <Icon name={passwordVisible ? "eye" : "eye-slash"} size={20} color="#000" />
+        <Icon name={passwordVisible ? "eye" : "eye-slash"} size={18} color="#000" />
       </TouchableOpacity>
     </View>
   );
@@ -36,13 +34,13 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   input: {
-    paddingRight: 40, // Space for the eye icon
+    paddingRight: 35, // Adjust padding for the eye icon
   },
   eyeIcon: {
     position: 'absolute',
     right: 10,
     top: '50%', // Center the icon vertically
-    transform: [{ translateY: -10 }], // Adjust for vertical centering
+    transform: [{ translateY: -5 }], // Adjust for vertical centering based on the icon size
   },
 });
 
