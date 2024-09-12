@@ -13,8 +13,14 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   Image,
+  Dimensions,
 } from "react-native";
 import LoginImage from "../assets/LoginImage.png";
+import { Colors } from "react-native/Libraries/NewAppScreen";
+import VectorBackground from "../assets/Vector-1.png"
+
+const { width: screenWidth } = Dimensions.get("window"); 
+const { height: screenHeight } = Dimensions.get("window"); 
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -39,14 +45,19 @@ const Login = () => {
   return (
     <TouchableWithoutFeedback onPress={dismissKeyboard}>
       <KeyboardAvoidingView style={styles.container} behavior="padding">
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <Image
+          source={VectorBackground}
+          style={styles.cornerImage}
+          resizeMode="contain"
+        />
+        <View style={styles.cornerContainer}>
+            <Text style={styles.subHeader}>Mapp!t</Text>
+          </View>
           <View style={styles.headerContainer}>
             <Text style={styles.header}>WELCOME BACK</Text>
           </View>
-          <View style={styles.cornerContainer}>
-            <Text style={styles.subHeader}>Mapp!t</Text>
-          </View>
-          <View>
+          
+          <View style={styles.imageContainer}>
             <Image source={LoginImage} style={styles.image} />
           </View>
           <View style={styles.loginContainer}>
@@ -65,7 +76,6 @@ const Login = () => {
               <Text style={styles.buttonText}>Login</Text>
             </TouchableOpacity>
           </View>
-        </ScrollView>
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );
@@ -127,5 +137,23 @@ const styles = StyleSheet.create({
   loginContainer: {
     width: "100%",
     paddingBottom: 200, // Space for the keyboard
+  },
+  imageContainer: {
+    width: screenWidth * 0.8,  // Adjust width relative to screen width
+    height: screenWidth * 0.6, // Adjust height relative to screen width
+    justifyContent: "center", // Center the image inside the container
+    marginHorizontal: screenWidth*0.1,
+  },
+  image: {
+    width: "100%",  // Make the image fill the width of the container
+    height: "100%", // Make the image fill the height of the container
+  },
+  cornerImage: {
+    position: "absolute",  // Ensures the image is positioned absolutely in the corner
+    top: 0,               // Aligns it to the top of the screen
+    right: 0,             // Aligns it to the right of the screen
+    width: screenWidth * 0.4, // Set the width of the image
+    height: screenHeight * 0.3, // Set the height relative to the screen
+    zIndex: -1,           // Ensures the image is behind the text
   },
 });
