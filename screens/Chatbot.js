@@ -9,48 +9,117 @@ import {
   KeyboardAvoidingView,
   Platform,
   Image,
+  Keyboard,
 } from "react-native";
 import { Card } from "react-native-paper";
 import Groq from "groq-sdk";
 import axios from "axios";
 import ArrowUp from "../assets/ArrowUp.png";
 import FrogHead from "../assets/FrogHead.png";
-import ArrowLeft from "../assets/ArrowLeft.png";
 import { useNavigation } from "@react-navigation/native";
 
 const Chatbot = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-  const [weather, setWeather] = useState(null);
-  const navigation = useNavigation();
+  const [forecast, setForecast] = useState(null);
+  const [date, setDate] = useState(null);
 
   const initialMessage = "Hi, I'm Froggie, how can i help you today?";
 
   useEffect(() => {
+    getDate();
+    getWeather();
     setMessages([...messages, { text: initialMessage, from: "ai" }]);
   }, []);
+
+  const getDate = () => {
+    const date = new Date();
+    const options = {
+      timeZone: "Asia/Singapore",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    };
+    const sgtDate = date.toLocaleString("en-SG", options);
+    console.log(sgtDate);
+    setDate(sgtDate);
+  };
+
+  const transformData = (apiResponse) => {
+    // Extract area metadata into an easy-to-reference format
+    const areaMetadata = apiResponse.data.area_metadata.reduce((acc, area) => {
+      acc[area.name] = {
+        latitude: area.label_location.latitude,
+        longitude: area.label_location.longitude,
+      };
+      return acc;
+    }, {});
+
+    // Combine forecasts with area metadata
+    const forecasts = apiResponse.data.items[0].forecasts;
+
+    return forecasts.map((forecast) => ({
+      location: forecast.area,
+      weather_forecast: forecast.forecast,
+    }));
+  };
 
   const getWeather = async () => {
     const options = {
       method: "GET",
-      url: "https://api-open.data.gov.sg/v2/real-time/api/twenty-four-hr-forecast",
+      url: "https://api-open.data.gov.sg/v2/real-time/api/two-hr-forecast",
     };
 
     try {
       const { data } = await axios.request(options);
-      setWeather(data.data.records[0].general);
+      const transformedData = transformData(data);
+
+      setForecast(transformedData);
     } catch (error) {
       console.error(error);
     }
   };
 
-  const handleSend = async () => {
-    getWeather();
-    if (input.trim() === "") return;
+  const dismissKeyboard = () => {
+    Keyboard.dismiss();
+  };
 
+  const extractEventDetails = (aiResponse) => {
+    const eventMatch = aiResponse.match(/Event: (.+?),/);
+    const dateMatch = aiResponse.match(/Date: (\d{2}-\d{2}-\d{4})/);
+    const timeMatch = aiResponse.match(/Time: (.+?)(?:$|\.)/);
+
+    return {
+      event: eventMatch ? eventMatch[1].trim() : "Untitled Event",
+      date: dateMatch ? dateMatch[1] : null,
+      time: timeMatch ? timeMatch[1].trim() : null,
+    };
+  };
+
+  const handleSend = async () => {
+    if (input.trim() === "") return;
+    getDate();
     // Add user message to the chat history
     setMessages([...messages, { text: input, from: "user" }]);
     setInput("");
+
+    const groqMessages = messages.map((message) => ({
+      role: message.from === "user" ? "user" : "assistant",
+      content: message.text,
+    }));
+
+    // Add the current user input as the latest message in the chat history
+    groqMessages.push({ role: "user", content: input });
+
+    const formatForecastData = (forecast) => {
+      return forecast.map((f) => `${f.location}: ${f.weather_forecast}`).join(", ");
+    };
+
+    // Inside your `handleSend` function
+    const forecastString = formatForecastData(forecast);
+    console.log(forecastString);
 
     try {
       const groq = new Groq({
@@ -61,23 +130,16 @@ const Chatbot = () => {
         messages: [
           {
             role: "system",
-            content: `You are only a Singapore travel planner, do not entertain any other queries about other countries. The current weather in Singapore is ${weather} to help you with the response. You are use temperature and precipitation to help the user plan the trip. If user wants to schedule a timing, use this format Event: , Date: , Time: `,
+            content: `You are a Singapore travel planner to help users plan their day. Do not answer queries unrelated to Singapore. Today's date is: ${date}.The current forecast is: ${forecastString}. Only use forecast given, do not add in additional details such as temperature. Use the weather condition to give recommendations about the place that the user asks. Always include the current weather in your response and avoid providing uncertain or false information. Format any scheduling requests as follows: Event: '', Date: 'DD-MM-YYYY',  Time: 24-hour clock. Do not use markdown in your response.`,
           },
           { role: "user", content: input },
+          ...groqMessages,
         ],
+
         model: "llama3-8b-8192",
       });
       const messages = response.choices[0].message.content;
-      const parsedContent = response.choices[0].message.content;
-
-      // You may need to parse the content to extract specific details like date, time, and title
-      // This is an example assuming the response is structured like: "Event: 'Meeting with John', Date: '2023-09-10', Time: '15:00'"
-
-      const parsedData = {
-        title: parsedContent.match(/Event: '(.+?)'/)?.[1] || "Untitled Event",
-        date: parsedContent.match(/Date: '(.+?)'/)?.[1] || null,
-        time: parsedContent.match(/Time: '(.+?)'/)?.[1] || null,
-      };
+      const parsedData = extractEventDetails(messages);
 
       const words = messages.split(" ");
       let currentMessage = "";
@@ -88,6 +150,7 @@ const Chatbot = () => {
         { text: "", from: "ai" }, // Start with an empty AI message
       ]);
 
+      dismissKeyboard();
       // Update the AI message incrementally by word
       for (const word of words) {
         currentMessage += word + " ";
@@ -111,22 +174,23 @@ const Chatbot = () => {
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}>
+      <View style={styles.topContainer}>
+        <Image source={FrogHead} />
+        <Text style={styles.frogTitle}>Frog Assistant</Text>
+        <Text style={styles.frogDescription}>Your trusted frog ai</Text>
+      </View>
       <ScrollView
         contentContainerStyle={styles.messagesContainer}
         ref={(ref) => ref?.scrollToEnd({ animated: true })}>
-        <View style={styles.topContainer}>
-          <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate("Login")}>
-            <Image source={ArrowLeft} />
-          </TouchableOpacity>
-          <Image source={FrogHead} />
-          <Text style={styles.frogTitle}>Frog Assistant</Text>
-          <Text style={styles.frogDescription}>Your trusted frog ai</Text>
+        <View>
+          {messages.map((message, index) => (
+            <Card
+              key={index}
+              style={message.from === "user" ? styles.userMessage : styles.aiMessage}>
+              <Text style={styles.messageText}>{message.text}</Text>
+            </Card>
+          ))}
         </View>
-        {messages.map((message, index) => (
-          <Card key={index} style={message.from === "user" ? styles.userMessage : styles.aiMessage}>
-            <Text style={styles.messageText}>{message.text}</Text>
-          </Card>
-        ))}
       </ScrollView>
 
       <View style={styles.inputContainer}>
@@ -189,7 +253,7 @@ const styles = StyleSheet.create({
     padding: 10,
     height: 80,
     marginLeft: 15,
-    marginBottom: 10,
+    marginBottom: 20,
   },
   input: {
     flex: 1,
@@ -200,6 +264,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: "#FFF",
     paddingLeft: 20,
+    paddingRight: 70,
   },
   sendButton: {
     position: "absolute",
@@ -219,7 +284,7 @@ const styles = StyleSheet.create({
   },
   topContainer: {
     alignItems: "center",
-    paddingTop: 20,
+    paddingTop: 70,
     paddingBottom: 20,
     backgroundColor: "#FFF",
   },
@@ -232,8 +297,8 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: "absolute",
-    left: 20,
-    top: 30,
+    left: 40,
+    top: 70,
     backgroundColor: "#D9D9D9",
     paddingLeft: 6,
     height: 40,
