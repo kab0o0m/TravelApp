@@ -9,6 +9,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@expo-google-fonts/nunito": "^0.2.3",
     "@google/generative-ai": "^0.17.1",
     "@react-navigation/native": "^6.1.18",
     "@react-navigation/native-stack": "^6.11.0",
@@ -20,7 +21,9 @@
     "react": "18.2.0",
     "react-native": "0.74.5",
     "react-native-dotenv": "^3.4.11",
-    "react-native-paper": "^5.12.5"
+    "react-native-paper": "^5.12.5",
+    "react-native-svg": "^15.6.0",
+    "react-native-vector-icons": "^10.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
