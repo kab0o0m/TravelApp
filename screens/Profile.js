@@ -117,14 +117,20 @@ const styles = StyleSheet.create({
   buttonContainer: {
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#F47966",
     borderRadius: 30,
-    padding: 20,
     marginTop: 20,
   },
   buttonText: {
     color: "#FFFFFF",
     fontSize: 18,
     fontWeight: "bold",
+  },
+  button: {
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#F47966",
+    borderRadius: 30,
+    width: "100%",
+    padding: 20,
   },
 });

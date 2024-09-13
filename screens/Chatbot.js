@@ -177,7 +177,7 @@ const Chatbot = () => {
       <View style={styles.topContainer}>
         <Image source={FrogHead} />
         <Text style={styles.frogTitle}>Frog Assistant</Text>
-        <Text style={styles.frogDescription}>Your trusted frog ai</Text>
+        <Text style={styles.frogDescription}>Your trusted Froggie</Text>
       </View>
       <ScrollView
         contentContainerStyle={styles.messagesContainer}

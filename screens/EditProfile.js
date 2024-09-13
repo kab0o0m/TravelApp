@@ -131,12 +131,17 @@ const styles = StyleSheet.create({
   buttonContainer: {
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#F47966",
     marginTop: 20,
     borderRadius: 30,
+  },
+  button: {
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#F47966",
+    borderRadius: 30,
+    width: "100%",
     padding: 20,
   },
-  button: {},
   buttonText: {
     color: "#FFFFFF",
     fontSize: 18,
