@@ -43,7 +43,6 @@ const Chatbot = () => {
       minute: "2-digit",
     };
     const sgtDate = date.toLocaleString("en-SG", options);
-    console.log(sgtDate);
     setDate(sgtDate);
   };
 
@@ -119,7 +118,6 @@ const Chatbot = () => {
 
     // Inside your `handleSend` function
     const forecastString = formatForecastData(forecast);
-    console.log(forecastString);
 
     try {
       const groq = new Groq({

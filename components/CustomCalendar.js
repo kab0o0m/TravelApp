@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { Calendar } from "react-native-calendars";
 
@@ -6,12 +6,53 @@ const CustomCalendar = () => {
   const [selectedRange, setSelectedRange] = useState({ startDate: "", endDate: "" });
   const [markedDates, setMarkedDates] = useState({});
 
+  useEffect(() => {
+    markPastDates();
+  }, []);
+
+  // Function to mark past dates as greyed out
+  const markPastDates = () => {
+    const today = new Date();
+    const pastDaysLimit = 30; // Limit to last 30 days
+    let pastDatesMarked = {};
+
+    for (let i = 1; i <= pastDaysLimit; i++) {
+      const pastDate = new Date();
+      pastDate.setDate(today.getDate() - i);
+      const dateString = pastDate.toISOString().split("T")[0];
+
+      pastDatesMarked[dateString] = {
+        disabled: true,
+        disableTouchEvent: true,
+        textColor: "#a9a9a9",
+      };
+    }
+
+    setMarkedDates(pastDatesMarked);
+  };
+
   const onDaySelect = (day) => {
-    let newMarkedDates = { ...markedDates };
+    const today = new Date();
+    const selectedDate = new Date(day.dateString);
+
+    // Prevent selecting past dates
+    if (selectedDate < today.setHours(0, 0, 0, 0)) {
+      return;
+    }
+
+    let newMarkedDates = { ...markedDates }; // Keep past dates greyed out
+
+    // Clear previous selected range but preserve greyed-out past dates
+    Object.keys(newMarkedDates).forEach((date) => {
+      if (!newMarkedDates[date].disabled) {
+        delete newMarkedDates[date];
+      }
+    });
 
     if (!selectedRange.startDate || (selectedRange.startDate && selectedRange.endDate)) {
       // When no startDate is selected or both start and end are selected, reset
       newMarkedDates = {
+        ...newMarkedDates, // Preserve past greyed out dates
         [day.dateString]: {
           selected: true,
           startingDay: true,
@@ -30,17 +71,17 @@ const CustomCalendar = () => {
       rangeDates.forEach((date, index) => {
         newMarkedDates[date] = {
           selected: true,
-          color: "#eeeeee", // Lighter grey for dates in between
+          color: "#eeeeee",
           textColor: "#000",
-          ...(index === 0 ? { startingDay: true, color: "#e6e6e6" } : {}), // Darker grey for the start date
-          ...(index === rangeDates.length - 1 ? { endingDay: true, color: "#e6e6e6" } : {}), // Darker grey for the end date
+          ...(index === 0 ? { startingDay: true, color: "#e6e6e6" } : {}),
+          ...(index === rangeDates.length - 1 ? { endingDay: true, color: "#e6e6e6" } : {}),
         };
       });
 
       setSelectedRange({ startDate: start, endDate: end });
     }
 
-    setMarkedDates(newMarkedDates);
+    setMarkedDates(newMarkedDates); // Update marked dates while keeping past dates
   };
 
   // Helper function to get all dates between startDate and endDate
