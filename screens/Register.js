@@ -19,6 +19,10 @@ import Button from "../components/Button"; // Import the Button component
 import { useFonts, Nunito_400Regular, Nunito_700Bold } from "@expo-google-fonts/nunito";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
+// Import BASE_URL from config
+import BASE_URL from "../config";
+import { validateEmail } from "../utils/authUtil.js";
+
 const { width: screenWidth } = Dimensions.get("window");
 const { height: screenHeight } = Dimensions.get("window");
 
@@ -40,14 +44,55 @@ const Login = () => {
     return null; // You can add a loading spinner or screen here if needed
   }
 
-  const handleRegister = () => {
-    if (!email || !password) {
-      Alert.alert("Error", "Please enter both email and password");
+  const handleRegister = async () => {
+    if (!email || !password || !firstname || !lastname) {
+      Alert.alert("Error", "Please fill in all fields");
       return;
     }
 
-    // Perform login logic here
-    Alert.alert("Success", "Registered successfully");
+    if (!validateEmail(email)) {
+      Alert.alert("Error", "Please enter a valid email address");
+      return;
+    }
+    
+    if (password !== confirmpassword) {
+      Alert.alert("Error", "Passwords do not match");
+      return;
+    }
+
+    // Prepare the data to send in the POST request
+    const data = {
+      firstName: firstname,
+      lastName: lastname,
+      email: email,
+      password: password,
+    };
+
+    try {
+      // Send the POST request to the API
+      const response = await fetch(`${BASE_URL}/api/signup`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        // If the request was successful, navigate to the login page or another screen
+        Alert.alert("Success", "Registered successfully");
+        navigation.navigate("Login");
+      } else {
+        // If there was an error, display the error message from the response
+        Alert.alert("Error", result.message || "Registration failed");
+      }
+    } catch (error) {
+      // Handle any errors during the request
+      Alert.alert("Error", "An error occurred. Please try again later.");
+      console.error(error);
+    }
   };
 
   const dismissKeyboard = () => {
