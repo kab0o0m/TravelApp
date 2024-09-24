@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 
+import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import VectorBackground from "../assets/Vector.png";
 import InputField from "../components/InputField.js";
@@ -22,7 +23,7 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 const { width: screenWidth } = Dimensions.get("window");
 const { height: screenHeight } = Dimensions.get("window");
 
-const Login = () => {
+const Register = () => {
   const [firstname, setFirstName] = useState("");
   const [lastname, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -136,7 +137,7 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;
 
 const styles = StyleSheet.create({
   container: {
