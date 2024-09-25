@@ -19,6 +19,7 @@ import InputField from "../components/InputField.js";
 import PasswordField from "../components/PasswordField.js";
 import Button from "../components/Button";
 import { useFonts, Nunito_400Regular, Nunito_700Bold } from "@expo-google-fonts/nunito";
+import { loginUser } from "../api/apiService";
 
 const { width: screenWidth } = Dimensions.get("window");
 const { height: screenHeight } = Dimensions.get("window");
@@ -38,14 +39,23 @@ const Login = () => {
     return null; // You can add a loading spinner or screen here if needed
   }
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!email || !password) {
       Alert.alert("Error", "Please enter both email and password");
       return;
-    }
+    } try {
+      console.log("Email:", email);
+      console.log("Password:", password);
+      const userData = await loginUser(email, password);
+      
+      Alert.alert("Success", "Logged in successfully");
+      console.log("User data:", userData);
+      
+      navigation.navigate('Homepage');
+    } catch (error) {
 
-    // Perform login logic here
-    Alert.alert("Success", "Logged in successfully");
+      Alert.alert("Login Failed", error.message || "Invalid email or password");
+    }
   };
 
   const dismissKeyboard = () => {
