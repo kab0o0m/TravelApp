@@ -19,9 +19,8 @@ import Button from "../components/Button"; // Import the Button component
 import { useFonts, Nunito_400Regular, Nunito_700Bold } from "@expo-google-fonts/nunito";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
-// Import BASE_URL from config
-import BASE_URL from "../config";
 import { validateEmail } from "../utils/authUtil.js";
+import { signup } from "../api/apiService.js";
 
 const { width: screenWidth } = Dimensions.get("window");
 const { height: screenHeight } = Dimensions.get("window");
@@ -60,39 +59,19 @@ const Login = () => {
       return;
     }
 
-    // Prepare the data to send in the POST request
-    const data = {
-      firstName: firstname,
-      lastName: lastname,
-      email: email,
-      password: password,
-    };
-
     try {
-      // Send the POST request to the API
-      const response = await fetch(`${BASE_URL}/api/signup`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+      console.log("Email:", email);
+      console.log("Password:", password);
+      const userData = await signup(firstname, lastname, email, password);
 
-      const result = await response.json();
+      //TODO Token
+      console.log("[SIGNUP SUCCESS] User data:", userData);
 
-      if (response.ok) {
-        // If the request was successful, navigate to the login page or another screen
-        Alert.alert("Success", "Registered successfully");
-        navigation.navigate("Login");
-      } else {
-        // If there was an error, display the error message from the response
-        Alert.alert("Error", result.message || "Registration failed");
-      }
+      navigation.navigate("Homepage");
     } catch (error) {
-      // Handle any errors during the request
-      Alert.alert("Error", "An error occurred. Please try again later.");
-      console.error(error);
+      Alert.alert("Registration Failed", error.message || "Invalid email or password");
     }
+
   };
 
   const dismissKeyboard = () => {
