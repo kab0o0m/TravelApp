@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
   closeButton: {
     padding: 10,
     backgroundColor: "#D9D9D9",
-    borderRadius: "50%",
+    borderRadius: 30,
     marginRight: 20,
   },
   headerText: {
