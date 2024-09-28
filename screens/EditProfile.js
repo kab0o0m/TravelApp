@@ -3,14 +3,22 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
   Image,
   TextInput,
+  TouchableWithoutFeedback,
+  Keyboard,
+  TouchableOpacity,
 } from "react-native";
 import ProfilePicture from "../assets/ProfilePicture.png";
 import { useNavigation } from "@react-navigation/native";
 import ArrowLeft from "../assets/ArrowLeft.png";
 import Edit from "../assets/editprofile.png";
+import {
+  useFonts,
+  Nunito_400Regular,
+  Nunito_700Bold,
+} from "@expo-google-fonts/nunito";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 const EditProfile = () => {
   const navigation = useNavigation();
@@ -20,73 +28,108 @@ const EditProfile = () => {
   const [gender, setGender] = useState(null);
   const [dob, setDob] = useState(null);
 
+  const [fontsLoaded] = useFonts({
+    Nunito_400Regular,
+    Nunito_700Bold,
+  });
+
+  if (!fontsLoaded) {
+    return null; // You can add a loading spinner or screen here if needed
+  }
+
+  const handleRegister = async () => {};
+
+  const dismissKeyboard = () => {
+    Keyboard.dismiss();
+  };
+
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => navigation.navigate("Profile")}
-          style={styles.closeButton}
-        >
-          <Image source={ArrowLeft} />
-        </TouchableOpacity>
-        <Text style={styles.headerText}>EDIT PROFILE</Text>
-      </View>
-      <View style={styles.userInfoSection}>
-        <View>
-          <Image source={ProfilePicture} style={styles.image} />
-          <TouchableOpacity style={styles.editContainer}>
-            <Image source={Edit} style={styles.edit} />
-          </TouchableOpacity>
-        </View>
-      </View>
-      <View style={styles.inputContainer}>
-        <View style={styles.genderDOB}>
-          <View>
-            <Text style={styles.label}> First Name</Text>
-            <TextInput style={styles.nameInput} value="john" editable={true} />
+    <TouchableWithoutFeedback onPress={dismissKeyboard}>
+      <KeyboardAwareScrollView
+        style={styles.container}
+        resetScrollToCoords={{ x: 0, y: 0 }}
+        contentContainerStyle={styles.scrollContainer}
+        extraHeight={150} // This extra height helps prevent blocking
+        enableAutomaticScroll={true}
+      >
+          <View style={styles.header}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("Profile")}
+              style={styles.closeButton}
+            >
+              <Image source={ArrowLeft} />
+            </TouchableOpacity>
+            <Text style={styles.headerText}>EDIT PROFILE</Text>
           </View>
-
-          <View>
-            <Text style={styles.label}>Last Name</Text>
-            <TextInput style={styles.nameInput} value="doe" editable={true} />
+          <View style={styles.userInfoSection}>
+            <View>
+              <Image source={ProfilePicture} style={styles.image} />
+              <TouchableOpacity style={styles.editContainer}>
+                <Image source={Edit} style={styles.edit} />
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
+          <View style={styles.inputContainer}>
+            <View style={styles.genderDOB}>
+              <View>
+                <Text style={styles.label}> First Name</Text>
+                <TextInput
+                  style={styles.nameInput}
+                  value="john"
+                  editable={true}
+                />
+              </View>
 
-        <Text style={styles.label}>Email</Text>
-        <TextInput
-          style={styles.input}
-          value="johndoe@email.com"
-          editable={true}
-        />
+              <View>
+                <Text style={styles.label}>Last Name</Text>
+                <TextInput
+                  style={styles.nameInput}
+                  value="doe"
+                  editable={true}
+                />
+              </View>
+            </View>
 
-        <Text style={styles.label}>Phone Number</Text>
-        <TextInput style={styles.input} value="+123456789" editable={true} />
-
-        <View style={styles.genderDOB}>
-          <View>
-            <Text style={styles.label}>Gender</Text>
+            <Text style={styles.label}>Email</Text>
             <TextInput
-              style={styles.genderInput}
-              value="Male"
+              style={styles.input}
+              value="johndoe@email.com"
               editable={true}
             />
-          </View>
-          <View>
-            <Text style={styles.label}>Date of Birth</Text>
+
+            <Text style={styles.label}>Phone Number</Text>
             <TextInput
-              style={styles.DOBInput}
-              value="01/01/1990"
+              style={styles.input}
+              value="+123456789"
               editable={true}
             />
+
+            <View style={styles.genderDOB}>
+              <View>
+                <Text style={styles.label}>Gender</Text>
+                <TextInput
+                  style={styles.genderInput}
+                  value="Male"
+                  editable={true}
+                />
+              </View>
+              <View>
+                <Text style={styles.label}>Date of Birth</Text>
+                <TextInput
+                  style={styles.DOBInput}
+                  value="01/01/1990"
+                  editable={true}
+                />
+              </View>
+            </View>
           </View>
-        </View>
-      </View>
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>Save</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.button}>
+              <Text style={styles.buttonText}>Save</Text>
+            </TouchableOpacity>
+          </View>
+      </KeyboardAwareScrollView>
+    </TouchableWithoutFeedback>
   );
 };
 
