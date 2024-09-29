@@ -19,6 +19,7 @@ import {
   Nunito_700Bold,
 } from "@expo-google-fonts/nunito";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import DatePicker from "react-native-date-picker";
 
 const EditProfile = () => {
   const navigation = useNavigation();
@@ -26,7 +27,8 @@ const EditProfile = () => {
   const [email, setEmail] = useState(null);
   const [phone, setPhone] = useState(null);
   const [gender, setGender] = useState(null);
-  const [dob, setDob] = useState(null);
+  const [dob, setDob] = useState(new Date())
+  const [open, setOpen] = useState(false)
 
   const [fontsLoaded] = useFonts({
     Nunito_400Regular,
@@ -37,7 +39,9 @@ const EditProfile = () => {
     return null; // You can add a loading spinner or screen here if needed
   }
 
-  const handleRegister = async () => {};
+  const handleUpdate = async () => {
+
+  };
 
   const dismissKeyboard = () => {
     Keyboard.dismiss();
@@ -52,82 +56,91 @@ const EditProfile = () => {
         extraHeight={150} // This extra height helps prevent blocking
         enableAutomaticScroll={true}
       >
-          <View style={styles.header}>
-            <TouchableOpacity
-              onPress={() => navigation.navigate("Profile")}
-              style={styles.closeButton}
-            >
-              <Image source={ArrowLeft} />
+        <View style={styles.header}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("Profile")}
+            style={styles.closeButton}
+          >
+            <Image source={ArrowLeft} />
+          </TouchableOpacity>
+          <Text style={styles.headerText}>EDIT PROFILE</Text>
+        </View>
+        <View style={styles.userInfoSection}>
+          <View>
+            <Image source={ProfilePicture} style={styles.image} />
+            <TouchableOpacity style={styles.editContainer}>
+              <Image source={Edit} style={styles.edit} />
             </TouchableOpacity>
-            <Text style={styles.headerText}>EDIT PROFILE</Text>
           </View>
-          <View style={styles.userInfoSection}>
+        </View>
+        <View style={styles.inputContainer}>
+          <View style={styles.genderDOB}>
             <View>
-              <Image source={ProfilePicture} style={styles.image} />
-              <TouchableOpacity style={styles.editContainer}>
-                <Image source={Edit} style={styles.edit} />
-              </TouchableOpacity>
+              <Text style={styles.label}> First Name</Text>
+              <TextInput
+                style={styles.nameInput}
+                value="john"
+                editable={true}
+              />
+            </View>
+
+            <View>
+              <Text style={styles.label}>Last Name</Text>
+              <TextInput style={styles.nameInput} value="doe" editable={true} />
             </View>
           </View>
-          <View style={styles.inputContainer}>
-            <View style={styles.genderDOB}>
-              <View>
-                <Text style={styles.label}> First Name</Text>
-                <TextInput
-                  style={styles.nameInput}
-                  value="john"
-                  editable={true}
-                />
-              </View>
 
-              <View>
-                <Text style={styles.label}>Last Name</Text>
-                <TextInput
-                  style={styles.nameInput}
-                  value="doe"
-                  editable={true}
-                />
-              </View>
+          <Text style={styles.label}>Email</Text>
+          <TextInput
+            style={styles.input}
+            value="johndoe@email.com"
+            editable={true}
+          />
+
+          <Text style={styles.label}>Phone Number</Text>
+          <TextInput style={styles.input} value="+123456789" editable={true} />
+
+          <View style={styles.genderDOB}>
+            <View>
+              <Text style={styles.label}>Gender</Text>
+              <TextInput
+                style={styles.genderInput}
+                value="Male"
+                editable={true}
+              />
             </View>
-
-            <Text style={styles.label}>Email</Text>
-            <TextInput
-              style={styles.input}
-              value="johndoe@email.com"
-              editable={true}
-            />
-
-            <Text style={styles.label}>Phone Number</Text>
-            <TextInput
-              style={styles.input}
-              value="+123456789"
-              editable={true}
-            />
-
-            <View style={styles.genderDOB}>
-              <View>
-                <Text style={styles.label}>Gender</Text>
-                <TextInput
-                  style={styles.genderInput}
-                  value="Male"
-                  editable={true}
-                />
-              </View>
-              <View>
-                <Text style={styles.label}>Date of Birth</Text>
+            <View>
+              <Text style={styles.label}>Date of Birth</Text>
+              <TouchableOpacity
+                onPress={() => setOpen(true)} // Open the date picker
+              >
                 <TextInput
                   style={styles.DOBInput}
-                  value="01/01/1990"
-                  editable={true}
+                  value={dob ? dob.toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' }) : ""}
+                  editable={false} // Disable manual editing
                 />
-              </View>
+              </TouchableOpacity>
+              <DatePicker
+                modal
+                mode="date"
+                open={open}
+                date={dob}
+                onConfirm={(date) => {
+                  setOpen(false);
+                  setDob(date); // Set the selected date
+                }}
+                onCancel={() => {
+                  setOpen(false);
+                }}
+              />
             </View>
           </View>
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.button}>
-              <Text style={styles.buttonText}>Save</Text>
-            </TouchableOpacity>
-          </View>
+        </View>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button}>
+            <Text style={styles.buttonText}>Save</Text>
+          </TouchableOpacity>
+        </View>
       </KeyboardAwareScrollView>
     </TouchableWithoutFeedback>
   );
@@ -265,3 +278,5 @@ const styles = StyleSheet.create({
     right: -10,
   },
 });
+
+
