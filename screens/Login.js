@@ -25,7 +25,7 @@ import {
 } from "@expo-google-fonts/nunito";
 
 import { validateEmail } from "../utils/authUtil.js";
-import { loginUser } from "../api/apiService";
+import { loginUser } from "../api/authAPI.js";
 
 const { width: screenWidth } = Dimensions.get("window");
 const { height: screenHeight } = Dimensions.get("window");
@@ -61,11 +61,7 @@ const Login = () => {
       console.log("Password:", password);
       const userData = await loginUser(email, password);
 
-      //TODO Token
-      // Alert.alert("Success", "Logged in successfully");
-      console.log("[LOGIN SUCCESS] User data:", userData);
-
-      navigation.navigate("Homepage");
+      navigation.navigate("Account");
     } catch (error) {
       Alert.alert("Login Failed", error.message || "Invalid email or password");
     }

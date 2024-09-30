@@ -16,11 +16,15 @@ import VectorBackground from "../assets/Vector.png";
 import InputField from "../components/InputField.js";
 import PasswordField from "../components/PasswordField.js";
 import Button from "../components/Button"; // Import the Button component
-import { useFonts, Nunito_400Regular, Nunito_700Bold } from "@expo-google-fonts/nunito";
+import {
+  useFonts,
+  Nunito_400Regular,
+  Nunito_700Bold,
+} from "@expo-google-fonts/nunito";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 import { validateEmail } from "../utils/authUtil.js";
-import { signup } from "../api/apiService.js";
+import { signup } from "../api/authAPI.js";
 
 const { width: screenWidth } = Dimensions.get("window");
 const { height: screenHeight } = Dimensions.get("window");
@@ -53,7 +57,7 @@ const Login = () => {
       Alert.alert("Error", "Please enter a valid email address");
       return;
     }
-    
+
     if (password !== confirmpassword) {
       Alert.alert("Error", "Passwords do not match");
       return;
@@ -69,9 +73,11 @@ const Login = () => {
 
       navigation.navigate("Homepage");
     } catch (error) {
-      Alert.alert("Registration Failed", error.message || "Invalid email or password");
+      Alert.alert(
+        "Registration Failed",
+        error.message || "Invalid email or password"
+      );
     }
-
   };
 
   const dismissKeyboard = () => {
@@ -85,8 +91,13 @@ const Login = () => {
         resetScrollToCoords={{ x: 0, y: 0 }}
         contentContainerStyle={styles.scrollContainer}
         extraHeight={150} // This extra height helps prevent blocking
-        enableAutomaticScroll={true}>
-        <Image source={VectorBackground} style={styles.cornerImage} resizeMode="cover" />
+        enableAutomaticScroll={true}
+      >
+        <Image
+          source={VectorBackground}
+          style={styles.cornerImage}
+          resizeMode="cover"
+        />
         <View style={styles.cornerContainer}>
           <Text style={styles.subHeader}>Mapp!t</Text>
         </View>
@@ -150,7 +161,8 @@ const Login = () => {
           <View style={styles.registrationContainer}>
             <TouchableOpacity onPress={() => navigation.navigate("Login")}>
               <Text style={styles.registrationText}>
-                Have an account? <Text style={styles.loginLink}>Login Here</Text>
+                Have an account?{" "}
+                <Text style={styles.loginLink}>Login Here</Text>
               </Text>
             </TouchableOpacity>
           </View>

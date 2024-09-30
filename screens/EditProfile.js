@@ -1,92 +1,226 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
   Image,
+  Alert,
   TextInput,
+  TouchableWithoutFeedback,
+  Keyboard,
+  TouchableOpacity,
 } from "react-native";
 import ProfilePicture from "../assets/ProfilePicture.png";
 import { useNavigation } from "@react-navigation/native";
 import ArrowLeft from "../assets/ArrowLeft.png";
 import Edit from "../assets/editprofile.png";
+import {
+  useFonts,
+  Nunito_400Regular,
+  Nunito_700Bold,
+} from "@expo-google-fonts/nunito";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import DatePicker from "react-native-date-picker";
+import { updateProfile, fetchUserData } from "../api/authAPI";
 
 const EditProfile = () => {
   const navigation = useNavigation();
-  const [name, setName] = useState(null);
+  const [firstName, setFirstName] = useState(null);
+  const [lastName, setLastName] = useState(null);
   const [email, setEmail] = useState(null);
   const [phone, setPhone] = useState(null);
   const [gender, setGender] = useState(null);
-  const [dob, setDob] = useState(null);
+  const [dob, setDob] = useState(new Date());
+  const [open, setOpen] = useState(false);
+
+  const [fontsLoaded] = useFonts({
+    Nunito_400Regular,
+    Nunito_700Bold,
+  });
+
+  useEffect(() => {
+    const getUserData = async () => {
+      try {
+        const userData = await fetchUserData();
+
+        // Set state variables with the fetched data
+        setFirstName(userData.firstName);
+        setLastName(userData.lastName);
+        setEmail(userData.email);
+        setPhone(userData.phoneNumber);
+        setGender(userData.gender);
+        setDob(new Date(userData.dob)); // Convert the dob string into a Date object
+      } catch (error) {
+        console.error("An error occurred while fetching user data", error);
+
+        // Show an alert in case of error
+        Alert.alert(
+          "Session Expired",
+          "Your session has expired. Redirecting to the login page...",
+          [
+            {
+              text: "OK",
+              onPress: () => {
+                // Redirect after 2 seconds
+                setTimeout(() => {
+                  navigation.navigate("Login");
+                }, 2000);
+              },
+            },
+          ],
+          { cancelable: false }
+        );
+      }
+    };
+
+    getUserData();
+  }, []);
+
+  if (!fontsLoaded) {
+    return null; // You can add a loading spinner or screen here if needed
+  }
+
+  const handleUpdate = async () => {
+    try {
+      let dob_string = dob.toISOString().split("T")[0]; // Format date as YYYY-MM-DD
+
+      const userData = await updateProfile(
+        firstName,
+        lastName,
+        email,
+        phone,
+        gender,
+        dob_string
+      );
+
+      navigation.navigate("EditProfile");
+    } catch (error) {
+      Alert.alert("Update Failed", error.message);
+    }
+  };
+
+  const dismissKeyboard = () => {
+    Keyboard.dismiss();
+  };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => navigation.navigate("Profile")}
-          style={styles.closeButton}
-        >
-          <Image source={ArrowLeft} />
-        </TouchableOpacity>
-        <Text style={styles.headerText}>EDIT PROFILE</Text>
-      </View>
-      <View style={styles.userInfoSection}>
-        <View>
-          <Image source={ProfilePicture} style={styles.image} />
-          <TouchableOpacity style={styles.editContainer}>
-            <Image source={Edit} style={styles.edit} />
+    <TouchableWithoutFeedback onPress={dismissKeyboard}>
+      <KeyboardAwareScrollView
+        style={styles.container}
+        resetScrollToCoords={{ x: 0, y: 0 }}
+        contentContainerStyle={styles.scrollContainer}
+        extraHeight={150} // This extra height helps prevent blocking
+        enableAutomaticScroll={true}
+      >
+        <View style={styles.header}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("Profile")}
+            style={styles.closeButton}
+          >
+            <Image source={ArrowLeft} />
+          </TouchableOpacity>
+          <Text style={styles.headerText}>EDIT PROFILE</Text>
+        </View>
+        <View style={styles.userInfoSection}>
+          <View>
+            <Image source={ProfilePicture} style={styles.image} />
+            <TouchableOpacity style={styles.editContainer}>
+              <Image source={Edit} style={styles.edit} />
+            </TouchableOpacity>
+          </View>
+        </View>
+        <View style={styles.inputContainer}>
+          <View style={styles.genderDOB}>
+            <View>
+              <Text style={styles.label}> First Name</Text>
+              <TextInput
+                style={styles.nameInput}
+                value={firstName}
+                editable={true}
+                onChangeText={setFirstName}
+              />
+            </View>
+
+            <View>
+              <Text style={styles.label}>Last Name</Text>
+              <TextInput
+                style={styles.nameInput}
+                value={lastName}
+                editable={true}
+                onChangeText={setLastName}
+              />
+            </View>
+          </View>
+
+          <Text style={styles.label}>Email</Text>
+          <TextInput
+            style={styles.emailInput}
+            value={email}
+            editable={false}
+            onChangeText={setEmail}
+          />
+
+          <Text style={styles.label}>Phone Number</Text>
+          <TextInput
+            style={styles.input}
+            value={phone}
+            editable={true}
+            onChangeText={setPhone}
+          />
+
+          <View style={styles.genderDOB}>
+            <View>
+              <Text style={styles.label}>Gender</Text>
+              <TextInput
+                style={styles.genderInput}
+                value={gender}
+                editable={true}
+                onChangeText={setGender}
+              />
+            </View>
+            <View>
+              <Text style={styles.label}>Date of Birth</Text>
+              <TouchableOpacity
+                onPress={() => setOpen(true)} // Open the date picker
+              >
+                <TextInput
+                  style={styles.DOBInput}
+                  value={
+                    dob
+                      ? `${dob.getDate().toString().padStart(2, "0")}/${(
+                          dob.getMonth() + 1
+                        )
+                          .toString()
+                          .padStart(2, "0")}/${dob.getFullYear()}`
+                      : ""
+                  }
+                  editable={false} // Disable manual editing
+                  onChangeText={setDob}
+                />
+              </TouchableOpacity>
+              <DatePicker
+                modal
+                mode="date"
+                open={open}
+                date={dob}
+                onConfirm={(date) => {
+                  setOpen(false);
+                  setDob(date); // Set the selected date
+                }}
+                onCancel={() => {
+                  setOpen(false);
+                }}
+              />
+            </View>
+          </View>
+        </View>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button} onPress={handleUpdate}>
+            <Text style={styles.buttonText}>Save</Text>
           </TouchableOpacity>
         </View>
-      </View>
-      <View style={styles.inputContainer}>
-        <View style={styles.genderDOB}>
-          <View>
-            <Text style={styles.label}> First Name</Text>
-            <TextInput style={styles.nameInput} value="john" editable={true} />
-          </View>
-
-          <View>
-            <Text style={styles.label}>Last Name</Text>
-            <TextInput style={styles.nameInput} value="doe" editable={true} />
-          </View>
-        </View>
-
-        <Text style={styles.label}>Email</Text>
-        <TextInput
-          style={styles.input}
-          value="johndoe@email.com"
-          editable={true}
-        />
-
-        <Text style={styles.label}>Phone Number</Text>
-        <TextInput style={styles.input} value="+123456789" editable={true} />
-
-        <View style={styles.genderDOB}>
-          <View>
-            <Text style={styles.label}>Gender</Text>
-            <TextInput
-              style={styles.genderInput}
-              value="Male"
-              editable={true}
-            />
-          </View>
-          <View>
-            <Text style={styles.label}>Date of Birth</Text>
-            <TextInput
-              style={styles.DOBInput}
-              value="01/01/1990"
-              editable={true}
-            />
-          </View>
-        </View>
-      </View>
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>Save</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+      </KeyboardAwareScrollView>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -154,11 +288,21 @@ const styles = StyleSheet.create({
     backgroundColor: "#F2F2F2",
     padding: 15,
     borderRadius: 8,
-    fontSize: 16,
+    fontSize: 18,
     color: "#777",
     marginBottom: 20,
     borderWidth: 1,
     borderColor: "#3A4646",
+  },
+  emailInput: {
+    backgroundColor: "#F2F2F2",
+    padding: 15,
+    borderRadius: 8,
+    fontSize: 18,
+    color: "#b2b3b5",
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: "#b2b3b5",
   },
   buttonContainer: {
     justifyContent: "center",
@@ -187,7 +331,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F2F2F2",
     padding: 15,
     borderRadius: 8,
-    fontSize: 16,
+    fontSize: 18,
     color: "#777",
     marginBottom: 20,
     borderWidth: 1,
@@ -198,7 +342,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F2F2F2",
     padding: 15,
     borderRadius: 8,
-    fontSize: 16,
+    fontSize: 18,
     color: "#777",
     marginBottom: 20,
     borderWidth: 1,
@@ -209,7 +353,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F2F2F2",
     padding: 15,
     borderRadius: 8,
-    fontSize: 16,
+    fontSize: 20,
     color: "#777",
     marginBottom: 20,
     borderWidth: 1,
