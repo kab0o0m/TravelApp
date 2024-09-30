@@ -23,6 +23,7 @@ import {
   Nunito_400Regular,
   Nunito_700Bold,
 } from "@expo-google-fonts/nunito";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { validateEmail } from "../utils/authUtil.js";
 import { loginUser } from "../api/authAPI.js";
@@ -60,6 +61,9 @@ const Login = () => {
       console.log("Email:", email);
       console.log("Password:", password);
       const userData = await loginUser(email, password);
+
+      // Save user data locally
+      await AsyncStorage.setItem('userData', JSON.stringify(userData.user));
 
       navigation.navigate("Account");
     } catch (error) {

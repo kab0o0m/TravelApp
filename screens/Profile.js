@@ -1,15 +1,85 @@
-import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image, TextInput } from "react-native";
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  Alert,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  TextInput,
+} from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import ProfilePicture from "../assets/ProfilePicture.png";
 import { useNavigation } from "@react-navigation/native";
 import ArrowLeft from "../assets/ArrowLeft.png";
 
 const Profile = () => {
   const navigation = useNavigation();
+  const [firstName, setFirstName] = useState(null);
+  const [lastName, setLastName] = useState(null);
+  const [email, setEmail] = useState(null);
+  const [phone, setPhone] = useState(null);
+  const [gender, setGender] = useState(null);
+  const [dob, setDob] = useState(new Date());
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        const storedUserData = await AsyncStorage.getItem("userData");
+        if (storedUserData == null) {
+          console.log("fetching");
+          storedUserData = await fetchUserData();
+          // Save user data locally
+          await AsyncStorage.setItem(
+            "userData",
+            JSON.stringify(storedUserData)
+          );
+        }
+        
+
+        const userData = JSON.parse(storedUserData);
+
+        setFirstName(userData.firstName);
+        setLastName(userData.lastName);
+        setEmail(userData.email);
+        setPhone(userData.phoneNumber);
+        setGender(userData.gender);
+        setDob(userData.dob); // Assuming dob is in valid format
+
+      } catch (error) {
+        console.error("Failed to load user data", error);
+
+        // Show an alert in case of error
+        Alert.alert(
+          "Session Expired",
+          "Your session has expired. Redirecting to the login page...",
+          [
+            {
+              text: "OK",
+              onPress: () => {
+                // Redirect after 2 seconds
+                setTimeout(() => {
+                  navigation.navigate("Login");
+                }, 2000);
+              },
+            },
+          ],
+          { cancelable: false }
+        );
+      }
+    };
+
+    loadUserData();
+  }, []);
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.navigate("Account")} style={styles.closeButton}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("Account")}
+          style={styles.closeButton}
+        >
           <Image source={ArrowLeft} />
         </TouchableOpacity>
         <Text style={styles.headerText}>PROFILE</Text>
@@ -19,25 +89,32 @@ const Profile = () => {
           <Image source={ProfilePicture} />
         </View>
         <View style={styles.userTextContainer}>
-          <Text style={styles.userName}>John Doe</Text>
+          <Text style={styles.userName}>{firstName} {lastName}</Text>
           <Text style={styles.userInfoSectionProfile}>Joined - Mar 2024</Text>
         </View>
       </View>
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Email</Text>
-        <TextInput style={styles.input} value="johndoe@email.com" editable={false} />
+        <TextInput
+          style={styles.input}
+          value={email}
+          editable={false}
+        />
 
         <Text style={styles.label}>Phone Number</Text>
-        <TextInput style={styles.input} value="+123456789" editable={false} />
+        <TextInput style={styles.input} value={phone} editable={false} />
 
         <Text style={styles.label}>Gender</Text>
-        <TextInput style={styles.input} value="Male" editable={false} />
+        <TextInput style={styles.input} value={gender} editable={false} />
 
         <Text style={styles.label}>Date of Birth</Text>
-        <TextInput style={styles.input} value="01/01/1990" editable={false} />
+        <TextInput style={styles.input} value={dob} editable={false} />
       </View>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("EditProfile")}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate("EditProfile")}
+        >
           <Text style={styles.buttonText}>Edit</Text>
         </TouchableOpacity>
       </View>

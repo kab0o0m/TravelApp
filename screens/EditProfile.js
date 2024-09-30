@@ -20,6 +20,7 @@ import {
   Nunito_700Bold,
 } from "@expo-google-fonts/nunito";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import DatePicker from "react-native-date-picker";
 import { updateProfile, fetchUserData } from "../api/authAPI";
 
@@ -39,19 +40,31 @@ const EditProfile = () => {
   });
 
   useEffect(() => {
-    const getUserData = async () => {
+    const loadUserData = async () => {
       try {
-        const userData = await fetchUserData();
+        const storedUserData = await AsyncStorage.getItem("userData");
+        if (storedUserData == null) {
+          console.log("fetching");
+          storedUserData = await fetchUserData();
+          // Save user data locally
+          await AsyncStorage.setItem(
+            "userData",
+            JSON.stringify(storedUserData)
+          );
+        }
+        
 
-        // Set state variables with the fetched data
+        const userData = JSON.parse(storedUserData);
+
         setFirstName(userData.firstName);
         setLastName(userData.lastName);
         setEmail(userData.email);
         setPhone(userData.phoneNumber);
         setGender(userData.gender);
-        setDob(new Date(userData.dob)); // Convert the dob string into a Date object
+        setDob(new Date(userData.dob)); // Assuming dob is in valid format
+
       } catch (error) {
-        console.error("An error occurred while fetching user data", error);
+        console.error("Failed to load user data", error);
 
         // Show an alert in case of error
         Alert.alert(
@@ -73,7 +86,7 @@ const EditProfile = () => {
       }
     };
 
-    getUserData();
+    loadUserData();
   }, []);
 
   if (!fontsLoaded) {

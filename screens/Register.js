@@ -22,6 +22,7 @@ import {
   Nunito_700Bold,
 } from "@expo-google-fonts/nunito";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { validateEmail } from "../utils/authUtil.js";
 import { signup } from "../api/authAPI.js";
@@ -68,10 +69,10 @@ const Login = () => {
       console.log("Password:", password);
       const userData = await signup(firstname, lastname, email, password);
 
-      //TODO Token
-      console.log("[SIGNUP SUCCESS] User data:", userData);
+      // Save user data locally
+      await AsyncStorage.setItem('userData', JSON.stringify(userData.user));
 
-      navigation.navigate("Homepage");
+      navigation.navigate("Account");
     } catch (error) {
       Alert.alert(
         "Registration Failed",
