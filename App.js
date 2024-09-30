@@ -16,7 +16,7 @@ export default function App() {
   const Stack = createNativeStackNavigator();
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Homepage">
+      <Stack.Navigator initialRouteName="AuthCheck">
         <Stack.Screen name="AuthCheck" component={AuthCheck} options={{ headerShown: false }} />
         <Stack.Screen name="Homepage" component={Homepage} options={{ headerShown: false }} />
         <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
