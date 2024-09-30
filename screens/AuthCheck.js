@@ -11,8 +11,10 @@ const AuthCheck = () => {
     const checkAuth = async () => {
       const tokenExpired = await isTokenExpired();
       if (tokenExpired) {
+        console.log("token expired/doesn't exist")
         navigation.navigate("Homepage"); // Redirect to login if token is expired
       } else {
+        console.log("token valid")
         navigation.navigate("Profile"); // TODO: Redirect to HOME
       }
     };
