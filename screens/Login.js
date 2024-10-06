@@ -119,9 +119,7 @@ const Login = () => {
           {/* Forgot Password */}
           <TouchableOpacity
             style={styles.forgotPasswordContainer}
-            onPress={() =>
-              Alert.alert("Forgot Password", "Password recovery logic here")
-            }
+            onPress={() => navigation.navigate("ResetPW")}
           >
             <Text style={styles.forgotPassword}>Forgot Password?</Text>
           </TouchableOpacity>
