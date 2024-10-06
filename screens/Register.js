@@ -17,8 +17,16 @@ import VectorBackground from "../assets/Vector.png";
 import InputField from "../components/InputField.js";
 import PasswordField from "../components/PasswordField.js";
 import Button from "../components/Button"; // Import the Button component
-import { useFonts, Nunito_400Regular, Nunito_700Bold } from "@expo-google-fonts/nunito";
+import {
+  useFonts,
+  Nunito_400Regular,
+  Nunito_700Bold,
+} from "@expo-google-fonts/nunito";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+import { validateEmail } from "../utils/authUtil.js";
+import { signup } from "../api/authAPI.js";
 
 const { width: screenWidth } = Dimensions.get("window");
 const { height: screenHeight } = Dimensions.get("window");
@@ -41,14 +49,37 @@ const Register = () => {
     return null; // You can add a loading spinner or screen here if needed
   }
 
-  const handleRegister = () => {
-    if (!email || !password) {
-      Alert.alert("Error", "Please enter both email and password");
+  const handleRegister = async () => {
+    if (!email || !password || !firstname || !lastname) {
+      Alert.alert("Error", "Please fill in all fields");
       return;
     }
 
-    // Perform login logic here
-    Alert.alert("Success", "Registered successfully");
+    if (!validateEmail(email)) {
+      Alert.alert("Error", "Please enter a valid email address");
+      return;
+    }
+
+    if (password !== confirmpassword) {
+      Alert.alert("Error", "Passwords do not match");
+      return;
+    }
+
+    try {
+      console.log("Email:", email);
+      console.log("Password:", password);
+      const userData = await signup(firstname, lastname, email, password);
+
+      // Save user data locally
+      await AsyncStorage.setItem('userData', JSON.stringify(userData.user));
+
+      navigation.navigate("Account");
+    } catch (error) {
+      Alert.alert(
+        "Registration Failed",
+        error.message || "Invalid email or password"
+      );
+    }
   };
 
   const dismissKeyboard = () => {
@@ -62,8 +93,13 @@ const Register = () => {
         resetScrollToCoords={{ x: 0, y: 0 }}
         contentContainerStyle={styles.scrollContainer}
         extraHeight={150} // This extra height helps prevent blocking
-        enableAutomaticScroll={true}>
-        <Image source={VectorBackground} style={styles.cornerImage} resizeMode="cover" />
+        enableAutomaticScroll={true}
+      >
+        <Image
+          source={VectorBackground}
+          style={styles.cornerImage}
+          resizeMode="cover"
+        />
         <View style={styles.cornerContainer}>
           <Text style={styles.subHeader}>Mapp!t</Text>
         </View>
@@ -127,7 +163,8 @@ const Register = () => {
           <View style={styles.registrationContainer}>
             <TouchableOpacity onPress={() => navigation.navigate("Login")}>
               <Text style={styles.registrationText}>
-                Have an account? <Text style={styles.loginLink}>Login Here</Text>
+                Have an account?{" "}
+                <Text style={styles.loginLink}>Login Here</Text>
               </Text>
             </TouchableOpacity>
           </View>

@@ -17,6 +17,7 @@ import axios from "axios";
 import ArrowUp from "../assets/ArrowUp.png";
 import FrogHead from "../assets/FrogHead.png";
 import { useNavigation } from "@react-navigation/native";
+import { GROQ_KEY } from "@env";
 
 const Chatbot = () => {
   const [messages, setMessages] = useState([]);
@@ -122,8 +123,7 @@ const Chatbot = () => {
 
     try {
       const groq = new Groq({
-        apiKey: "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",
-        dangerouslyAllowBrowser: true,
+        apiKey: GROQ_KEY,
       });
       const response = await groq.chat.completions.create({
         messages: [
@@ -169,40 +169,40 @@ const Chatbot = () => {
     }
   };
 
-  const handleSchedule = async () => {
-    const groqMessages = messages.map((message) => ({
-      role: message.from === "user" ? "user" : "assistant",
-      content: message.text,
-    }));
+  // const handleSchedule = async () => {
+  //   const groqMessages = messages.map((message) => ({
+  //     role: message.from === "user" ? "user" : "assistant",
+  //     content: message.text,
+  //   }));
 
-    // Add the current user input as the latest message in the chat history
-    groqMessages.push({ role: "user", content: input });
-    try {
-      const groq = new Groq({
-        apiKey: "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",
-        dangerouslyAllowBrowser: true,
-      });
-      const response = await groq.chat.completions.create({
-        messages: [
-          {
-            role: "system",
-            content: `You are a formatter to make user input into json object {"event": userEvent, "startDate": userStartDate, "endDate": userEndDate}. You will do nothing else but to format. Whole message will only contain the Json Object`,
-          },
-          { role: "user", content: input },
-          ...groqMessages,
-        ],
+  //   // Add the current user input as the latest message in the chat history
+  //   groqMessages.push({ role: "user", content: input });
+  //   try {
+  //     const groq = new Groq({
+  //       apiKey: "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",
+  //       dangerouslyAllowBrowser: true,
+  //     });
+  //     const response = await groq.chat.completions.create({
+  //       messages: [
+  //         {
+  //           role: "system",
+  //           content: `You are a formatter to make user input into json object {"event": userEvent, "startDate": userStartDate, "endDate": userEndDate}. You will do nothing else but to format. Whole message will only contain the Json Object`,
+  //         },
+  //         { role: "user", content: input },
+  //         ...groqMessages,
+  //       ],
 
-        model: "llama3-8b-8192",
-      });
-      const jsonObject = response.choices[0].message.content;
-      console.log(jsonObject);
-      setSchedule(false);
-    } catch (error) {
-      console.error("Error fetching response:", error);
-    }
+  //       model: "llama3-8b-8192",
+  //     });
+  //     const jsonObject = response.choices[0].message.content;
+  //     console.log(jsonObject);
+  //     setSchedule(false);
+  //   } catch (error) {
+  //     console.error("Error fetching response:", error);
+  //   }
 
-    setSchedule(true);
-  };
+  //   setSchedule(true);
+  // };
 
   return (
     <KeyboardAvoidingView
@@ -239,11 +239,11 @@ const Chatbot = () => {
           <Image source={ArrowUp} />
         </TouchableOpacity>
       </View>
-      <View style={styles.scheduleContainer}>
+      {/* <View style={styles.scheduleContainer}>
         <TouchableOpacity style={styles.scheduleButton} onPress={handleSchedule}>
           <Text style={styles.scheduleText}>Schedule</Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
     </KeyboardAvoidingView>
   );
 };

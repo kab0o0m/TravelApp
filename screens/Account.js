@@ -1,10 +1,40 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import ProfilePicture from "../assets/ProfilePicture.png";
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Account = () => {
   const navigation = useNavigation();
+  const [firstName, setFirstName] = useState(null);
+  const [lastName, setLastName] = useState(null);
+
+  useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        const storedUserData = await AsyncStorage.getItem("userData");
+        if (storedUserData == null) {
+          console.log("fetching");
+          storedUserData = await fetchUserData();
+          // Save user data locally
+          await AsyncStorage.setItem(
+            "userData",
+            JSON.stringify(storedUserData)
+          );
+        }
+
+        const userData = JSON.parse(storedUserData);
+
+        setFirstName(userData.firstName);
+        setLastName(userData.lastName);
+
+      } catch (error) {
+        console.error("Failed to load user data", error);
+      }
+    };
+
+    loadUserData();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -16,7 +46,7 @@ const Account = () => {
           <Image source={ProfilePicture} />
         </View>
         <View style={styles.userTextContainer}>
-          <Text style={styles.userName}>John Doe</Text>
+          <Text style={styles.userName}>{firstName} {lastName}</Text>
           <TouchableOpacity
             style={styles.userInfoSectionProfileContainer}
             onPress={() => navigation.navigate("Profile")}>
@@ -109,7 +139,7 @@ const styles = StyleSheet.create({
   },
   userTextContainer: {
     flexDirection: "column",
-    alignItems: "center",
+    // alignItems: "center",
     marginLeft: 20,
   },
 });

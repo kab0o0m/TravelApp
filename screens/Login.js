@@ -18,7 +18,15 @@ import VectorBackground from "../assets/Vector.png";
 import InputField from "../components/InputField.js";
 import PasswordField from "../components/PasswordField.js";
 import Button from "../components/Button";
-import { useFonts, Nunito_400Regular, Nunito_700Bold } from "@expo-google-fonts/nunito";
+import {
+  useFonts,
+  Nunito_400Regular,
+  Nunito_700Bold,
+} from "@expo-google-fonts/nunito";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+import { validateEmail } from "../utils/authUtil.js";
+import { loginUser } from "../api/authAPI.js";
 
 const { width: screenWidth } = Dimensions.get("window");
 const { height: screenHeight } = Dimensions.get("window");
@@ -38,14 +46,29 @@ const Login = () => {
     return null; // You can add a loading spinner or screen here if needed
   }
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!email || !password) {
       Alert.alert("Error", "Please enter both email and password");
       return;
     }
 
-    // Perform login logic here
-    Alert.alert("Success", "Logged in successfully");
+    if (!validateEmail(email)) {
+      Alert.alert("Error", "Please enter a valid email address");
+      return;
+    }
+
+    try {
+      console.log("Email:", email);
+      console.log("Password:", password);
+      const userData = await loginUser(email, password);
+
+      // Save user data locally
+      await AsyncStorage.setItem('userData', JSON.stringify(userData.user));
+
+      navigation.navigate("Account");
+    } catch (error) {
+      Alert.alert("Login Failed", error.message || "Invalid email or password");
+    }
   };
 
   const dismissKeyboard = () => {
@@ -59,11 +82,16 @@ const Login = () => {
         resetScrollToCoords={{ x: 0, y: 0 }}
         contentContainerStyle={styles.scrollContainer}
         extraHeight={150} // This extra height helps prevent blocking
-        enableAutomaticScroll={true}>
+        enableAutomaticScroll={true}
+      >
         <View style={styles.cornerContainer}>
           <Text style={styles.subHeader}>Mapp!t</Text>
         </View>
-        <Image source={VectorBackground} style={styles.cornerImage} resizeMode="cover" />
+        <Image
+          source={VectorBackground}
+          style={styles.cornerImage}
+          resizeMode="cover"
+        />
         <View style={styles.headerContainer}>
           <Text style={styles.header}>WELCOME BACK</Text>
         </View>
@@ -82,12 +110,19 @@ const Login = () => {
           />
 
           {/* Password Field */}
-          <PasswordField label="Password" value={password} onChangeText={setPassword} />
+          <PasswordField
+            label="Password"
+            value={password}
+            onChangeText={setPassword}
+          />
 
           {/* Forgot Password */}
           <TouchableOpacity
             style={styles.forgotPasswordContainer}
-            onPress={() => Alert.alert("Forgot Password", "Password recovery logic here")}>
+            onPress={() =>
+              Alert.alert("Forgot Password", "Password recovery logic here")
+            }
+          >
             <Text style={styles.forgotPassword}>Forgot Password?</Text>
           </TouchableOpacity>
 
@@ -105,7 +140,8 @@ const Login = () => {
           <View style={styles.registrationContainer}>
             <TouchableOpacity onPress={() => navigation.navigate("Register")}>
               <Text style={styles.registrationText}>
-                Don’t have an account? <Text style={styles.registerLink}>Register Here</Text>
+                Don’t have an account?{" "}
+                <Text style={styles.registerLink}>Register Here</Text>
               </Text>
             </TouchableOpacity>
           </View>
