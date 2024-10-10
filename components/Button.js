@@ -13,7 +13,7 @@ const Button = ({
   borderColor = '#F47966', // Default border color
   borderWidth = 2, // Thickness of the border
   width = 'auto', // Default width
-  iconName = "ios-add", // Default plus icon
+  iconName = null, // Default no icon
   iconSize = 24, // Default icon size
   iconColor = '#FFFFFF', // Default icon color
   style 
@@ -38,7 +38,10 @@ const Button = ({
     >
       {/* Container for the icon and the text */}
       <View style={styles.buttonContent}>
-        <Ionicons name={iconName} size={iconSize} color={iconColor} style={styles.icon} />
+        {/* Only render the icon if iconName is provided */}
+        {iconName && (
+          <Ionicons name={iconName} size={iconSize} color={iconColor} style={styles.icon} />
+        )}
         <Text style={[styles.buttonText, { color: textColor }]}>{title}</Text>
       </View>
     </TouchableOpacity>

@@ -32,9 +32,9 @@ const Expenses = () => {
             onPress={null}
             backgroundColor="#006D77" // Same as box color
             textColor="#FFFFFF"
-            paddingVertical={10} // Lesser padding
+            paddingVertical={8} // Lesser padding
             borderRadius={25}
-            width={screenWidth * 0.8} // Wider button width (80% of screen width)
+            width={screenWidth * 0.45} // Wider button width (80% of screen width)
             borderColor="#FFFFFF" // White border color
             borderWidth={2} // Thicker border
           />
@@ -69,7 +69,7 @@ const Expenses = () => {
             textColor="#FFFFFF"
             paddingVertical={10}
             borderRadius={25}
-            width={screenWidth * 0.5} // 60% of screen width
+            width={screenWidth * 0.5} 
             iconName="add"
         />
         </View>
@@ -120,6 +120,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Nunito_400Regular', // Regular font for the budget text
     color: '#FFF', // White color for text
     marginTop: screenHeight * 0.01, // Space between amount and budget text
+    marginBottom: screenHeight*0.005,
   },
   whiteBox: {
     position: 'absolute', // Positioning it absolutely to overlap
