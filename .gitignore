@@ -78,4 +78,3 @@ yarn-error.*
 
 /android
 metro.config.js
-package-lock.json
