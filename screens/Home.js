@@ -81,7 +81,7 @@ const Home = () => {
           </TouchableOpacity>
 
           {/*London Destination */}
-          <View style={styles.destinationContainer}>
+          <View style={styles.destinationContainerLast}>
             <View style={styles.destinationBackground} />
             <Image source={require('../assets/LondonBG.png')} style={styles.destinationImage} />
             <View style={styles.textContainer}>
@@ -140,7 +140,7 @@ const Home = () => {
           </View>
 
           {/* Feasting Section */}
-          <View style={styles.featuredContainer}>
+          <View style={styles.featuredContainerLast}>
             <View style={styles.featuredBackground} />
             <Image source={require('../assets/FeastingBG.png')} style={styles.featuredImage} />
             <View style={styles.featuredTextContainer}>
@@ -251,15 +251,9 @@ const styles = StyleSheet.create({
     fontSize: 24,
     color: '#3A4646',
     fontFamily: 'Nunito_700Bold',
-    marginLeft: 20,
+    marginLeft: 30,
     marginBottom: 10,
-    marginTop: 10,
-  },
-  destinationContainer: {
-    position: 'relative', // Set position relative for absolute children
-    marginBottom: 10,
-    marginRight: 20,
-    alignItems: 'center',
+    marginTop: 20,
   },
   textContainer: {
     position: 'absolute', // Position text absolutely
@@ -294,12 +288,6 @@ const styles = StyleSheet.create({
     textShadowColor: 'rgba(0, 0, 0, 0.5)', // Black color with 50% opacity
     textShadowOffset: { width: 0, height: 2 }, // x: 0, y: 2
     textShadowRadius: 4, // Blur radius 
-  },
-  featuredContainer: {
-    position: 'relative',
-    marginBottom: 20,
-    marginRight: 40,
-    alignItems: 'center',
   },
   featuredBackground: {
     width: 148,
@@ -355,13 +343,32 @@ const styles = StyleSheet.create({
     marginBottom: -20,
   },
   popularScrollView: {
+    paddingHorizontal: 30,
+  },
+  destinationContainer: {
+    position: 'relative', // Set position relative for absolute children
     marginRight: 20,
-    paddingHorizontal: 20,
+    alignItems: 'center',
+  },
+  destinationContainerLast: {
+    position: 'relative', // Set position relative for absolute children
+    marginRight: 55,
+    alignItems: 'center',
   },
   featuredScrollView: {
-    marginRight: 10,
-    marginLeft: 10,
-    paddingHorizontal: 20,
+    paddingHorizontal: 40,
+  },
+  featuredContainer: {
+    position: 'relative',
+    marginBottom: 20,
+    marginRight: 40,
+    alignItems: 'center',
+  },
+  featuredContainerLast: {
+    position: 'relative',
+    marginBottom: 20,
+    marginRight: 80,
+    alignItems: 'center',
   },
 
 });
