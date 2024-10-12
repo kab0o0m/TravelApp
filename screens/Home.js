@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Image, Dimensions, ScrollView, ActivityIndicato
 import { useFonts, Nunito_600SemiBold, Nunito_700Bold, Nunito_800ExtraBold, Nunito_900Black } from '@expo-google-fonts/nunito';
 import * as SplashScreen from 'expo-splash-screen';
 import { useNavigation } from '@react-navigation/native';
+import { populateEvents } from 'react-native-calendars/src/timeline/Packer';
 
 const { width: screenWidth } = Dimensions.get('window');
 const { height: screenHeight } = Dimensions.get('window');
@@ -59,7 +60,7 @@ const Home = () => {
         <Text style={styles.sectionHeader}>Popular Destinations</Text>
 
         {/* ScrollView for Destinations */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.popularScrollView}>
 
          {/* Japan Destination */}
           <View style={styles.destinationContainer}>
@@ -94,7 +95,7 @@ const Home = () => {
         <Text style={styles.sectionHeader}>Featured</Text>
 
         {/* ScrollView for Featured Destinations */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.featuredScrollView}>
 
           {/* Sightseeing Section */}
           <View style={styles.featuredContainer}>
@@ -211,7 +212,8 @@ const styles = StyleSheet.create({
     color: '#006D77',
     fontSize: 20,
     fontFamily: 'Nunito_600SemiBold',
-    fontWeight: '600'
+    fontWeight: '600',
+    width: 290,
   },
   relativeContainer: {
     width: '100%',
@@ -251,11 +253,12 @@ const styles = StyleSheet.create({
     fontFamily: 'Nunito_700Bold',
     marginLeft: 20,
     marginBottom: 10,
+    marginTop: 10,
   },
   destinationContainer: {
     position: 'relative', // Set position relative for absolute children
     marginBottom: 10,
-    marginLeft: 20,
+    marginRight: 20,
     alignItems: 'center',
   },
   textContainer: {
@@ -295,7 +298,7 @@ const styles = StyleSheet.create({
   featuredContainer: {
     position: 'relative',
     marginBottom: 20,
-    marginLeft: 40,
+    marginRight: 40,
     alignItems: 'center',
   },
   featuredBackground: {
@@ -350,6 +353,15 @@ const styles = StyleSheet.create({
     zIndex: 2,
     marginTop: -5,
     marginBottom: -20,
+  },
+  popularScrollView: {
+    marginRight: 20,
+    paddingHorizontal: 20,
+  },
+  featuredScrollView: {
+    marginRight: 10,
+    marginLeft: 10,
+    paddingHorizontal: 20,
   },
 
 });
