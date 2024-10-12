@@ -17,7 +17,7 @@ import ArrowLeft from "../assets/ArrowLeft.png";
 import plane from "../assets/Plane.png";
 import background from "../assets/background.png";
 
-const Homepage = () => {
+const Startpage = () => {
   const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -62,7 +62,7 @@ const Homepage = () => {
   );
 };
 
-export default Homepage;
+export default Startpage;
 
 const styles = StyleSheet.create({
   container: {
