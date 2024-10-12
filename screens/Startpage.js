@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     backgroundColor: "#D9D9D9",
     padding: 10,
-    borderRadius: "50%",
+    borderRadius: 30,
     zIndex: 999,
     right: 30,
     bottom: 200,
@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
     zIndex: 999,
     padding: 15,
     backgroundColor: "#D9D9D9",
-    borderRadius: "50%",
+    borderRadius: 30,
   },
   closeButtonText: {
     fontSize: 20,

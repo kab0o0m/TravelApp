@@ -17,12 +17,16 @@ import axios from "axios";
 import ArrowUp from "../assets/ArrowUp.png";
 import FrogHead from "../assets/FrogHead.png";
 import { useNavigation } from "@react-navigation/native";
+import { GROQ_KEY } from "@env";
 
 const Chatbot = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [forecast, setForecast] = useState(null);
   const [date, setDate] = useState(null);
+  const [latest, setLatest] = useState("");
+
+  const [schedule, setSchedule] = useState(false);
 
   const initialMessage = "Hi, I'm Froggie, how can i help you today?";
 
@@ -43,7 +47,6 @@ const Chatbot = () => {
       minute: "2-digit",
     };
     const sgtDate = date.toLocaleString("en-SG", options);
-    console.log(sgtDate);
     setDate(sgtDate);
   };
 
@@ -100,8 +103,6 @@ const Chatbot = () => {
 
   const handleSend = async () => {
     if (input.trim() === "") return;
-    getDate();
-    // Add user message to the chat history
     setMessages([...messages, { text: input, from: "user" }]);
     setInput("");
 
@@ -119,12 +120,10 @@ const Chatbot = () => {
 
     // Inside your `handleSend` function
     const forecastString = formatForecastData(forecast);
-    console.log(forecastString);
 
     try {
       const groq = new Groq({
-        apiKey: "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",
-        dangerouslyAllowBrowser: true,
+        apiKey: GROQ_KEY,
       });
       const response = await groq.chat.completions.create({
         messages: [
@@ -139,7 +138,7 @@ const Chatbot = () => {
         model: "llama3-8b-8192",
       });
       const messages = response.choices[0].message.content;
-      const parsedData = extractEventDetails(messages);
+      setLatest(messages);
 
       const words = messages.split(" ");
       let currentMessage = "";
@@ -169,6 +168,41 @@ const Chatbot = () => {
       console.error("Error fetching response:", error);
     }
   };
+
+  // const handleSchedule = async () => {
+  //   const groqMessages = messages.map((message) => ({
+  //     role: message.from === "user" ? "user" : "assistant",
+  //     content: message.text,
+  //   }));
+
+  //   // Add the current user input as the latest message in the chat history
+  //   groqMessages.push({ role: "user", content: input });
+  //   try {
+  //     const groq = new Groq({
+  //       apiKey: "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",
+  //       dangerouslyAllowBrowser: true,
+  //     });
+  //     const response = await groq.chat.completions.create({
+  //       messages: [
+  //         {
+  //           role: "system",
+  //           content: `You are a formatter to make user input into json object {"event": userEvent, "startDate": userStartDate, "endDate": userEndDate}. You will do nothing else but to format. Whole message will only contain the Json Object`,
+  //         },
+  //         { role: "user", content: input },
+  //         ...groqMessages,
+  //       ],
+
+  //       model: "llama3-8b-8192",
+  //     });
+  //     const jsonObject = response.choices[0].message.content;
+  //     console.log(jsonObject);
+  //     setSchedule(false);
+  //   } catch (error) {
+  //     console.error("Error fetching response:", error);
+  //   }
+
+  //   setSchedule(true);
+  // };
 
   return (
     <KeyboardAvoidingView
@@ -205,6 +239,11 @@ const Chatbot = () => {
           <Image source={ArrowUp} />
         </TouchableOpacity>
       </View>
+      {/* <View style={styles.scheduleContainer}>
+        <TouchableOpacity style={styles.scheduleButton} onPress={handleSchedule}>
+          <Text style={styles.scheduleText}>Schedule</Text>
+        </TouchableOpacity>
+      </View> */}
     </KeyboardAvoidingView>
   );
 };
@@ -306,6 +345,30 @@ const styles = StyleSheet.create({
     borderRadius: "50%",
     justifyContent: "center",
     alignContent: "center",
+  },
+  inputContainer: {
+    flexDirection: "row",
+    padding: 10,
+    height: 80,
+    marginLeft: 15,
+    marginBottom: 0, // Remove margin to fit the schedule button closer
+  },
+  scheduleContainer: {
+    marginTop: 10, // Adjust spacing between input and schedule button
+    alignItems: "center",
+    marginBottom: 20, // Add space from bottom
+  },
+  scheduleButton: {
+    backgroundColor: "#3A4646",
+    padding: 10,
+    borderRadius: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    width: "40%", // Adjust the button width as needed
+  },
+  scheduleText: {
+    color: "#FFF",
+    fontSize: 16,
   },
 });
 
