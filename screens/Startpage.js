@@ -10,16 +10,25 @@ import {
 } from "react-native";
 import Startpagebackground from "../assets/Startpagebackground.png";
 import { useNavigation } from "@react-navigation/native";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Chatbot from "./Chatbot";
 import FrogIcon from "../assets/FrogHead.png";
 import ArrowLeft from "../assets/ArrowLeft.png";
 import plane from "../assets/Plane.png";
 import background from "../assets/background.png";
+import * as SplashScreen from 'expo-splash-screen';
+
+SplashScreen.preventAutoHideAsync(); // Prevent the splash screen from auto-hiding
 
 const Startpage = () => {
   const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(false);
+
+  useEffect(() => {
+    if (!modalVisible) {
+      SplashScreen.hideAsync(); // Hide the splash screen once fonts are loaded
+    }
+  }, [modalVisible]);
 
   const toggleModal = () => {
     setModalVisible(!modalVisible);
