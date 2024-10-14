@@ -73,7 +73,7 @@ const Register = () => {
       // Save user data locally
       await AsyncStorage.setItem('userData', JSON.stringify(userData.user));
 
-      navigation.navigate("Account");
+      navigation.navigate("Home");
     } catch (error) {
       Alert.alert(
         "Registration Failed",
