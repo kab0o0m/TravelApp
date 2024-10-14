@@ -9,6 +9,7 @@ import Account from "./screens/Account";
 import Profile from "./screens/Profile";
 import EditProfile from "./screens/EditProfile";
 import ResetPW from "./screens/ResetPW";
+import PlannerMain from "./screens/PlannerMain";
 import Test from "./screens/Test";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -17,7 +18,7 @@ export default function App() {
   const Stack = createNativeStackNavigator();
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="AuthCheck">
+      <Stack.Navigator initialRouteName="PlannerMain">
         <Stack.Screen name="AuthCheck" component={AuthCheck} options={{ headerShown: false }} />
         <Stack.Screen name="Homepage" component={Homepage} options={{ headerShown: false }} />
         <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
@@ -27,6 +28,7 @@ export default function App() {
         <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
         <Stack.Screen name="EditProfile" component={EditProfile} options={{ headerShown: false }} />
         <Stack.Screen name="ResetPW" component={ResetPW} options={{ headerShown: false }} />
+        <Stack.Screen name="PlannerMain" component={PlannerMain} options={{ headerShown: false }} />
         <Stack.Screen name="Test" component={Test} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
