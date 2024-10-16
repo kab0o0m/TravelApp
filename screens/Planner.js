@@ -1,9 +1,8 @@
 import React from "react";
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, SafeAreaView } from "react-native";
 import Footer from "../components/Footer";
 
-const PlannerMain = () => {
-  // Example trip data
+const Planner = () => {
   const trips = [
     { id: 1, destination: "Bali", dates: "Oct 14 - Oct 20" },
     { id: 2, destination: "Singapore", dates: "Nov 5 - Nov 10" },
@@ -11,12 +10,10 @@ const PlannerMain = () => {
   ];
 
   const handleSort = () => {
-    // Sorting logic can be implemented here
     console.log("Sort button pressed");
   };
 
   const handleAddTrip = () => {
-    // Add trip logic here
     console.log("+ Add Trip button pressed");
   };
 
@@ -33,7 +30,6 @@ const PlannerMain = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Trips List */}
       <ScrollView style={styles.tripListContainer}>
         {trips.map((trip) => (
           <View key={trip.id} style={styles.tripItem}>
@@ -42,7 +38,6 @@ const PlannerMain = () => {
           </View>
         ))}
 
-        {/* Add Trip Button */}
         <TouchableOpacity onPress={handleAddTrip} style={styles.addTripButton}>
           <Text style={styles.addTripButtonText}>+ Add Trip</Text>
         </TouchableOpacity>
@@ -57,6 +52,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "space-between",
+    backgroundColor: "#fff",
   },
   headerContainer: {
     padding: 20,
@@ -128,4 +124,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PlannerMain;
+export default Planner;
