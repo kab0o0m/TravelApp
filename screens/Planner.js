@@ -1,20 +1,14 @@
-import React from "react";
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, SafeAreaView } from "react-native";
+import React, { useState } from "react";
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
 import Footer from "../components/Footer";
+import { useNavigation } from "@react-navigation/native";
 
 const Planner = () => {
-  const trips = [
-    { id: 1, destination: "Bali", dates: "Oct 14 - Oct 20" },
-    { id: 2, destination: "Singapore", dates: "Nov 5 - Nov 10" },
-    { id: 3, destination: "Tokyo", dates: "Dec 1 - Dec 7" },
-  ];
+  const navigation = useNavigation();
+  const [trips, setTrips] = useState([]); // State to store trips
 
-  const handleSort = () => {
-    console.log("Sort button pressed");
-  };
-
-  const handleAddTrip = () => {
-    console.log("+ Add Trip button pressed");
+  const handleAddTrip = (newTrip) => {
+    setTrips((prevTrips) => [...prevTrips, newTrip]); // Add new trip to the list
   };
 
   return (
@@ -25,20 +19,25 @@ const Planner = () => {
 
       <View style={styles.tripHeaderContainer}>
         <Text style={styles.tripHeaderText}>Your Trips</Text>
-        <TouchableOpacity onPress={handleSort} style={styles.sortButton}>
-          <Text style={styles.sortButtonText}>Sort</Text>
-        </TouchableOpacity>
       </View>
 
       <ScrollView style={styles.tripListContainer}>
-        {trips.map((trip) => (
-          <View key={trip.id} style={styles.tripItem}>
-            <Text style={styles.tripDestination}>{trip.destination}</Text>
-            <Text style={styles.tripDates}>{trip.dates}</Text>
-          </View>
-        ))}
+        {trips.length === 0 ? (
+          <Text style={styles.noTripsText}>No trips added yet!</Text>
+        ) : (
+          trips.map((trip, index) => (
+            <View key={index} style={styles.tripItem}>
+              <View style={styles.tripDetails}>
+                <Text style={styles.tripDestination}>{trip.destination}</Text>
+                <Text style={styles.tripDates}>{trip.dates}</Text>
+              </View>
+            </View>
+          ))
+        )}
 
-        <TouchableOpacity onPress={handleAddTrip} style={styles.addTripButton}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("PlannerNewTrip", { onAddTrip: handleAddTrip })}
+          style={styles.addTripButton}>
           <Text style={styles.addTripButtonText}>+ Add Trip</Text>
         </TouchableOpacity>
       </ScrollView>
@@ -72,54 +71,55 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     backgroundColor: "#fff",
     borderBottomWidth: 1,
-    borderBottomColor: "#000",
+    borderBottomColor: "#ddd",
   },
   tripHeaderText: {
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: "bold",
     color: "#333",
-  },
-  sortButton: {
-    paddingVertical: 5,
-    paddingHorizontal: 15,
-    borderRadius: 5,
-  },
-  sortButtonText: {
-    color: "#000",
-    fontSize: 16,
   },
   tripListContainer: {
     flex: 1,
     paddingHorizontal: 20,
     backgroundColor: "#fff",
   },
+  noTripsText: {
+    fontSize: 16,
+    color: "#666",
+    textAlign: "center",
+    marginTop: 20,
+  },
   tripItem: {
     paddingVertical: 15,
     borderBottomWidth: 1,
     borderBottomColor: "#ddd",
+    marginBottom: 10,
+    borderRadius: 10,
+    backgroundColor: "#F9F9F9", // Light background for trip items
+  },
+  tripDetails: {
+    padding: 10,
   },
   tripDestination: {
-    fontSize: 20,
-    fontWeight: "500",
+    fontSize: 22,
+    fontWeight: "600",
     color: "#333",
   },
   tripDates: {
-    fontSize: 16,
+    fontSize: 18,
     color: "#666",
   },
   addTripButton: {
-    backgroundColor: "#fff",
+    backgroundColor: "#F47966", // Change background color
     paddingVertical: 10,
     paddingHorizontal: 20,
     marginVertical: 20,
     alignSelf: "center",
     borderRadius: 50,
-    borderWidth: 1,
-    borderColor: "#F47966",
   },
   addTripButtonText: {
     fontSize: 18,
-    color: "#F47966",
+    color: "#fff", // Change text color to white
     fontWeight: "bold",
   },
 });

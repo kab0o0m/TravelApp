@@ -19,7 +19,7 @@ const Footer = () => {
         <Image source={BudgetIcon} style={styles.image} resizeMode="cover" />
         <Text style={styles.buttonText}>Budget</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("PlannerMain")}>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Planner")}>
         <Image source={PlannerIcon} style={styles.image} resizeMode="cover" />
         <Text style={styles.buttonText}>Planner</Text>
       </TouchableOpacity>

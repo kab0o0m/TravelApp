@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { Calendar } from "react-native-calendars";
 
-const CustomCalendar = () => {
+const CustomCalendar = ({ onDateSelect }) => {
   const [selectedRange, setSelectedRange] = useState({ startDate: "", endDate: "" });
   const [markedDates, setMarkedDates] = useState({});
 
@@ -10,10 +10,9 @@ const CustomCalendar = () => {
     markPastDates();
   }, []);
 
-  // Function to mark past dates as greyed out
   const markPastDates = () => {
     const today = new Date();
-    const pastDaysLimit = 30; // Limit to last 30 days
+    const pastDaysLimit = 300;
     let pastDatesMarked = {};
 
     for (let i = 1; i <= pastDaysLimit; i++) {
@@ -35,14 +34,12 @@ const CustomCalendar = () => {
     const today = new Date();
     const selectedDate = new Date(day.dateString);
 
-    // Prevent selecting past dates
     if (selectedDate < today.setHours(0, 0, 0, 0)) {
       return;
     }
 
-    let newMarkedDates = { ...markedDates }; // Keep past dates greyed out
+    let newMarkedDates = { ...markedDates };
 
-    // Clear previous selected range but preserve greyed-out past dates
     Object.keys(newMarkedDates).forEach((date) => {
       if (!newMarkedDates[date].disabled) {
         delete newMarkedDates[date];
@@ -50,23 +47,20 @@ const CustomCalendar = () => {
     });
 
     if (!selectedRange.startDate || (selectedRange.startDate && selectedRange.endDate)) {
-      // When no startDate is selected or both start and end are selected, reset
       newMarkedDates = {
-        ...newMarkedDates, // Preserve past greyed out dates
+        ...newMarkedDates,
         [day.dateString]: {
           selected: true,
           startingDay: true,
-          color: "#D0D0D0", // Darker grey for the start date
+          color: "#D0D0D0",
           textColor: "#fff",
         },
       };
       setSelectedRange({ startDate: day.dateString, endDate: "" });
     } else if (selectedRange.startDate && !selectedRange.endDate) {
-      // If a start date is selected, now select the end date
       const start = selectedRange.startDate;
       const end = day.dateString;
 
-      // Mark all the dates between startDate and endDate
       const rangeDates = getDatesInRange(start, end);
       rangeDates.forEach((date, index) => {
         newMarkedDates[date] = {
@@ -79,12 +73,12 @@ const CustomCalendar = () => {
       });
 
       setSelectedRange({ startDate: start, endDate: end });
+      onDateSelect(start, end); // Pass the selected start and end dates to parent
     }
 
-    setMarkedDates(newMarkedDates); // Update marked dates while keeping past dates
+    setMarkedDates(newMarkedDates);
   };
 
-  // Helper function to get all dates between startDate and endDate
   const getDatesInRange = (startDate, endDate) => {
     const dates = [];
     let currentDate = new Date(startDate);
@@ -100,35 +94,23 @@ const CustomCalendar = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.calendarContainer}>
-        <Calendar
-          current={"2024-09-13"}
-          onDayPress={onDaySelect}
-          markedDates={markedDates}
-          markingType={"period"}
-          theme={{
-            selectedDayBackgroundColor: "#007BFF", // Blue background for selected dates
-            todayTextColor: "#FF6347", // Tomato color for today's date
-            arrowColor: "#000", // Blue arrows
-            monthTextColor: "#333", // Dark grey month text color
-            textDayFontWeight: "bold",
-            textDayHeaderFontWeight: "500",
-            textDayFontSize: 16,
-            textMonthFontSize: 18,
-            textMonthFontWeight: "bold",
-            todayBackgroundColor: "#FFF5F5", // Light red background for today's date
-            calendarBackground: "#FFF", // White background for the calendar
-          }}
-          style={styles.calendar}
-        />
-      </View>
-      {selectedRange.startDate && selectedRange.endDate && (
-        <View style={styles.tripSummary}>
-          <Text style={styles.tripText}>
-            Trip: {selectedRange.startDate} - {selectedRange.endDate}
-          </Text>
-        </View>
-      )}
+      <Calendar
+        current={new Date().toISOString().split("T")[0]}
+        onDayPress={onDaySelect}
+        markedDates={markedDates}
+        markingType={"period"}
+        theme={{
+          selectedDayBackgroundColor: "#007BFF",
+          todayTextColor: "#FF6347",
+          arrowColor: "#000",
+          monthTextColor: "#333",
+          textDayFontWeight: "bold",
+          textDayHeaderFontWeight: "500",
+          textDayFontSize: 16,
+          textMonthFontSize: 18,
+          textMonthFontWeight: "bold",
+        }}
+      />
     </View>
   );
 };
@@ -136,38 +118,8 @@ const CustomCalendar = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f4f4f4",
+    justifyContent: "center",
     padding: 20,
-  },
-  calendarContainer: {
-    borderRadius: 20,
-    overflow: "hidden",
-    backgroundColor: "#fff",
-    elevation: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    padding: 10,
-  },
-  calendar: {
-    borderRadius: 15,
-  },
-  tripSummary: {
-    marginTop: 20,
-    padding: 15,
-    backgroundColor: "#fff",
-    borderRadius: 15,
-    elevation: 3,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-  },
-  tripText: {
-    fontSize: 16,
-    color: "#333",
-    fontWeight: "bold",
   },
 });
 

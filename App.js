@@ -12,6 +12,7 @@ import Home from "./screens/Home";
 import HomeFeatured from "./screens/HomeFeatured";
 import ResetPW from "./screens/ResetPW";
 import Planner from "./screens/Planner";
+import PlannerNewTrip from "./screens/PlannerNewTrip";
 import Test from "./screens/Test";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -20,7 +21,7 @@ export default function App() {
   const Stack = createNativeStackNavigator();
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Planner">
+      <Stack.Navigator initialRouteName="Startpage">
         <Stack.Screen name="AuthCheck" component={AuthCheck} options={{ headerShown: false }} />
         <Stack.Screen name="Startpage" component={Startpage} options={{ headerShown: false }} />
         <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
@@ -37,6 +38,11 @@ export default function App() {
         <Stack.Screen name="EditProfile" component={EditProfile} options={{ headerShown: false }} />
         <Stack.Screen name="ResetPW" component={ResetPW} options={{ headerShown: false }} />
         <Stack.Screen name="Planner" component={Planner} options={{ headerShown: false }} />
+        <Stack.Screen
+          name="PlannerNewTrip"
+          component={PlannerNewTrip}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen name="Test" component={Test} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>

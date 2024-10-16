@@ -16,7 +16,7 @@ import FrogIcon from "../assets/FrogHead.png";
 import ArrowLeft from "../assets/ArrowLeft.png";
 import plane from "../assets/Plane.png";
 import background from "../assets/background.png";
-import * as SplashScreen from 'expo-splash-screen';
+import * as SplashScreen from "expo-splash-screen";
 
 SplashScreen.preventAutoHideAsync(); // Prevent the splash screen from auto-hiding
 
