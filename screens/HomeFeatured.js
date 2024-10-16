@@ -96,7 +96,7 @@ const HomeFeatured = () => {
     {/* Information on USS */}
 
     <View style={styles.infoContainer}>
-        <Image source={require('../assets/LocationPin.png')} style={styles.icon} />
+        <Image source={require('../assets/LocationIcon.png')} style={styles.icon} />
         <TouchableOpacity onPress={handleAddressPress}>
           <Text style={styles.infoText}>8 Sentosa Gateway, 098269</Text>
         </TouchableOpacity>
