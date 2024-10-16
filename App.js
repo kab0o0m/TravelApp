@@ -13,6 +13,7 @@ import HomeFeatured from "./screens/HomeFeatured";
 import ResetPW from "./screens/ResetPW";
 import PlannerMain from "./screens/PlannerMain";
 import Test from "./screens/Test";
+import Expenses from "./screens/Expenses";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
@@ -34,6 +35,7 @@ export default function App() {
         <Stack.Screen name="ResetPW" component={ResetPW} options={{ headerShown: false }} />
         <Stack.Screen name="PlannerMain" component={PlannerMain} options={{ headerShown: false }} />
         <Stack.Screen name="Test" component={Test} options={{ headerShown: false }} />
+        <Stack.Screen name="Expenses" component={Expenses} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
   );
