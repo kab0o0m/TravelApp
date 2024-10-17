@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, Image, Dimensions, ActivityIndicator, TouchableOpacity, Linking } from 'react-native';
-import { useFonts, Nunito_600SemiBold, Nunito_700Bold, Nunito_800ExtraBold, Nunito_900Black } from '@expo-google-fonts/nunito';
+import { useFonts, Nunito_400Regular, Nunito_600SemiBold, Nunito_700Bold, Nunito_800ExtraBold, Nunito_900Black } from '@expo-google-fonts/nunito';
 import * as SplashScreen from 'expo-splash-screen';
 import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient'; 
@@ -13,6 +13,7 @@ SplashScreen.preventAutoHideAsync(); // Prevent the splash screen from auto-hidi
 const HomeFeatured = () => {
   
   const [fontsLoaded] = useFonts({
+    Nunito_400Regular,
     Nunito_600SemiBold,
     Nunito_700Bold,
     Nunito_800ExtraBold,
@@ -156,8 +157,7 @@ container: {
   backText: {
     color: '#3A4646',
     fontSize: 16,
-    fontFamily: 'Nunito',
-    fontWeight: '700',
+    fontFamily: 'Nunito_700Bold',
     marginLeft: 6,
     top: 0.2,
   },
@@ -206,8 +206,7 @@ container: {
     top: 171,
     color: 'white',
     fontSize: 18,
-    fontFamily: 'Nunito',
-    fontWeight: '800',
+    fontFamily: 'Nunito_800ExtraBold',
     zIndex: 2,
   },
   bookNowContainer: {
@@ -229,20 +228,17 @@ container: {
   bookNowButton: {
     justifyContent: 'center',
     alignItems: 'center',
-    
   },
   bookNowText: {
     color: 'white',
     fontSize: 20,
-    fontFamily: 'Nunito',
-    fontWeight: '700',
+    fontFamily: 'Nunito_700Bold',
   },
   about: {
     width: 167,
     color: '#006D77',
     fontSize: 16,
-    fontFamily: 'Nunito',
-    fontWeight: '700',
+    fontFamily: 'Nunito_700Bold',
     marginLeft: 21,
     marginTop: 22,
   },
@@ -250,8 +246,7 @@ container: {
     width: 351,
     color: '#006D77',
     fontSize: 16,
-    fontFamily: 'Nunito',
-    fontWeight: '400',
+    fontFamily: 'Nunito_400Regular',
     marginTop: 6,
     marginLeft: 21,
   },
@@ -269,14 +264,12 @@ container: {
   infoText: {
     color: '#F47966',
     fontSize: 12,
-    fontFamily: 'Nunito',
-    fontWeight: '400',
+    fontFamily: 'Nunito_400Regular',
   },
   website: {
     color: '#F47966',
     fontSize: 12,
-    fontFamily: 'Nunito',
-    fontWeight: '400',
+    fontFamily: 'Nunito_400Regular',
     textDecorationLine: 'underline',
   },
   
