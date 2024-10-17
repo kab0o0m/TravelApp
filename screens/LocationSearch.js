@@ -1,13 +1,33 @@
-import React, { useEffect, useRef } from 'react';
-import { View, TextInput, StyleSheet, Image, Dimensions, Animated } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, FlatList, Dimensions, Image, ActivityIndicator, Linking, Animated } from 'react-native';
 import { useFonts, Nunito_600SemiBold } from '@expo-google-fonts/nunito';
 
 const { width: screenWidth } = Dimensions.get('window');
+
+// Sample list of recommendations (you can replace this with actual data or an API call)
+const locations = [
+    'United States',
+    'Canada',
+    'United Kingdom',
+    'Germany',
+    'France',
+    'Australia',
+    'India',
+    'Japan',
+    'Brazil',
+    'China',
+    'Russia',
+    'South Africa',
+    'Mexico',
+  ];
 
 const LocationSearch = () => {
   const [fontsLoaded] = useFonts({
     Nunito_600SemiBold,
   });
+
+  const [searchText, setSearchText] = useState(''); // State to track the input
+  const [filteredLocations, setFilteredLocations] = useState([]); // State to store filtered recommendations
 
   // Animated value to control the search bar position
   const searchBarY = useRef(new Animated.Value(100)).current; // Starts at Y offset of 100
@@ -16,10 +36,21 @@ const LocationSearch = () => {
   useEffect(() => {
     Animated.timing(searchBarY, {
       toValue: 0, // Move to the top (Y offset = 0)
-      duration: 500, // Duration of animation in ms
+      duration: 300, // Duration of animation in ms
       useNativeDriver: true,
     }).start();
   }, []);
+
+  // Handle search input changes
+  const handleSearchChange = (text) => {
+    setSearchText(text);
+
+    // Filter the locations based on the search text
+    const filtered = locations.filter((location) =>
+      location.toLowerCase().includes(text.toLowerCase())
+    );
+    setFilteredLocations(filtered);
+  };
 
   if (!fontsLoaded) {
     return null;
@@ -34,10 +65,25 @@ const LocationSearch = () => {
           style={styles.searchInput}
           placeholder="Discover a Country"
           placeholderTextColor="#A9A9A9"
+          value={searchText}
+          onChangeText={handleSearchChange}
         />
       </Animated.View>
 
-      {/* Other content can go here */}
+      {/* Display filtered recommendations */}
+      {searchText.length > 0 && filteredLocations.length > 0 && (
+        <View style={styles.recommendationsContainer}>
+          <FlatList
+            data={filteredLocations}
+            keyExtractor={(item) => item}
+            renderItem={({ item }) => (
+              <TouchableOpacity style={styles.recommendationItem}>
+                <Text style={styles.recommendationText}>{item}</Text>
+              </TouchableOpacity>
+            )}
+          />
+        </View>
+      )}
     </View>
   );
 };
@@ -76,5 +122,20 @@ const styles = StyleSheet.create({
     fontFamily: 'Nunito_600SemiBold',
     fontWeight: '600',
     width: 290,
+  },
+  recommendationsContainer: {
+    marginTop: 80, // Position below the search bar
+    marginHorizontal: 20,
+  },
+  recommendationItem: {
+    backgroundColor: '#FFF',
+    padding: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E6F1F2',
+  },
+  recommendationText: {
+    fontSize: 18,
+    color: '#006D77',
+    fontFamily: 'Nunito_600SemiBold',
   },
 });
