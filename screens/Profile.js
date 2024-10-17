@@ -10,11 +10,11 @@ import {
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ProfilePicture from "../assets/ProfilePicture.png";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation } from '@react-navigation/native';
 import ArrowLeft from "../assets/ArrowLeft.png";
+import { fetchUserData } from "../api/authAPI";
 
 const Profile = () => {
-  const navigation = useNavigation();
   const [firstName, setFirstName] = useState(null);
   const [lastName, setLastName] = useState(null);
   const [email, setEmail] = useState(null);
@@ -22,6 +22,8 @@ const Profile = () => {
   const [gender, setGender] = useState(null);
   const [dob, setDob] = useState(new Date());
   const [open, setOpen] = useState(false);
+
+  const navigation = useNavigation();
 
   useEffect(() => {
     const loadUserData = async () => {

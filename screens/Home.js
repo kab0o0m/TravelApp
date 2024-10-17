@@ -347,7 +347,7 @@ const styles = StyleSheet.create({
   },
   destinationContainer: {
     position: 'relative', // Set position relative for absolute children
-    marginRight: 20,
+    marginRight: 10,
     alignItems: 'center',
   },
   destinationContainerLast: {
@@ -356,18 +356,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   featuredScrollView: {
-    paddingHorizontal: 40,
+    paddingHorizontal: 25,
   },
   featuredContainer: {
     position: 'relative',
     marginBottom: 20,
-    marginRight: 40,
+    marginRight: 20,
+    marginLeft: 16,
     alignItems: 'center',
   },
   featuredContainerLast: {
     position: 'relative',
     marginBottom: 20,
-    marginRight: 80,
+    marginLeft: 16,
+    marginRight: 60,
     alignItems: 'center',
   },
 

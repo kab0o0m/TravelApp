@@ -12,6 +12,8 @@ import Home from "./screens/Home";
 import HomeFeatured from "./screens/HomeFeatured";
 import HomePopular from "./screens/HomePopular";
 import ResetPW from "./screens/ResetPW";
+import Planner from "./screens/Planner";
+import PlannerNewTrip from "./screens/PlannerNewTrip";
 import Test from "./screens/Test";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -33,6 +35,12 @@ export default function App() {
         <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
         <Stack.Screen name="EditProfile" component={EditProfile} options={{ headerShown: false }} />
         <Stack.Screen name="ResetPW" component={ResetPW} options={{ headerShown: false }} />
+        <Stack.Screen name="Planner" component={Planner} options={{ headerShown: false }} />
+        <Stack.Screen
+          name="PlannerNewTrip"
+          component={PlannerNewTrip}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen name="Test" component={Test} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
