@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, FlatList, Dimensions, Image, ActivityIndicator, Linking, Animated } from 'react-native';
 import { useFonts, Nunito_600SemiBold } from '@expo-google-fonts/nunito';
+import { useNavigation } from "@react-navigation/native";
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -28,6 +29,7 @@ const LocationSearch = () => {
 
   const [searchText, setSearchText] = useState(''); // State to track the input
   const [filteredLocations, setFilteredLocations] = useState([]); // State to store filtered recommendations
+  const navigation = useNavigation();
 
   // Animated value to control the search bar position
   const searchBarY = useRef(new Animated.Value(100)).current; // Starts at Y offset of 100
@@ -52,6 +54,12 @@ const LocationSearch = () => {
     setFilteredLocations(filtered);
   };
 
+  // Handle cross icon press to go back to home
+  const handleClearSearch = () => {
+    setSearchText(''); // Clear search input
+    navigation.navigate('Home'); // Assuming your home screen is named 'Home'
+  };
+
   if (!fontsLoaded) {
     return null;
   }
@@ -63,11 +71,15 @@ const LocationSearch = () => {
         <Image source={require('../assets/Search.png')} style={styles.searchIcon} />
         <TextInput
           style={styles.searchInput}
-          placeholder="Discover a Country"
+          placeholder="Search a place"
           placeholderTextColor="#A9A9A9"
           value={searchText}
           onChangeText={handleSearchChange}
         />
+        {/* Cross icon on the right of the search input */}
+        <TouchableOpacity onPress={handleClearSearch} style={styles.crossIconContainer}>
+          <Image source={require('../assets/Cross.png')} style={styles.crossIcon} />
+        </TouchableOpacity>
       </Animated.View>
 
       {/* Display filtered recommendations */}
@@ -121,7 +133,14 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontFamily: 'Nunito_600SemiBold',
     fontWeight: '600',
-    width: 290,
+    flex:1,
+  },
+  crossIconContainer: {
+    paddingLeft: 10,
+  },
+  crossIcon: {
+    width: 38,
+    height: 38,
   },
   recommendationsContainer: {
     marginTop: 80, // Position below the search bar
