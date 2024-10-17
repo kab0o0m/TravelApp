@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Image, Dimensions, ScrollView, ActivityIndicato
 import { useFonts, Nunito_600SemiBold, Nunito_700Bold, Nunito_800ExtraBold, Nunito_900Black } from '@expo-google-fonts/nunito';
 import * as SplashScreen from 'expo-splash-screen';
 import { useNavigation } from '@react-navigation/native';
-import { populateEvents } from 'react-native-calendars/src/timeline/Packer';
+//import { populateEvents } from 'react-native-calendars/src/timeline/Packer';
 
 const { width: screenWidth } = Dimensions.get('window');
 const { height: screenHeight } = Dimensions.get('window');
@@ -71,8 +71,8 @@ const Home = () => {
             </View>
           </View>
 
-          {/* Singapore Destination - NOTE: replace "Profile" with appropriate Popz Home Pg*/}
-          <TouchableOpacity style={styles.destinationContainer} onPress={() => navigation.navigate('Profile')}>   
+          {/* Singapore Destination*/}
+          <TouchableOpacity style={styles.destinationContainer} onPress={() => navigation.navigate('HomePopular')}>   
             <View style={styles.destinationBackground} />
             <Image source={require('../assets/SingaporeBG.png')} style={styles.destinationImage} />
             <View style={styles.textContainer}>
