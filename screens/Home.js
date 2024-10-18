@@ -19,10 +19,10 @@ import {
 } from "@expo-google-fonts/nunito";
 import * as SplashScreen from "expo-splash-screen";
 import { useNavigation } from "@react-navigation/native";
+import Footer from "../components/Footer";
 //import { populateEvents } from 'react-native-calendars/src/timeline/Packer';
 
-const { width: screenWidth } = Dimensions.get("window");
-const { height: screenHeight } = Dimensions.get("window");
+const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
 SplashScreen.preventAutoHideAsync(); // Prevent the splash screen from auto-hiding
 
@@ -51,55 +51,53 @@ const Home = () => {
   }
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.scrollViewContent}
-    >
-      <View style={styles.headerContainer}>
-        <Text style={styles.header}>Mapp!t</Text>
-        <Image
-          source={require("../assets/HomePageBGWaves.png")}
-          style={styles.headerImage}
-        />
-      </View>
-
-      <TouchableOpacity onPress={() => navigation.navigate("LocationSearch")}>
-        <View style={styles.searchContainer}>
+    <View style={styles.mainContainer}>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.scrollViewContent}
+      >
+        <View style={styles.headerContainer}>
+          <Text style={styles.header}>Mapp!t</Text>
           <Image
-            source={require("../assets/Search.png")}
-            style={styles.searchIcon}
-          />
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Discover a Country"
-            placeholderTextColor="#A9A9A9"
-            editable={false} // Disable editing since this is just for navigation
+            source={require("../assets/HomePageBGWaves.png")}
+            style={styles.headerImage}
           />
         </View>
-      </TouchableOpacity>
 
-      <View style={styles.relativeContainer}>
-        <View style={styles.absoluteBox} />
-        <Image
-          source={require("../assets/AroundtheWorldBG.png")}
-          style={styles.absoluteImage}
-        />
-      </View>
+        <TouchableOpacity onPress={() => navigation.navigate("LocationSearch")}>
+          <View style={styles.searchContainer}>
+            <Image
+              source={require("../assets/Search.png")}
+              style={styles.searchIcon}
+            />
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Discover a Country"
+              placeholderTextColor="#A9A9A9"
+              editable={false} // Disable editing since this is just for navigation
+            />
+          </View>
+        </TouchableOpacity>
 
-      <View style={styles.sectionContainer}>
-        <Text style={styles.sectionHeader}>Popular Destinations</Text>
+        <View style={styles.relativeContainer}>
+          <View style={styles.absoluteBox} />
+          <Image
+            source={require("../assets/AroundtheWorldBG.png")}
+            style={styles.absoluteImage}
+          />
+        </View>
 
-        {/* ScrollView for Destinations */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.popularScrollView}
-        >
-          {/* Japan Destination */}
-          <TouchableOpacity
-            style={styles.destinationContainer}
-            onPress={() => navigation.navigate("Profile")}
+        <View style={styles.sectionContainer}>
+          <Text style={styles.sectionHeader}>Popular Destinations</Text>
+
+          {/* ScrollView for Destinations */}
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.popularScrollView}
           >
+            {/* Japan Destination */}
+
             <View style={styles.destinationContainer}>
               <View style={styles.destinationBackground} />
               <Image
@@ -110,136 +108,143 @@ const Home = () => {
                 <Text style={styles.destinationText}>Japan</Text>
               </View>
             </View>
-          </TouchableOpacity>
 
-          {/* Singapore Destination*/}
-          <TouchableOpacity
-            style={styles.destinationContainer}
-            onPress={() => navigation.navigate("HomePopular")}
+            {/* Singapore Destination*/}
+            <TouchableOpacity
+              style={styles.destinationContainer}
+              onPress={() => navigation.navigate("HomePopular")}
+            >
+              <View style={styles.destinationBackground} />
+              <Image
+                source={require("../assets/SingaporeBG.png")}
+                style={styles.destinationImage}
+              />
+              <View style={styles.textContainer}>
+                <Text style={styles.destinationText}>Singapore</Text>
+              </View>
+            </TouchableOpacity>
+
+            {/*London Destination */}
+            <View style={styles.destinationContainerLast}>
+              <View style={styles.destinationBackground} />
+              <Image
+                source={require("../assets/LondonBG.png")}
+                style={styles.destinationImage}
+              />
+              <View style={styles.textContainer}>
+                <Text style={styles.destinationText}>London</Text>
+              </View>
+            </View>
+          </ScrollView>
+        </View>
+
+        <View style={styles.sectionContainer}>
+          <Text style={styles.sectionHeader}>Featured</Text>
+
+          {/* ScrollView for Featured Destinations */}
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.featuredScrollView}
           >
-            <View style={styles.destinationBackground} />
-            <Image
-              source={require("../assets/SingaporeBG.png")}
-              style={styles.destinationImage}
-            />
-            <View style={styles.textContainer}>
-              <Text style={styles.destinationText}>Singapore</Text>
+            {/* Sightseeing Section */}
+            <View style={styles.featuredContainer}>
+              <View style={styles.featuredBackground} />
+              <Image
+                source={require("../assets/SightseeingBG.png")}
+                style={styles.featuredImage}
+              />
+              <View style={styles.featuredTextContainer}>
+                <Text style={styles.featuredText}>Sightseeing</Text>
+                <View style={styles.subTextContainer}>
+                  <Image
+                    source={require("../assets/HomeIcon.png")}
+                    style={styles.homeIcon}
+                  />
+                  <Text style={styles.featuredSubText}>Norway, Europe</Text>
+                </View>
+              </View>
             </View>
-          </TouchableOpacity>
 
-          {/*London Destination */}
-          <View style={styles.destinationContainerLast}>
-            <View style={styles.destinationBackground} />
-            <Image
-              source={require("../assets/LondonBG.png")}
-              style={styles.destinationImage}
-            />
-            <View style={styles.textContainer}>
-              <Text style={styles.destinationText}>London</Text>
+            {/* Theme Park Section */}
+            <TouchableOpacity
+              style={styles.featuredContainer}
+              onPress={() => navigation.navigate("HomeFeatured")}
+            >
+              <View style={styles.featuredBackground} />
+              <Image
+                source={require("../assets/ThemeParkBG.png")}
+                style={styles.featuredImage}
+              />
+              <View style={styles.featuredTextContainer}>
+                <Text style={styles.featuredText}>Theme Park</Text>
+                <View style={styles.subTextContainer}>
+                  <Image
+                    source={require("../assets/HomeIcon.png")}
+                    style={styles.homeIcon}
+                  />
+                  <Text style={styles.featuredSubText}>Singapore, Asia</Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+
+            {/* Snorkeling Section */}
+            <View style={styles.featuredContainer}>
+              <View style={styles.featuredBackground} />
+              <Image
+                source={require("../assets/SnorkelingBG.png")}
+                style={styles.featuredImage}
+              />
+              <View style={styles.featuredTextContainer}>
+                <Text style={styles.featuredText}>Snorkeling</Text>
+                <View style={styles.subTextContainer}>
+                  <Image
+                    source={require("../assets/HomeIcon.png")}
+                    style={styles.homeIcon}
+                  />
+                  <Text style={styles.featuredSubText}>Singapore, Asia</Text>
+                </View>
+              </View>
             </View>
-          </View>
-        </ScrollView>
+
+            {/* Feasting Section */}
+            <View style={styles.featuredContainerLast}>
+              <View style={styles.featuredBackground} />
+              <Image
+                source={require("../assets/FeastingBG.png")}
+                style={styles.featuredImage}
+              />
+              <View style={styles.featuredTextContainer}>
+                <Text style={styles.featuredText}>Feasting</Text>
+                <View style={styles.subTextContainer}>
+                  <Image
+                    source={require("../assets/HomeIcon.png")}
+                    style={styles.homeIcon}
+                  />
+                  <Text style={styles.featuredSubText}>Thailand, Asia</Text>
+                </View>
+              </View>
+            </View>
+          </ScrollView>
+        </View>
+      </ScrollView>
+
+      <View style={styles.footerContainer}>
+        <Footer />
       </View>
-
-      <View style={styles.sectionContainer}>
-        <Text style={styles.sectionHeader}>Featured</Text>
-
-        {/* ScrollView for Featured Destinations */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.featuredScrollView}
-        >
-          {/* Sightseeing Section */}
-          <View style={styles.featuredContainer}>
-            <View style={styles.featuredBackground} />
-            <Image
-              source={require("../assets/SightseeingBG.png")}
-              style={styles.featuredImage}
-            />
-            <View style={styles.featuredTextContainer}>
-              <Text style={styles.featuredText}>Sightseeing</Text>
-              <View style={styles.subTextContainer}>
-                <Image
-                  source={require("../assets/HomeIcon.png")}
-                  style={styles.homeIcon}
-                />
-                <Text style={styles.featuredSubText}>Norway, Europe</Text>
-              </View>
-            </View>
-          </View>
-
-          {/* Theme Park Section */}
-          <TouchableOpacity
-            style={styles.featuredContainer}
-            onPress={() => navigation.navigate("HomeFeatured")}
-          >
-            <View style={styles.featuredBackground} />
-            <Image
-              source={require("../assets/ThemeParkBG.png")}
-              style={styles.featuredImage}
-            />
-            <View style={styles.featuredTextContainer}>
-              <Text style={styles.featuredText}>Theme Park</Text>
-              <View style={styles.subTextContainer}>
-                <Image
-                  source={require("../assets/HomeIcon.png")}
-                  style={styles.homeIcon}
-                />
-                <Text style={styles.featuredSubText}>Singapore, Asia</Text>
-              </View>
-            </View>
-          </TouchableOpacity>
-
-          {/* Snorkeling Section */}
-          <View style={styles.featuredContainer}>
-            <View style={styles.featuredBackground} />
-            <Image
-              source={require("../assets/SnorkelingBG.png")}
-              style={styles.featuredImage}
-            />
-            <View style={styles.featuredTextContainer}>
-              <Text style={styles.featuredText}>Snorkeling</Text>
-              <View style={styles.subTextContainer}>
-                <Image
-                  source={require("../assets/HomeIcon.png")}
-                  style={styles.homeIcon}
-                />
-                <Text style={styles.featuredSubText}>Singapore, Asia</Text>
-              </View>
-            </View>
-          </View>
-
-          {/* Feasting Section */}
-          <View style={styles.featuredContainerLast}>
-            <View style={styles.featuredBackground} />
-            <Image
-              source={require("../assets/FeastingBG.png")}
-              style={styles.featuredImage}
-            />
-            <View style={styles.featuredTextContainer}>
-              <Text style={styles.featuredText}>Feasting</Text>
-              <View style={styles.subTextContainer}>
-                <Image
-                  source={require("../assets/HomeIcon.png")}
-                  style={styles.homeIcon}
-                />
-                <Text style={styles.featuredSubText}>Thailand, Asia</Text>
-              </View>
-            </View>
-          </View>
-        </ScrollView>
-      </View>
-    </ScrollView>
+    </View>
   );
 };
 
 export default Home;
 
 const styles = StyleSheet.create({
-  container: {
+  mainContainer: {
     flex: 1,
     backgroundColor: "#FFF",
+  },
+  container: {
+    flex: 1,
   },
   scrollViewContent: {
     flexGrow: 1, // Allows the content to grow and be scrollable
@@ -437,7 +442,7 @@ const styles = StyleSheet.create({
   },
   featuredContainer: {
     position: "relative",
-    marginBottom: 20,
+    marginBottom: 40,
     marginRight: 20,
     marginLeft: 16,
     alignItems: "center",
@@ -448,5 +453,10 @@ const styles = StyleSheet.create({
     marginLeft: 16,
     marginRight: 60,
     alignItems: "center",
+  },
+  footerContainer: {
+    position: "absolute",
+    bottom: 0,
+    width: "100%",
   },
 });
