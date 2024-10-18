@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, Dimensions, ActivityIndicator, TouchableOpacity, Linking, ScrollView } from 'react-native';
-import { useFonts, Nunito_600SemiBold, Nunito_700Bold, Nunito_800ExtraBold, Nunito_900Black, Nunito_800ExtraBold_Italic, Nunito_400Regular_Italic } from '@expo-google-fonts/nunito';
+import { useFonts, Nunito_400Regular, Nunito_600SemiBold, Nunito_700Bold, Nunito_800ExtraBold, Nunito_900Black, Nunito_800ExtraBold_Italic, Nunito_400Regular_Italic } from '@expo-google-fonts/nunito';
 import * as SplashScreen from 'expo-splash-screen';
 import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient'; 
@@ -13,6 +13,7 @@ SplashScreen.preventAutoHideAsync(); // Prevent the splash screen from auto-hidi
 const HomePopular = () => {
   
   const [fontsLoaded] = useFonts({
+    Nunito_400Regular,
     Nunito_400Regular_Italic,
     Nunito_600SemiBold,
     Nunito_700Bold,
@@ -194,8 +195,7 @@ container: {
   backText: {
     color: '#3A4646',
     fontSize: 16,
-    fontFamily: 'Nunito',
-    fontWeight: '700',
+    fontFamily: 'Nunito_700Bold',
     marginLeft: 6,
     top: 0.2,
   },
@@ -244,8 +244,7 @@ container: {
     top: 171,
     color: 'white',
     fontSize: 18,
-    fontFamily: 'Nunito',
-    fontWeight: '800',
+    fontFamily: 'Nunito_800ExtraBold',
     zIndex: 2,
   },
   infoContainer: {
@@ -286,8 +285,7 @@ container: {
   saveText: {
     color: 'white',
     fontSize: 12,
-    fontFamily: 'Nunito',
-    fontWeight: '800',
+    fontFamily: 'Nunito_800ExtraBold',
   },
   contentContainer: {
     flexDirection: 'row',
@@ -300,8 +298,7 @@ container: {
   description: {
     color: '#006D77',
     fontSize: 16,
-    fontFamily: 'Nunito',
-    fontWeight: '400',
+    fontFamily: 'Nunito_400Regular',
     marginBottom: 8,
   },
   notToBeMissed: {

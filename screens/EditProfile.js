@@ -89,6 +89,34 @@ const EditProfile = () => {
     loadUserData();
   }, []);
 
+  const updateUserDataInAsyncStorage = async (newUserData) => {
+    try {
+      // Get the stored user data
+      const storedUserData = await AsyncStorage.getItem('userData');
+      let userData = {};
+  
+      // If there's existing data, parse it
+      if (storedUserData !== null) {
+        userData = JSON.parse(storedUserData);
+      }
+  
+      // Update the fields with the new values
+      userData.firstName = newUserData.firstName || userData.firstName;
+      userData.lastName = newUserData.lastName || userData.lastName;
+      userData.email = newUserData.email || userData.email;
+      userData.phoneNumber = newUserData.phoneNumber || userData.phoneNumber;
+      userData.gender = newUserData.gender || userData.gender;
+      userData.dob = newUserData.dob || userData.dob;
+  
+      // Save the updated user data back to AsyncStorage
+      await AsyncStorage.setItem('userData', JSON.stringify(userData));
+  
+      console.log('[AsyncStorage] User data updated successfully');
+    } catch (error) {
+      console.error('Error updating user data in AsyncStorage', error);
+    }
+  };
+
   if (!fontsLoaded) {
     return null; // You can add a loading spinner or screen here if needed
   }
@@ -105,6 +133,8 @@ const EditProfile = () => {
         gender,
         dob_string
       );
+
+      await updateUserDataInAsyncStorage(userData);
 
       navigation.navigate("EditProfile");
     } catch (error) {
