@@ -3,7 +3,10 @@ import { View, StyleSheet } from "react-native";
 import { Calendar } from "react-native-calendars";
 
 const CustomCalendar = ({ onDateSelect }) => {
-  const [selectedRange, setSelectedRange] = useState({ startDate: "", endDate: "" });
+  const [selectedRange, setSelectedRange] = useState({
+    startDate: "",
+    endDate: "",
+  });
   const [markedDates, setMarkedDates] = useState({});
 
   useEffect(() => {
@@ -46,7 +49,10 @@ const CustomCalendar = ({ onDateSelect }) => {
       }
     });
 
-    if (!selectedRange.startDate || (selectedRange.startDate && selectedRange.endDate)) {
+    if (
+      !selectedRange.startDate ||
+      (selectedRange.startDate && selectedRange.endDate)
+    ) {
       newMarkedDates = {
         ...newMarkedDates,
         [day.dateString]: {
@@ -68,7 +74,9 @@ const CustomCalendar = ({ onDateSelect }) => {
           color: "#eeeeee",
           textColor: "#000",
           ...(index === 0 ? { startingDay: true, color: "#e6e6e6" } : {}),
-          ...(index === rangeDates.length - 1 ? { endingDay: true, color: "#e6e6e6" } : {}),
+          ...(index === rangeDates.length - 1
+            ? { endingDay: true, color: "#e6e6e6" }
+            : {}),
         };
       });
 
