@@ -17,6 +17,21 @@ import { fetchLocations } from "../api/locationAPI.js";
 
 const { width: screenWidth } = Dimensions.get("window");
 
+
+const placeholderLocations = [
+  { id: 1, location_name: "[offline] Eiffel Tower" },
+  { id: 2, location_name: "[offline] Statue of Liberty" },
+  { id: 3, location_name: "[offline] Great Wall of China" },
+  { id: 4, location_name: "[offline] Sydney Opera House" },
+  { id: 5, location_name: "[offline] Colosseum" },
+  { id: 6, location_name: "[offline] Machu Picchu" },
+  { id: 7, location_name: "[offline] Mount Fuji" },
+  { id: 8, location_name: "[offline] Taj Mahal" },
+  { id: 9, location_name: "[offline] Christ the Redeemer" },
+  { id: 10, location_name: "[offline] Buckingham Palace" },
+];
+
+
 const PlannerLocationSearchbar = ({ onClose, onLocationSelect }) => {
   const [fontsLoaded] = useFonts({
     Nunito_600SemiBold,
@@ -25,6 +40,7 @@ const PlannerLocationSearchbar = ({ onClose, onLocationSelect }) => {
   const [searchText, setSearchText] = useState(""); // State to track the input
   const [filteredLocations, setFilteredLocations] = useState([]); // State to store filtered recommendations
   const [locations, setLocations] = useState([]); // Store fetched locations
+  const [usePlaceholder, setUsePlaceholder] = useState(false); // Track whether to use placeholder
 
   // Animated value to control the search bar position
   const searchBarY = useRef(new Animated.Value(200)).current; // Starts at Y offset of 100
@@ -35,8 +51,11 @@ const PlannerLocationSearchbar = ({ onClose, onLocationSelect }) => {
       try {
         const locationData = await fetchLocations();
         setLocations(locationData); // Update locations array with API response
+        setUsePlaceholder(false);  // We successfully fetched the data
       } catch (error) {
         console.error("Error fetching locations:", error);
+        setLocations(placeholderLocations); // Use placeholder data if there is an error
+        setUsePlaceholder(true); // Indicate that we are using the placeholder
       }
     };
 
@@ -130,6 +149,13 @@ const PlannerLocationSearchbar = ({ onClose, onLocationSelect }) => {
           />
         </View>
       )}
+
+      {/* Display a message if using placeholder data */}
+      {usePlaceholder && (
+        <Text style={styles.offlineText}>
+          You are not connected to the Server. Viewing placeholder data
+        </Text>
+      )}
     </View>
   );
 };
@@ -190,5 +216,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "#006D77",
     fontFamily: "Nunito_600SemiBold",
+  },
+  offlineText: {
+    marginTop: 350,
+    marginHorizontal: 10,
+    textAlign: "center",
+    color: "#FF0000",
+    fontSize: 16,
   },
 });
