@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ProfilePicture from "../assets/ProfilePicture.png";
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import ArrowLeft from "../assets/ArrowLeft.png";
 import { fetchUserData } from "../api/authAPI";
 
@@ -25,55 +25,51 @@ const Profile = () => {
 
   const navigation = useNavigation();
 
-  useEffect(() => {
-    const loadUserData = async () => {
-      try {
-        const storedUserData = await AsyncStorage.getItem("userData");
-        if (storedUserData == null) {
-          console.log("fetching");
-          storedUserData = await fetchUserData();
-          // Save user data locally
-          await AsyncStorage.setItem(
-            "userData",
-            JSON.stringify(storedUserData)
+  // Use useFocusEffect to reload data whenever the screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      const loadUserData = async () => {
+        try {
+          const storedUserData = await AsyncStorage.getItem("userData");
+          if (!storedUserData) {
+            console.log("fetching");
+            const fetchedUserData = await fetchUserData();
+            // Save user data locally
+            await AsyncStorage.setItem("userData", JSON.stringify(fetchedUserData));
+          }
+  
+          const userData = JSON.parse(storedUserData);
+  
+          setFirstName(userData.firstName);
+          setLastName(userData.lastName);
+          setEmail(userData.email);
+          setPhone(userData.phoneNumber);
+          setGender(userData.gender);
+          setDob(userData.dob); // Assuming dob is in valid format
+        } catch (error) {
+          console.error("Failed to load user data", error);
+  
+          Alert.alert(
+            "Session Expired",
+            "Your session has expired. Redirecting to the login page...",
+            [
+              {
+                text: "OK",
+                onPress: () => {
+                  setTimeout(() => {
+                    navigation.navigate("Login");
+                  }, 2000);
+                },
+              },
+            ],
+            { cancelable: false }
           );
         }
-        
-
-        const userData = JSON.parse(storedUserData);
-
-        setFirstName(userData.firstName);
-        setLastName(userData.lastName);
-        setEmail(userData.email);
-        setPhone(userData.phoneNumber);
-        setGender(userData.gender);
-        setDob(userData.dob); // Assuming dob is in valid format
-
-      } catch (error) {
-        console.error("Failed to load user data", error);
-
-        // Show an alert in case of error
-        Alert.alert(
-          "Session Expired",
-          "Your session has expired. Redirecting to the login page...",
-          [
-            {
-              text: "OK",
-              onPress: () => {
-                // Redirect after 2 seconds
-                setTimeout(() => {
-                  navigation.navigate("Login");
-                }, 2000);
-              },
-            },
-          ],
-          { cancelable: false }
-        );
-      }
-    };
-
-    loadUserData();
-  }, []);
+      };
+  
+      loadUserData();
+    }, [])  // Dependency array is empty, so this runs every time the screen is focused
+  );
 
   return (
     <View style={styles.container}>

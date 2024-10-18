@@ -115,7 +115,7 @@ export const updateProfile = async (
     const result = await response.json();
 
     console.log("Update profile successful:", result);
-    return result;
+    return result.user;
   } catch (error) {
     console.error("Error updating profile:", error.message);
     throw new Error("An error occurred during update. Please try again.");

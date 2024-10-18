@@ -96,16 +96,21 @@ const Home = () => {
           style={styles.popularScrollView}
         >
           {/* Japan Destination */}
-          <View style={styles.destinationContainer}>
-            <View style={styles.destinationBackground} />
-            <Image
-              source={require("../assets/JapanBG.png")}
-              style={styles.destinationImage}
-            />
-            <View style={styles.textContainer}>
-              <Text style={styles.destinationText}>Japan</Text>
+          <TouchableOpacity
+            style={styles.destinationContainer}
+            onPress={() => navigation.navigate("Profile")}
+          >
+            <View style={styles.destinationContainer}>
+              <View style={styles.destinationBackground} />
+              <Image
+                source={require("../assets/JapanBG.png")}
+                style={styles.destinationImage}
+              />
+              <View style={styles.textContainer}>
+                <Text style={styles.destinationText}>Japan</Text>
+              </View>
             </View>
-          </View>
+          </TouchableOpacity>
 
           {/* Singapore Destination*/}
           <TouchableOpacity
