@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -19,6 +19,11 @@ const PlannerNewTrip = ({ route }) => {
   const [isSearchbarVisible, setSearchbarVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState("");
   const [destination, setDestination] = useState("");
+  const [destinationID, setDestinationID] = useState("");
+
+  useEffect(() => {
+    console.log("Destination ID updated:", destinationID);
+  }, [destinationID]); // This will run every time destinationID is updated
 
   const openCalendar = () => {
     setCalendarVisible(true);
@@ -42,7 +47,8 @@ const PlannerNewTrip = ({ route }) => {
   };
 
   const handleLocationSelection = (location) => {
-    setDestination(location);
+    setDestination(location.location_name);
+    setDestinationID(location.id);
     closeSearchBar();
   }
 

@@ -13,11 +13,9 @@ import {
   Animated,
 } from "react-native";
 import { useFonts, Nunito_600SemiBold } from "@expo-google-fonts/nunito";
-import { useNavigation } from "@react-navigation/native";
+import { fetchLocations } from "../api/locationAPI.js";
 
 const { width: screenWidth } = Dimensions.get("window");
-
-const locations = ["Afghanistan", "Albania", "Algeria"];
 
 const PlannerLocationSearchbar = ({ onClose, onLocationSelect }) => {
   const [fontsLoaded] = useFonts({
@@ -26,13 +24,24 @@ const PlannerLocationSearchbar = ({ onClose, onLocationSelect }) => {
 
   const [searchText, setSearchText] = useState(""); // State to track the input
   const [filteredLocations, setFilteredLocations] = useState([]); // State to store filtered recommendations
-  const navigation = useNavigation();
+  const [locations, setLocations] = useState([]); // Store fetched locations
 
   // Animated value to control the search bar position
   const searchBarY = useRef(new Animated.Value(200)).current; // Starts at Y offset of 100
 
   // This useEffect hook will animate the search bar to the top
   useEffect(() => {
+    const fetchLocationsFromAPI = async () => {
+      try {
+        const locationData = await fetchLocations();
+        setLocations(locationData); // Update locations array with API response
+      } catch (error) {
+        console.error("Error fetching locations:", error);
+      }
+    };
+
+    fetchLocationsFromAPI();
+
     Animated.timing(searchBarY, {
       toValue: 0, // Move to the top (Y offset = 0)
       duration: 200, // Duration of animation in ms
@@ -46,8 +55,9 @@ const PlannerLocationSearchbar = ({ onClose, onLocationSelect }) => {
 
     // Filter the locations based on the search text
     const filtered = locations.filter((location) =>
-      location.toLowerCase().includes(text.toLowerCase())
+      location.location_name.toLowerCase().includes(text.toLowerCase())
     );
+
     setFilteredLocations(filtered);
   };
 
@@ -108,13 +118,13 @@ const PlannerLocationSearchbar = ({ onClose, onLocationSelect }) => {
         <View style={styles.recommendationsContainer}>
           <FlatList
             data={filteredLocations}
-            keyExtractor={(item) => item}
+            keyExtractor={(item) => item.id.toString()} // Use the `id` as the key, convert to string if needed
             renderItem={({ item }) => (
               <TouchableOpacity
                 style={styles.recommendationItem}
                 onPress={() => handleLocationPress(item)}
               >
-                <Text style={styles.recommendationText}>{item}</Text>
+                <Text style={styles.recommendationText}>{item.location_name}</Text>
               </TouchableOpacity>
             )}
           />
