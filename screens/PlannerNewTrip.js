@@ -1,42 +1,68 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Modal } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  TextInput,
+  Modal,
+  Image,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import CustomCalendar from "../components/CustomCalendar"; // Import your CustomCalendar
+import PlannerLocationSearchbar from "../components/PlannerLocationSearchbar";
 
 const PlannerNewTrip = ({ route }) => {
   const navigation = useNavigation();
-  const { onAddTrip } = route.params; 
-  const [isCalendarVisible, setCalendarVisible] = useState(false); 
-  const [selectedDate, setSelectedDate] = useState(""); 
-  const [destination, setDestination] = useState(""); 
+  const { onAddTrip } = route.params || {};
+  const [isCalendarVisible, setCalendarVisible] = useState(false);
+  const [isSearchbarVisible, setSearchbarVisible] = useState(false);
+  const [selectedDate, setSelectedDate] = useState("");
+  const [destination, setDestination] = useState("");
 
   const openCalendar = () => {
-    setCalendarVisible(true); 
+    setCalendarVisible(true);
   };
 
   const closeCalendar = () => {
-    setCalendarVisible(false); 
+    setCalendarVisible(false);
+  };
+
+  const openSearchBar = () => {
+    setSearchbarVisible(true);
+  };
+
+  const closeSearchBar = () => {
+    setSearchbarVisible(false);
   };
 
   const handleDateSelection = (startDate, endDate) => {
     setSelectedDate(`${startDate} to ${endDate}`);
-    closeCalendar(); 
+    closeCalendar();
   };
+
+  const handleLocationSelection = (location) => {
+    setDestination(location);
+    closeSearchBar();
+  }
 
   const handleConfirmTrip = () => {
     if (destination && selectedDate) {
-      onAddTrip({ destination, dates: selectedDate }); 
+      onAddTrip({ destination, dates: selectedDate });
       navigation.navigate("Planner");
     } else {
-      alert("Please fill in all details."); 
+      alert("Please fill in all details.");
     }
   };
 
   return (
     <View style={styles.container}>
       {/* Top Left X Button */}
-      <TouchableOpacity style={styles.exitButton} onPress={() => navigation.navigate("Planner")}>
-        <Text style={styles.exitButtonText}>X</Text>
+      <TouchableOpacity
+        style={styles.exitButton}
+        onPress={() => navigation.navigate("Planner")}
+      >
+        <Image source={require("../assets/Cross.png")} />
       </TouchableOpacity>
 
       {/* Header */}
@@ -47,21 +73,35 @@ const PlannerNewTrip = ({ route }) => {
 
       {/* Input Fields */}
       <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Where to?"
-          value={destination}
-          onChangeText={setDestination} // Update destination state
-        />
+        <TouchableOpacity onPress={openSearchBar} style={styles.input}>
+          <Text
+            style={[
+              styles.inputText,
+              { color: destination ? "#323232" : "#A9A9A9" },
+            ]}
+          >
+            {destination || "Where to?"}
+          </Text>
+        </TouchableOpacity>
 
         {/* Date Input Field */}
         <TouchableOpacity onPress={openCalendar} style={styles.input}>
-          <Text>{selectedDate || "Date?"}</Text>
+          <Text
+            style={[
+              styles.inputText,
+              { color: selectedDate ? "#323232" : "#A9A9A9" },
+            ]}
+          >
+            {selectedDate || "Date?"}
+          </Text>
         </TouchableOpacity>
       </View>
 
       {/* Confirm Button */}
-      <TouchableOpacity onPress={handleConfirmTrip} style={styles.confirmButton}>
+      <TouchableOpacity
+        onPress={handleConfirmTrip}
+        style={styles.confirmButton}
+      >
         <Text style={styles.confirmButtonText}>Confirm Trip</Text>
       </TouchableOpacity>
 
@@ -74,6 +114,16 @@ const PlannerNewTrip = ({ route }) => {
           <TouchableOpacity onPress={closeCalendar} style={styles.closeButton}>
             <Text style={styles.closeButtonText}>Close Calendar</Text>
           </TouchableOpacity>
+        </View>
+      </Modal>
+
+      {/* Searchbar Modal */}
+      <Modal visible={isSearchbarVisible}>
+        <View style={styles.modalSearchContainer}>
+          <PlannerLocationSearchbar
+            onLocationSelect={handleLocationSelection}
+            onClose={closeSearchBar}
+          />
         </View>
       </Modal>
     </View>
@@ -115,28 +165,37 @@ const styles = StyleSheet.create({
     marginTop: 50,
   },
   input: {
+    justifyContent: "center", // Center text vertically
+    color: "#000",
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 10,
     padding: 15,
-    fontSize: 16,
     marginBottom: 20,
+    height: 60,
+  },
+  inputText: {
+    fontSize: 20,
   },
   confirmButton: {
     backgroundColor: "#F47966",
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
+    marginTop: 30,
   },
   confirmButtonText: {
     color: "#fff",
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "bold",
   },
   modalContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  modalSearchContainer: {
+    flex: 1,
   },
   closeButton: {
     marginTop: 20,
