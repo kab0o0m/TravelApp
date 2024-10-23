@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { useFonts, Nunito_400Regular, Nunito_700Bold } from '@expo-google-fonts/nunito';
 import { Picker } from '@react-native-picker/picker'; 
 import Button from "../components/Button"; 
+import Footer from "../components/Footer"; 
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
@@ -60,8 +61,13 @@ const Expenses = () => {
 
         <Text style={styles.noExpenses}>You haven’t added any expenses yet.</Text>
 
+
+        
+        
+      </View>
+      <View style={styles.footerContainer}>
         <View style={styles.buttonContainer}>
-          <Button
+        <Button
             title="Add Expense"
             onPress={null}
             backgroundColor="#F47966"
@@ -71,8 +77,8 @@ const Expenses = () => {
             width={screenWidth * 0.5} 
             iconName="add"
           />
-        </View>
-
+          </View>
+        <Footer />
       </View>
     </View>
   );
@@ -159,10 +165,15 @@ const styles = StyleSheet.create({
     marginTop: screenHeight * 0.02, 
   },
   buttonContainer: {
-    position: 'absolute',
-    bottom: screenHeight * 0.03, 
+    bottom: screenHeight * 0.025, // Space above the footer
     left: 0,
     right: 0,
     alignItems: 'center', 
+    justifyContent: 'flex-end',
+  },
+  footerContainer: {
+    position: "absolute",
+    bottom: 0,
+    width: "100%",
   },
 });

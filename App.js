@@ -17,10 +17,12 @@ import Test from "./screens/Test";
 import Expenses from "./screens/Expenses";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export default function App() {
   const Stack = createNativeStackNavigator();
   return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home">
         <Stack.Screen name="AuthCheck" component={AuthCheck} options={{ headerShown: false }} />
@@ -48,6 +50,7 @@ export default function App() {
         <Stack.Screen name="Expenses" component={Expenses} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
+    </GestureHandlerRootView>
   );
 }
 
