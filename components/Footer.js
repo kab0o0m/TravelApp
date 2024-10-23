@@ -15,7 +15,7 @@ const Footer = () => {
         <Image source={HomeIcon} style={styles.image} resizeMode="cover" />
         <Text style={styles.buttonText}>Home</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Expenses")}>
         <Image source={BudgetIcon} style={styles.image} resizeMode="cover" />
         <Text style={styles.buttonText}>Budget</Text>
       </TouchableOpacity>
