@@ -14,6 +14,8 @@ const Expenses = () => {
   });
 
   const [selectedSortOption, setSelectedSortOption] = useState("date_latest"); 
+  const [expenses, setExpenses] = useState([]); // State to track expenses
+  const [budget, setBudget] = useState(null); // State to track budget
 
   if (!fontsLoaded) {
     return null; // Add a loading spinner or screen here if needed
@@ -27,7 +29,14 @@ const Expenses = () => {
       <View style={styles.box}>
         <View style={styles.innerBox}>
           <Text style={styles.amount}>SGD 0.00</Text>
-          <Text style={styles.budgetText}>Set a budget</Text>
+
+          {/* Conditional Rendering for Budget */}
+          {budget === null ? (
+            <Text style={styles.budgetText}>Set a budget</Text>
+          ) : (
+            <Text>A</Text> // Replace this with actual budget display logic
+          )}
+
           <Button
             title="View Summary"
             onPress={null}
@@ -59,15 +68,17 @@ const Expenses = () => {
           </Picker>
         </View>
 
-        <Text style={styles.noExpenses}>You haven’t added any expenses yet.</Text>
-
-
-        
-        
+        {/* Conditional Rendering for Expenses */}
+        {expenses.length === 0 ? (
+          <Text style={styles.noExpenses}>You haven’t added any expenses yet.</Text>
+        ) : (
+          <Text>A</Text> // Replace this with actual expenses display logic
+        )}
       </View>
+
       <View style={styles.footerContainer}>
         <View style={styles.buttonContainer}>
-        <Button
+          <Button
             title="Add Expense"
             onPress={null}
             backgroundColor="#F47966"
@@ -77,7 +88,7 @@ const Expenses = () => {
             width={screenWidth * 0.5} 
             iconName="add"
           />
-          </View>
+        </View>
         <Footer />
       </View>
     </View>
@@ -125,7 +136,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Nunito_400Regular', 
     color: '#FFF', 
     marginTop: screenHeight * 0.01, 
-    marginBottom: screenHeight*0.005,
+    marginBottom: screenHeight * 0.005,
   },
   whiteBox: {
     position: 'absolute', 
