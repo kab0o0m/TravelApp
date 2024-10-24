@@ -4,6 +4,7 @@ import { useFonts, Nunito_400Regular, Nunito_700Bold } from '@expo-google-fonts/
 import { Picker } from '@react-native-picker/picker'; 
 import Button from "../components/Button"; 
 import Footer from "../components/Footer"; 
+import AddExpenseModal from './AddExpenseModal'; // Import the modal component
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
@@ -16,10 +17,16 @@ const Expenses = () => {
   const [selectedSortOption, setSelectedSortOption] = useState("date_latest"); 
   const [expenses, setExpenses] = useState([]); // State to track expenses
   const [budget, setBudget] = useState(null); // State to track budget
+  const [modalVisible, setModalVisible] = useState(false); // State to control modal visibility
 
   if (!fontsLoaded) {
     return null; // Add a loading spinner or screen here if needed
   }
+
+  // Function to handle adding a new expense
+  const handleAddExpense = (expense) => {
+    setExpenses([...expenses, expense]); // Add new expense to the list
+  };
 
   return (
     <View style={styles.container}>
@@ -80,7 +87,7 @@ const Expenses = () => {
         <View style={styles.buttonContainer}>
           <Button
             title="Add Expense"
-            onPress={null}
+            onPress={() => setModalVisible(true)} // Open the modal when clicked
             backgroundColor="#F47966"
             textColor="#FFFFFF"
             paddingVertical={10}
@@ -91,6 +98,13 @@ const Expenses = () => {
         </View>
         <Footer />
       </View>
+
+      {/* Add Expense Modal */}
+      <AddExpenseModal 
+        visible={modalVisible} 
+        onClose={() => setModalVisible(false)} 
+        onAdd={handleAddExpense} 
+      />
     </View>
   );
 };
@@ -101,7 +115,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFF',
-    paddingTop: screenHeight * 0.05, 
+    paddingTop: screenHeight * 0.075, 
   },
   header: {
     fontSize: screenHeight * 0.03, 
