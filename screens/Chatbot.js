@@ -14,8 +14,8 @@ import {
 import { Card } from "react-native-paper";
 import Groq from "groq-sdk";
 import axios from "axios";
-import ArrowUp from "../assets/ArrowUp.png";
-import FrogHead from "../assets/FrogHead.png";
+import ArrowUp from "../assets/icons/ArrowUp.png";
+import FrogHead from "../assets/images/FrogHead.png";
 import { useNavigation } from "@react-navigation/native";
 import { GROQ_KEY } from "@env";
 

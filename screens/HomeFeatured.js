@@ -96,14 +96,14 @@ const HomeFeatured = () => {
           onPress={() => navigation.navigate("Home")}
         >
           <Image
-            source={require("../assets/BackArrow.png")}
+            source={require("../assets/icons/BackArrow.png")}
             style={styles.arrowIcon}
           />
           <Text style={styles.backText}>BACK</Text>
         </TouchableOpacity>
         <Text style={styles.header}>Mapp!t</Text>
         <Image
-          source={require("../assets/HomePageBGWaves.png")}
+          source={require("../assets/images/HomePageBGWaves.png")}
           style={styles.headerImage}
         />
       </View>
@@ -133,7 +133,7 @@ const HomeFeatured = () => {
 
         <View style={styles.infoContainer}>
           <Image
-            source={require("../assets/LocationIcon.png")}
+            source={require("../assets/icons/LocationIcon.png")}
             style={styles.icon}
           />
           <TouchableOpacity onPress={handleAddressPress}>
@@ -143,7 +143,7 @@ const HomeFeatured = () => {
 
         <View style={styles.infoContainer}>
           <Image
-            source={require("../assets/PhoneIcon.png")}
+            source={require("../assets/icons/PhoneIcon.png")}
             style={styles.icon}
           />
           <TouchableOpacity onPress={handlePhonePress}>
@@ -153,7 +153,7 @@ const HomeFeatured = () => {
 
         <View style={styles.infoContainer}>
           <Image
-            source={require("../assets/TimeIcon.png")}
+            source={require("../assets/icons/TimeIcon.png")}
             style={styles.icon}
           />
           <Text style={styles.infoText}>Mon - Sun: 10AM - 8PM</Text>
@@ -161,7 +161,7 @@ const HomeFeatured = () => {
 
         <View style={styles.infoContainer}>
           <Image
-            source={require("../assets/WebsiteIcon.png")}
+            source={require("../assets/icons/WebsiteIcon.png")}
             style={styles.icon}
           />
           <TouchableOpacity onPress={handleWebsitePress}>

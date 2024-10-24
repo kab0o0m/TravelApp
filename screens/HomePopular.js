@@ -58,15 +58,15 @@ const HomePopular = () => {
         <ScrollView contentContainerStyle={styles.scrollViewContent}>
             <View style={styles.headerContainer}>
                 <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Home')}>
-                    <Image source={require('../assets/BackArrow.png')} style={styles.arrowIcon} />
+                    <Image source={require('../assets/icons/BackArrow.png')} style={styles.arrowIcon} />
                     <Text style={styles.backText}>BACK</Text>
                 </TouchableOpacity>
                 <Text style={styles.header}>Mapp!t</Text>
-                <Image source={require('../assets/HomePageBGWaves.png')} style={styles.headerImage} />
+                <Image source={require('../assets/images/HomePageBGWaves.png')} style={styles.headerImage} />
             </View>
         
             <View style={styles.popularContainer}>
-                <Image source={require('../assets/TopPlacesSGBG.png')} style={styles.popularImage} />
+                <Image source={require('../assets/images/TopPlacesSGBG.png')} style={styles.popularImage} />
                 <LinearGradient
                     colors={['#FFFFFF00', 'rgba(0, 0, 0, 0.4)']} // Linear gradient from white to black with 40% opacity
                     style={styles.popularOverlay}
@@ -79,10 +79,10 @@ const HomePopular = () => {
 
             <View style={styles.infoContainer}>
                 <View style={styles.infoHeader}>
-                    <Image source={require('../assets/LocationIcon.png')} style={styles.icon} />
+                    <Image source={require('../assets/icons/LocationIcon.png')} style={styles.icon} />
                     <Text style={styles.infoTitle}>Singapore Zoo</Text>
                     <TouchableOpacity style={styles.saveButton} onPress={() => toggleSave('singaporeZoo')}>
-                        <Image source={savedItems.singaporeZoo ? require('../assets/SavingIcon.png') : require('../assets/ToSave.png')} style={styles.saveIcon} />
+                        <Image source={savedItems.singaporeZoo ? require('../assets/icons/SavingIcon.png') : require('../assets/icons/ToSave.png')} style={styles.saveIcon} />
                         <Text style={styles.saveText}>{savedItems.singaporeZoo ? 'Saved' : 'Save'}</Text>
                     </TouchableOpacity>
                 </View>
@@ -107,10 +107,10 @@ const HomePopular = () => {
 
             <View style={styles.infoContainer}>
                 <View style={styles.infoHeader}>
-                    <Image source={require('../assets/LocationIcon.png')} style={styles.icon} />
+                    <Image source={require('../assets/icons/LocationIcon.png')} style={styles.icon} />
                     <Text style={styles.infoTitle}>Singapore Cable Car</Text>
                     <TouchableOpacity style={styles.saveButton} onPress={() => toggleSave('singaporeCableCar')}>
-                        <Image source={savedItems.singaporeCableCar ? require('../assets/SavingIcon.png') : require('../assets/ToSave.png')} style={styles.saveIcon} />
+                        <Image source={savedItems.singaporeCableCar ? require('../assets/icons/SavingIcon.png') : require('../assets/icons/ToSave.png')} style={styles.saveIcon} />
                         <Text style={styles.saveText}>{savedItems.singaporeCableCar ? 'Saved' : 'Save'}</Text>
                     </TouchableOpacity>
                 </View>
@@ -134,10 +134,10 @@ const HomePopular = () => {
             {/* Information on Mega Adventure Park */}
             <View style={styles.infoContainer}>
                 <View style={styles.infoHeader}>
-                    <Image source={require('../assets/LocationIcon.png')} style={styles.icon} />
+                    <Image source={require('../assets/icons/LocationIcon.png')} style={styles.icon} />
                     <Text style={styles.infoTitle}>Mega Adventure Park</Text>
                     <TouchableOpacity style={styles.saveButton} onPress={() => toggleSave('megaAdventurePark')}>
-                        <Image source={savedItems.megaAdventurePark ? require('../assets/SavingIcon.png') : require('../assets/ToSave.png')} style={styles.saveIcon} />
+                        <Image source={savedItems.megaAdventurePark ? require('../assets/icons/SavingIcon.png') : require('../assets/icons/ToSave.png')} style={styles.saveIcon} />
                         <Text style={styles.saveText}>{savedItems.megaAdventurePark ? 'Saved' : 'Save'}</Text>
                     </TouchableOpacity>
                 </View>

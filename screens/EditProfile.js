@@ -10,10 +10,10 @@ import {
   Keyboard,
   TouchableOpacity,
 } from "react-native";
-import ProfilePicture from "../assets/ProfilePicture.png";
+import ProfilePicture from "../assets/icons/ProfilePicture.png";
 import { useNavigation } from "@react-navigation/native";
-import ArrowLeft from "../assets/ArrowLeft.png";
-import Edit from "../assets/editprofile.png";
+import ArrowLeft from "../assets/icons/ArrowLeft.png";
+import Edit from "../assets/icons/editprofile.png";
 import {
   useFonts,
   Nunito_400Regular,

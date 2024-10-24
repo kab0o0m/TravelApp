@@ -273,7 +273,7 @@ const LocationSearch = () => {
         ]}
       >
         <Image
-          source={require("../assets/Search.png")}
+          source={require("../assets/icons/Search.png")}
           style={styles.searchIcon}
         />
         <TextInput
@@ -289,7 +289,7 @@ const LocationSearch = () => {
           style={styles.crossIconContainer}
         >
           <Image
-            source={require("../assets/Cross.png")}
+            source={require("../assets/icons/Cross.png")}
             style={styles.crossIcon}
           />
         </TouchableOpacity>
