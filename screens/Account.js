@@ -66,6 +66,9 @@ const Account = () => {
           >
             <Text style={styles.accountItemText}>Personal Information</Text>
           </TouchableOpacity>
+          <TouchableOpacity style={styles.accountItem} onPress={() => navigation.navigate("SavedLocation")}>
+            <Text style={styles.accountItemText}>Saved Locations</Text>
+          </TouchableOpacity>
           <TouchableOpacity style={styles.accountItem}>
             <Text style={styles.accountItemText}>My Bookings</Text>
           </TouchableOpacity>
