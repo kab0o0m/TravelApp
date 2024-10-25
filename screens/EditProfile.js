@@ -52,7 +52,6 @@ const EditProfile = () => {
             JSON.stringify(storedUserData)
           );
         }
-        
 
         const userData = JSON.parse(storedUserData);
 
@@ -62,7 +61,6 @@ const EditProfile = () => {
         setPhone(userData.phoneNumber);
         setGender(userData.gender);
         setDob(new Date(userData.dob)); // Assuming dob is in valid format
-
       } catch (error) {
         console.error("Failed to load user data", error);
 
@@ -92,14 +90,14 @@ const EditProfile = () => {
   const updateUserDataInAsyncStorage = async (newUserData) => {
     try {
       // Get the stored user data
-      const storedUserData = await AsyncStorage.getItem('userData');
+      const storedUserData = await AsyncStorage.getItem("userData");
       let userData = {};
-  
+
       // If there's existing data, parse it
       if (storedUserData !== null) {
         userData = JSON.parse(storedUserData);
       }
-  
+
       // Update the fields with the new values
       userData.firstName = newUserData.firstName || userData.firstName;
       userData.lastName = newUserData.lastName || userData.lastName;
@@ -107,13 +105,13 @@ const EditProfile = () => {
       userData.phoneNumber = newUserData.phoneNumber || userData.phoneNumber;
       userData.gender = newUserData.gender || userData.gender;
       userData.dob = newUserData.dob || userData.dob;
-  
+
       // Save the updated user data back to AsyncStorage
-      await AsyncStorage.setItem('userData', JSON.stringify(userData));
-  
-      console.log('[AsyncStorage] User data updated successfully');
+      await AsyncStorage.setItem("userData", JSON.stringify(userData));
+
+      console.log("[AsyncStorage] User data updated successfully");
     } catch (error) {
-      console.error('Error updating user data in AsyncStorage', error);
+      console.error("Error updating user data in AsyncStorage", error);
     }
   };
 
@@ -138,7 +136,21 @@ const EditProfile = () => {
 
       navigation.navigate("EditProfile");
     } catch (error) {
-      Alert.alert("Update Failed", error.message);
+      Alert.alert(
+        "Session Expired",
+        "Your session has expired. Redirecting to the login page...",
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              setTimeout(() => {
+                navigation.navigate("Login");
+              }, 2000);
+            },
+          },
+        ],
+        { cancelable: false }
+      );
     }
   };
 
