@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   Linking,
   ScrollView,
+  Alert,
 } from "react-native";
 import {
   useFonts,
@@ -24,7 +25,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { fetchSavedLocations } from "../api/locationAPI";
+import { fetchSavedLocations, removeSavedLocation } from "../api/locationAPI";
 import BASE_URL from "../config";
 
 const { width: screenWidth } = Dimensions.get("window");
@@ -50,6 +51,7 @@ const SavedLocation = () => {
   const [locations, setLocations] = useState([]);
   const [savedItems, setSavedItems] = useState({});
   const [loading, setLoading] = useState(true);
+  const [skipConfirmation, setSkipConfirmation] = useState(false);
 
   useEffect(() => {
     if (fontsLoaded) {
@@ -74,6 +76,12 @@ const SavedLocation = () => {
           return acc;
         }, {});
         setSavedItems(initialSavedItems);
+
+        // Load "skip confirmation" preference from storage
+        const storedSkipConfirmation = await AsyncStorage.getItem(
+          "skipConfirmation"
+        );
+        setSkipConfirmation(storedSkipConfirmation === "true");
       } catch (error) {
         console.error("Error fetching locations:", error);
       } finally {
@@ -85,10 +93,56 @@ const SavedLocation = () => {
 
   // Function to toggle the save state for a specific item
   const toggleSave = (id) => {
-    setSavedItems((prevState) => ({
-      ...prevState,
-      [id]: !prevState[id],
-    }));
+    if (savedItems[id]) {
+      if (skipConfirmation) {
+        // Directly remove without showing alert if skipConfirmation is enabled
+        setSavedItems((prevState) => ({
+          ...prevState,
+          [id]: false,
+        }));
+        // Call the API to remove from saved locations
+        removeSavedLocation(id).catch((error) => console.error(error));
+      } else {
+        // Show confirmation alert if skipConfirmation is disabled
+        Alert.alert(
+          "Remove from Saved Locations",
+          "Are you sure you want to remove this location from your saved list?",
+          [
+            { text: "Cancel", style: "cancel" },
+            {
+              text: "Don't show again",
+              style: "default",
+              onPress: async () => {
+                setSkipConfirmation(true);
+                await AsyncStorage.setItem("skipConfirmation", "true");
+                setSavedItems((prevState) => ({
+                  ...prevState,
+                  [id]: false,
+                }));
+              },
+            },
+            {
+              text: "Remove",
+              style: "destructive",
+              onPress: () => {
+                setSavedItems((prevState) => ({
+                  ...prevState,
+                  [id]: false,
+                }));
+                // Call the API to remove from saved locations
+                removeSavedLocation(id).catch((error) => console.error(error));
+              },
+            },
+          ]
+        );
+      }
+    } else {
+      // Add to saved items without confirmation
+      setSavedItems((prevState) => ({
+        ...prevState,
+        [id]: true,
+      }));
+    }
   };
 
   if (loading || !fontsLoaded) {
@@ -115,51 +169,62 @@ const SavedLocation = () => {
           </TouchableOpacity>
         </View>
 
-
-
         {/* Populate data from API */}
-
-        <View style={styles.bottomContainer}>
-          {locations.map((location) => (
-            <View key={location.id} style={styles.infoContainer}>
-              <View style={styles.infoHeader}>
-                <Image
-                  source={require("../assets/icons/LocationIcon.png")}
-                  style={styles.icon}
-                />
-                <Text style={styles.infoTitle}>{location.location_name}</Text>
-                <TouchableOpacity
-                  style={styles.saveButton}
-                  onPress={() => toggleSave(location.id)}
-                >
+        {locations.length === 0 ? (
+          <View style={styles.noLocationsContainer}>
+            <Text style={styles.noLocationsText}>No saved locations</Text>
+          </View>
+        ) : (
+          <View style={styles.bottomContainer}>
+            {locations.map((location) => (
+              <View key={location.id} style={styles.infoContainer}>
+                <View style={styles.infoHeader}>
                   <Image
-                    source={
-                      savedItems[location.id]
-                        ? require("../assets/icons/SavingIcon.png")
-                        : require("../assets/icons/ToSave.png")
-                    }
-                    style={styles.saveIcon}
+                    source={require("../assets/icons/LocationIcon.png")}
+                    style={styles.icon}
                   />
-                  <Text style={styles.saveText}>
-                    {savedItems[location.id] ? "Saved" : "Save"}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-              <View style={styles.contentContainer}>
-                <View style={styles.textContainer}>
-                  <Text style={styles.description}>{location.about}</Text>
-                  <Text style={styles.notToBeMissedBold}>Not-to-be-Missed: </Text>
-                  <Text style={styles.notToBeMissed}>{location.additional_info}</Text>
-                  <View style={styles.rectangle} />
+                  <Text style={styles.infoTitle}>{location.location_name}</Text>
+                  <TouchableOpacity
+                    style={styles.saveButton}
+                    onPress={() => toggleSave(location.id)}
+                  >
+                    <Image
+                      source={
+                        savedItems[location.id]
+                          ? require("../assets/icons/SavingIcon.png")
+                          : require("../assets/icons/ToSave.png")
+                      }
+                      style={styles.saveIcon}
+                    />
+                    <Text style={styles.saveText}>
+                      {savedItems[location.id] ? "Saved" : "Save"}
+                    </Text>
+                  </TouchableOpacity>
                 </View>
-                <Image
-                  source={{ uri: `${BASE_URL}/api/assets/${location.img_url}` }}
-                  style={styles.topPlacesImage}
+                <View style={styles.contentContainer}>
+                  <View style={styles.textContainer}>
+                    <Text style={styles.description}>{location.about}</Text>
+                    <Text style={styles.notToBeMissedBold}>
+                      Not-to-be-Missed:{" "}
+                    </Text>
+                    <Text style={styles.notToBeMissed}>
+                      {location.additional_info}
+                    </Text>
+                    <View style={styles.rectangle} />
+                  </View>
+                  <Image
+                    source={{
+                      uri: location.img_url.startsWith("locations/")
+                        ? `${BASE_URL}/api/assets/${location.img_url}`
+                        : location.img_url, // Use the img_url directly if it’s an absolute URL
+                    }}
+                    style={styles.topPlacesImage}
                   />
+                </View>
               </View>
-            </View>
-          ))}
-        </View>
+            ))}
+          </View>
+        )}
       </ScrollView>
     </View>
   );
@@ -329,6 +394,17 @@ const styles = StyleSheet.create({
     height: 110,
     borderRadius: 10,
     marginBottom: 15,
+  },
+  noLocationsContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 20,
+  },
+  noLocationsText: {
+    fontSize: 18,
+    color: "#006D77",
+    fontFamily: "Nunito_700Bold",
   },
 });
 

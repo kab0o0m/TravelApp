@@ -128,53 +128,65 @@ const HomePopular = () => {
         </View>
 
         {/* Populate data from API */}
-
-        <View style={styles.bottomContainer}>
-          {locations.map((location) => (
-            <View key={location.id} style={styles.infoContainer}>
-              <View style={styles.infoHeader}>
-                <Image
-                  source={require("../assets/icons/LocationIcon.png")}
-                  style={styles.icon}
-                />
-                <Text style={styles.infoTitle}>{location.location_name}</Text>
-                <TouchableOpacity
-                  style={styles.saveButton}
-                  onPress={() => toggleSave(location.id)}
-                >
+        {locations.length === 0 ? (
+          <View style={styles.noLocationsContainer}>
+            <Text style={styles.noLocationsText}>No saved locations</Text>
+          </View>
+        ) : (
+          <View style={styles.bottomContainer}>
+            {locations.map((location) => (
+              <View key={location.id} style={styles.infoContainer}>
+                <View style={styles.infoHeader}>
                   <Image
-                    source={
-                      savedItems[location.id]
-                        ? require("../assets/icons/SavingIcon.png")
-                        : require("../assets/icons/ToSave.png")
-                    }
-                    style={styles.saveIcon}
+                    source={require("../assets/icons/LocationIcon.png")}
+                    style={styles.icon}
                   />
-                  <Text style={styles.saveText}>
-                    {savedItems[location.id] ? "Saved" : "Save"}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-              <View style={styles.contentContainer}>
-                <View style={styles.textContainer}>
-                  <Text style={styles.description}>{location.about}</Text>
-                  <Text style={styles.notToBeMissedBold}>Not-to-be-Missed: </Text>
-                  <Text style={styles.notToBeMissed}>{location.additional_info}</Text>
-                  <View style={styles.rectangle} />
+                  <Text style={styles.infoTitle}>{location.location_name}</Text>
+                  <TouchableOpacity
+                    style={styles.saveButton}
+                    onPress={() => toggleSave(location.id)}
+                  >
+                    <Image
+                      source={
+                        savedItems[location.id]
+                          ? require("../assets/icons/SavingIcon.png")
+                          : require("../assets/icons/ToSave.png")
+                      }
+                      style={styles.saveIcon}
+                    />
+                    <Text style={styles.saveText}>
+                      {savedItems[location.id] ? "Saved" : "Save"}
+                    </Text>
+                  </TouchableOpacity>
                 </View>
-                <Image
-                  source={{ uri: `${BASE_URL}/api/assets/${location.img_url}` }}
-                  style={styles.topPlacesImage}
+                <View style={styles.contentContainer}>
+                  <View style={styles.textContainer}>
+                    <Text style={styles.description}>{location.about}</Text>
+                    <Text style={styles.notToBeMissedBold}>
+                      Not-to-be-Missed:{" "}
+                    </Text>
+                    <Text style={styles.notToBeMissed}>
+                      {location.additional_info}
+                    </Text>
+                    <View style={styles.rectangle} />
+                  </View>
+                  <Image
+                    source={{
+                      uri: location.img_url.startsWith("locations/")
+                        ? `${BASE_URL}/api/assets/${location.img_url}`
+                        : location.img_url, // Use the img_url directly if it’s an absolute URL
+                    }}
+                    style={styles.topPlacesImage}
                   />
+                </View>
               </View>
-            </View>
-          ))}
-        </View>
+            ))}
+          </View>
+        )}
       </ScrollView>
     </View>
   );
 };
-
 
 const styles = StyleSheet.create({
   container: {
@@ -347,6 +359,17 @@ const styles = StyleSheet.create({
     height: 110,
     borderRadius: 10,
     marginBottom: 15,
+  },
+  noLocationsContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 20,
+  },
+  noLocationsText: {
+    fontSize: 18,
+    color: "#006D77",
+    fontFamily: "Nunito_700Bold",
   },
 });
 
