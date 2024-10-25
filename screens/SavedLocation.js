@@ -23,6 +23,9 @@ import {
 import * as SplashScreen from "expo-splash-screen";
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { fetchSavedLocations } from "../api/locationAPI";
+import BASE_URL from "../config";
 
 const { width: screenWidth } = Dimensions.get("window");
 const { height: screenHeight } = Dimensions.get("window");
@@ -43,11 +46,10 @@ const SavedLocation = () => {
   const navigation = useNavigation(); // Get the navigation object
 
   // State to track if each item is saved
-  const [savedItems, setSavedItems] = useState({
-    singaporeZoo: false,
-    singaporeCableCar: false,
-    megaAdventurePark: false,
-  });
+  // State to store location data and save states
+  const [locations, setLocations] = useState([]);
+  const [savedItems, setSavedItems] = useState({});
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (fontsLoaded) {
@@ -55,15 +57,41 @@ const SavedLocation = () => {
     }
   }, [fontsLoaded]);
 
+  // Fetch locations from API on component mount
+  useEffect(() => {
+    const loadLocations = async () => {
+      try {
+        const storedUserData = await AsyncStorage.getItem("userData");
+        const userData = JSON.parse(storedUserData);
+
+        const user_id = userData.id;
+
+        const data = await fetchSavedLocations(user_id);
+        setLocations(data);
+
+        const initialSavedItems = data.reduce((acc, location) => {
+          acc[location.id] = true; // TODO: check with saved-location db
+          return acc;
+        }, {});
+        setSavedItems(initialSavedItems);
+      } catch (error) {
+        console.error("Error fetching locations:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadLocations();
+  }, []);
+
   // Function to toggle the save state for a specific item
-  const toggleSave = (item) => {
+  const toggleSave = (id) => {
     setSavedItems((prevState) => ({
       ...prevState,
-      [item]: !prevState[item],
+      [id]: !prevState[id],
     }));
   };
 
-  if (!fontsLoaded) {
+  if (loading || !fontsLoaded) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#006D77" />
@@ -87,144 +115,50 @@ const SavedLocation = () => {
           </TouchableOpacity>
         </View>
 
-        {/* Information on Singapore Zoo */}
 
-        <View style={styles.infoContainer}>
-          <View style={styles.infoHeader}>
-            <Image
-              source={require("../assets/icons/LocationIcon.png")}
-              style={styles.icon}
-            />
-            <Text style={styles.infoTitle}>Singapore Zoo</Text>
-            <TouchableOpacity
-              style={styles.saveButton}
-              onPress={() => toggleSave("singaporeZoo")}
-            >
-              <Image
-                source={
-                  savedItems.singaporeZoo
-                    ? require("../assets/icons/SavingIcon.png")
-                    : require("../assets/icons/ToSave.png")
-                }
-                style={styles.saveIcon}
-              />
-              <Text style={styles.saveText}>
-                {savedItems.singaporeZoo ? "Saved" : "Save"}
-              </Text>
-            </TouchableOpacity>
-          </View>
 
-          <View style={styles.contentContainer}>
-            <View style={styles.textContainer}>
-              <Text style={styles.description}>
-                Open concept enclosures and immersive wildlife make it a
-                must-see for nature-lovers!
-              </Text>
-              <Text style={styles.notToBeMissedBold}>Not-to-be-Missed: </Text>
-              <Text style={styles.notToBeMissed}>
-                Witness adorable performances from talented animals and get up
-                close during feeding sessions
-              </Text>
-              <View style={styles.rectangle} />
+        {/* Populate data from API */}
+
+        <View style={styles.bottomContainer}>
+          {locations.map((location) => (
+            <View key={location.id} style={styles.infoContainer}>
+              <View style={styles.infoHeader}>
+                <Image
+                  source={require("../assets/icons/LocationIcon.png")}
+                  style={styles.icon}
+                />
+                <Text style={styles.infoTitle}>{location.location_name}</Text>
+                <TouchableOpacity
+                  style={styles.saveButton}
+                  onPress={() => toggleSave(location.id)}
+                >
+                  <Image
+                    source={
+                      savedItems[location.id]
+                        ? require("../assets/icons/SavingIcon.png")
+                        : require("../assets/icons/ToSave.png")
+                    }
+                    style={styles.saveIcon}
+                  />
+                  <Text style={styles.saveText}>
+                    {savedItems[location.id] ? "Saved" : "Save"}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.contentContainer}>
+                <View style={styles.textContainer}>
+                  <Text style={styles.description}>{location.about}</Text>
+                  <Text style={styles.notToBeMissedBold}>Not-to-be-Missed: </Text>
+                  <Text style={styles.notToBeMissed}>{location.additional_info}</Text>
+                  <View style={styles.rectangle} />
+                </View>
+                <Image
+                  source={{ uri: `${BASE_URL}/api/assets/${location.img_url}` }}
+                  style={styles.topPlacesImage}
+                  />
+              </View>
             </View>
-            <Image
-              source={require("../assets/SingaporeZoo.png")}
-              style={styles.topPlacesImage}
-            />
-          </View>
-        </View>
-
-        {/* Information on Singapore Cable Car */}
-
-        <View style={styles.infoContainer}>
-          <View style={styles.infoHeader}>
-            <Image
-              source={require("../assets/icons/LocationIcon.png")}
-              style={styles.icon}
-            />
-            <Text style={styles.infoTitle}>Singapore Cable Car</Text>
-            <TouchableOpacity
-              style={styles.saveButton}
-              onPress={() => toggleSave("singaporeCableCar")}
-            >
-              <Image
-                source={
-                  savedItems.singaporeCableCar
-                    ? require("../assets/icons/SavingIcon.png")
-                    : require("../assets/icons/ToSave.png")
-                }
-                style={styles.saveIcon}
-              />
-              <Text style={styles.saveText}>
-                {savedItems.singaporeCableCar ? "Saved" : "Save"}
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.contentContainer}>
-            <View style={styles.textContainer}>
-              <Text style={styles.description}>
-                Take in the splendour of Singapore’s cityscape through this
-                30-minute cable car ride.
-              </Text>
-              <Text style={styles.notToBeMissedBold}>Not-to-be-Missed: </Text>
-              <Text style={styles.notToBeMissed}>
-                Enjoy a romantic 4-course, private cable car dining experience
-                with your partner.
-              </Text>
-              <View style={styles.rectangle} />
-            </View>
-            <Image
-              source={require("../assets/SingaporeCableCar.png")}
-              style={styles.topPlacesImage}
-            />
-          </View>
-        </View>
-
-        {/* Information on Mega Adventure Park */}
-        <View style={styles.infoContainer}>
-          <View style={styles.infoHeader}>
-            <Image
-              source={require("../assets/icons/LocationIcon.png")}
-              style={styles.icon}
-            />
-            <Text style={styles.infoTitle}>Mega Adventure Park</Text>
-            <TouchableOpacity
-              style={styles.saveButton}
-              onPress={() => toggleSave("megaAdventurePark")}
-            >
-              <Image
-                source={
-                  savedItems.megaAdventurePark
-                    ? require("../assets/icons/SavingIcon.png")
-                    : require("../assets/icons/ToSave.png")
-                }
-                style={styles.saveIcon}
-              />
-              <Text style={styles.saveText}>
-                {savedItems.megaAdventurePark ? "Saved" : "Save"}
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.contentContainer}>
-            <View style={styles.textContainer}>
-              <Text style={styles.description}>
-                Feeling daring? With 4 activities to choose from, embark on the
-                highest adventure in Singapore!
-              </Text>
-              <Text style={styles.notToBeMissedBold}>Not-to-be-Missed: </Text>
-              <Text style={styles.notToBeMissed}>
-                Take MegaZip - Asia’s #1 zipline above the jungle, across the
-                beach and out to the island.
-              </Text>
-              <View style={styles.rectangle} />
-            </View>
-            <Image
-              source={require("../assets/MegaAdventurePark.png")}
-              style={styles.topPlacesImage}
-            />
-          </View>
+          ))}
         </View>
       </ScrollView>
     </View>
