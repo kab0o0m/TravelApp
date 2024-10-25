@@ -1,4 +1,5 @@
 import { StyleSheet, Text, View, SafeAreaView } from "react-native";
+import Toast from 'react-native-toast-message';
 
 import Startpage from "./screens/Startpage";
 import AuthCheck from "./screens/AuthCheck";
@@ -45,6 +46,7 @@ export default function App() {
         <Stack.Screen name="SavedLocation" component={SavedLocation} options={{ headerShown: false }}/>
         <Stack.Screen name="Test" component={Test} options={{ headerShown: false }} />
       </Stack.Navigator>
+      <Toast />
     </NavigationContainer>
   );
 }

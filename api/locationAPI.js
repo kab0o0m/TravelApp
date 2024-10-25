@@ -47,7 +47,7 @@ export const fetchSavedLocations = async (user_id) => {
     
 
     const result = await response.json();
-    
+
     return result.savedLocations; // Assuming saved locations are under "saved-locations"
 
   } catch (error) {
@@ -56,14 +56,14 @@ export const fetchSavedLocations = async (user_id) => {
   }
 };
 
-export const removeSavedLocation = async (savedLocationId) => {
+export const removeSavedLocation = async (user_id, location_id) => {
   try {
     const response = await fetch(`${BASE_URL}/api/remove-saved-location`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ id: savedLocationId }), // Send the saved_location ID
+      body: JSON.stringify({ user_id, location_id }), // Send the saved_location ID
     });
 
     if (!response.ok) {
@@ -72,5 +72,25 @@ export const removeSavedLocation = async (savedLocationId) => {
   } catch (error) {
     console.error("Error removing saved location:", error);
     throw error;
+  }
+};
+
+
+export const addSavedLocation = async (user_id, location_id) => {
+  try {
+    const response = await fetch(`${BASE_URL}/api/add-saved-location`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ user_id, location_id }), // Send user_id and location_id
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to add saved location: ${response.status}`);
+    }
+  } catch (error) {
+    console.error("Error adding saved location:", error);
+    throw error; // Re-throw error to handle it in the calling function
   }
 };

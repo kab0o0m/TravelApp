@@ -11,6 +11,7 @@ import {
   ScrollView,
   Alert,
 } from "react-native";
+import Toast from "react-native-toast-message";
 import {
   useFonts,
   Nunito_400Regular,
@@ -25,7 +26,11 @@ import * as SplashScreen from "expo-splash-screen";
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { fetchSavedLocations, removeSavedLocation } from "../api/locationAPI";
+import {
+  fetchSavedLocations,
+  removeSavedLocation,
+  addSavedLocation,
+} from "../api/locationAPI";
 import BASE_URL from "../config";
 
 const { width: screenWidth } = Dimensions.get("window");
@@ -92,16 +97,35 @@ const SavedLocation = () => {
   }, []);
 
   // Function to toggle the save state for a specific item
-  const toggleSave = (id) => {
-    if (savedItems[id]) {
+  const toggleSave = async (location_id) => {
+    const userId = await AsyncStorage.getItem("userData"); // Get the user ID from AsyncStorage
+    const user = JSON.parse(userId);
+
+    if (!user?.id) {
+      Alert.alert("User ID missing", "Unable to find user information.");
+      return;
+    }
+
+    if (savedItems[location_id]) {
+      // If the location is already saved, unsave it (remove from saved locations)
       if (skipConfirmation) {
         // Directly remove without showing alert if skipConfirmation is enabled
         setSavedItems((prevState) => ({
           ...prevState,
-          [id]: false,
+          [location_id]: false,
         }));
-        // Call the API to remove from saved locations
-        removeSavedLocation(id).catch((error) => console.error(error));
+        try {
+          await removeSavedLocation(user.id, location_id); // Call the remove API
+          Toast.show({
+            type: "error",
+            text1: "Removed",
+            text2: "Location has been removed from your saved list.",
+            position: "bottom",
+          });
+        } catch (error) {
+          console.error("Error removing saved location:", error);
+          Alert.alert("Error", "There was a problem removing the location.");
+        }
       } else {
         // Show confirmation alert if skipConfirmation is disabled
         Alert.alert(
@@ -117,31 +141,76 @@ const SavedLocation = () => {
                 await AsyncStorage.setItem("skipConfirmation", "true");
                 setSavedItems((prevState) => ({
                   ...prevState,
-                  [id]: false,
+                  [location_id]: false,
                 }));
+                try {
+                  await removeSavedLocation(user.id, location_id); // Call the remove API
+                  Toast.show({
+                    type: "error",
+                    text1: "Removed",
+                    text2: "Location has been removed from your saved list.",
+                    position: "bottom",
+                  });
+                } catch (error) {
+                  console.error("Error removing saved location:", error);
+                  Alert.alert(
+                    "Error",
+                    "There was a problem removing the location."
+                  );
+                }
               },
             },
             {
               text: "Remove",
               style: "destructive",
-              onPress: () => {
+              onPress: async () => {
                 setSavedItems((prevState) => ({
                   ...prevState,
-                  [id]: false,
+                  [location_id]: false,
                 }));
-                // Call the API to remove from saved locations
-                removeSavedLocation(id).catch((error) => console.error(error));
+                try {
+                  await removeSavedLocation(user.id, location_id); // Call the remove API
+                  Toast.show({
+                    type: "error",
+                    text1: "Removed",
+                    text2: "Location has been removed from your saved list.",
+                    position: "bottom",
+                  });
+                } catch (error) {
+                  console.error("Error removing saved location:", error);
+                  Alert.alert(
+                    "Error",
+                    "There was a problem removing the location."
+                  );
+                }
               },
             },
           ]
         );
       }
     } else {
-      // Add to saved items without confirmation
+      // If the location is not saved, save it (add to saved locations)
       setSavedItems((prevState) => ({
         ...prevState,
-        [id]: true,
+        [location_id]: true,
       }));
+      try {
+        await addSavedLocation(user.id, location_id); // Call the add API
+        Toast.show({
+          type: "success",
+          text1: "Saved",
+          text2: "Location has been saved to your list.",
+          position: "bottom",
+        });
+      } catch (error) {
+        console.error("Error saving location:", error);
+        Alert.alert("Error", "There was a problem saving the location.");
+        // Revert the saved state if there was an error
+        setSavedItems((prevState) => ({
+          ...prevState,
+          [location_id]: false,
+        }));
+      }
     }
   };
 
@@ -155,20 +224,20 @@ const SavedLocation = () => {
 
   return (
     <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollViewContent}>
-        <View style={styles.headerContainer}>
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => navigation.navigate("Home")}
-          >
-            <Image
-              source={require("../assets/icons/BackArrow.png")}
-              style={styles.arrowIcon}
-            />
-            <Text style={styles.backText}>Saved Locations</Text>
-          </TouchableOpacity>
-        </View>
+      <View style={styles.headerContainer}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.navigate("Account")}
+        >
+          <Image
+            source={require("../assets/icons/BackArrow.png")}
+            style={styles.arrowIcon}
+          />
+        </TouchableOpacity>
+        <Text style={styles.backText}>Saved Locations</Text>
+      </View>
 
+      <ScrollView contentContainerStyle={styles.scrollViewContent}>
         {/* Populate data from API */}
         {locations.length === 0 ? (
           <View style={styles.noLocationsContainer}>
@@ -238,7 +307,6 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   scrollViewContent: {
-    flex: 1,
     paddingBottom: 20,
     marginHorizontal: 25,
     marginTop: 10,
@@ -249,23 +317,25 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   headerContainer: {
+    flexDirection: "row",
+    alignItems: "center",
     position: "relative",
-    marginBottom: 10,
+    marginBottom: 12,
+    marginHorizontal: 25,
   },
   backButton: {
     flexDirection: "row",
     alignItems: "center",
   },
   arrowIcon: {
-    width: 38,
-    height: 38,
+    width: 35,
+    height: 35,
   },
   backText: {
     color: "#3A4646",
     fontSize: 24,
     fontFamily: "Nunito_700Bold",
-    marginLeft: 12,
-    top: 0.2,
+    marginLeft: 14,
   },
   header: {
     fontSize: 24,

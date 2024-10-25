@@ -226,7 +226,7 @@ const LocationSearch = () => {
   const navigation = useNavigation();
 
   // Animated value to control the search bar position
-  const searchBarY = useRef(new Animated.Value(100)).current; // Starts at Y offset of 100
+  const searchBarY = useRef(new Animated.Value(120)).current; // Starts at Y offset of 100
 
   // This useEffect hook will animate the search bar to the top
   useEffect(() => {
@@ -336,7 +336,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     position: "absolute", // To allow it to animate from any Y position
     zIndex: 1, // Ensure it's above other content
-    marginTop: 50,
+    marginTop: 10,
   },
   searchIcon: {
     width: 25,
