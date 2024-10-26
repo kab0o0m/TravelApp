@@ -93,8 +93,8 @@ const CustomCalendar = ({ onDateSelect }) => {
       newMarkedDates[day.dateString] = {
         selected: true,
         startingDay: true,
-        color: "#FFA07A",
-        textColor: "#fff",
+        color: "#E5E6E1",
+        textColor: "#000",
         borderRadius: 8,
       };
       setSelectedRange({ startDate: formatDate(day.dateString), endDate: "" });
@@ -110,7 +110,7 @@ const CustomCalendar = ({ onDateSelect }) => {
       rangeDates.forEach((date, index) => {
         newMarkedDates[date] = {
           selected: true,
-          color: "#FFA07A",
+          color: "#D9D9D9",
           textColor: "#000",
           ...(index === 0 ? { startingDay: true } : {}),
           ...(index === rangeDates.length - 1 ? { endingDay: true, borderRadius: 8 } : {}),
@@ -153,7 +153,6 @@ const CustomCalendar = ({ onDateSelect }) => {
           todayTextColor: "#FF4500",
           arrowColor: "#333",
           monthTextColor: "#333",
-          textDayFontWeight: "bold",
           textDayFontSize: 22,
           textMonthFontSize: 20,
           textMonthFontWeight: "bold",

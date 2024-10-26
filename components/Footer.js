@@ -12,19 +12,19 @@ const Footer = () => {
   return (
     <View style={styles.footerContainer}>
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Home")}>
-        <Image source={HomeIcon} style={styles.image} resizeMode="cover" />
+        <Image source={HomeIcon} style={styles.image} resizeMode="contain" />
         <Text style={styles.buttonText}>Home</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.button}>
-        <Image source={BudgetIcon} style={styles.image} resizeMode="cover" />
+        <Image source={BudgetIcon} style={styles.image} resizeMode="contain" />
         <Text style={styles.buttonText}>Budget</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Planner")}>
-        <Image source={PlannerIcon} style={styles.image} resizeMode="cover" />
+        <Image source={PlannerIcon} style={styles.image} resizeMode="contain" />
         <Text style={styles.buttonText}>Planner</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Account")}>
-        <Image source={ProfileIcon} style={styles.image} resizeMode="cover" />
+        <Image source={ProfileIcon} style={styles.image} resizeMode="contain" />
         <Text style={styles.buttonText}>Account</Text>
       </TouchableOpacity>
     </View>
@@ -35,11 +35,16 @@ const styles = StyleSheet.create({
   footerContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
-    backgroundColor: "#f8f8f8",
+    backgroundColor: "#fff",
     paddingVertical: 20,
     borderTopWidth: 1,
     borderTopColor: "#ddd",
     paddingTop: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: -3 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 5, // For Android shadow
   },
   button: {
     flex: 1,
@@ -49,6 +54,11 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 16,
     color: "#333",
+  },
+  image: {
+    width: 24,
+    height: 24,
+    marginBottom: 5,
   },
 });
 
