@@ -27,7 +27,11 @@ export default function App() {
         <Stack.Screen name="AuthCheck" component={AuthCheck} options={{ headerShown: false }} />
         <Stack.Screen name="Startpage" component={Startpage} options={{ headerShown: false }} />
         <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
-        <Stack.Screen name="HomeFeatured" component={HomeFeatured} options={{ headerShown: false }} />
+        <Stack.Screen
+          name="HomeFeatured"
+          component={HomeFeatured}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen name="HomePopular" component={HomePopular} options={{ headerShown: false }} />
         <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
         <Stack.Screen name="Register" component={Register} options={{ headerShown: false }} />
@@ -37,8 +41,16 @@ export default function App() {
         <Stack.Screen name="EditProfile" component={EditProfile} options={{ headerShown: false }} />
         <Stack.Screen name="ResetPW" component={ResetPW} options={{ headerShown: false }} />
         <Stack.Screen name="Planner" component={Planner} options={{ headerShown: false }} />
-        <Stack.Screen name="PlannerNewTrip" component={PlannerNewTrip} options={{ headerShown: false }} />
-        <Stack.Screen name="LocationSearch" component={LocationSearch} options={{ headerShown: false }}/>
+        <Stack.Screen
+          name="PlannerNewTrip"
+          component={PlannerNewTrip}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="LocationSearch"
+          component={LocationSearch}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen name="Test" component={Test} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>

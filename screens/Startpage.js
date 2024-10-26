@@ -62,7 +62,7 @@ const Startpage = () => {
           <Text style={styles.subHeader}>Mapp!t</Text>
         </View>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Login")}>
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Planner")}>
             <Text style={styles.buttonText}>Start My Journey</Text>
           </TouchableOpacity>
         </View>

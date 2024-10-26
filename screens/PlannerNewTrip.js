@@ -1,13 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  TextInput,
-  Modal,
-  Image,
-} from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Modal, Image } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import CustomCalendar from "../components/CustomCalendar"; // Import your CustomCalendar
 import PlannerLocationSearchbar from "../components/PlannerLocationSearchbar";
@@ -50,7 +42,7 @@ const PlannerNewTrip = ({ route }) => {
     setDestination(location.location_name);
     setDestinationID(location.id);
     closeSearchBar();
-  }
+  };
 
   const handleConfirmTrip = () => {
     if (destination && selectedDate) {
@@ -64,10 +56,7 @@ const PlannerNewTrip = ({ route }) => {
   return (
     <View style={styles.container}>
       {/* Top Left X Button */}
-      <TouchableOpacity
-        style={styles.exitButton}
-        onPress={() => navigation.navigate("Planner")}
-      >
+      <TouchableOpacity style={styles.exitButton} onPress={() => navigation.navigate("Planner")}>
         <Image source={require("../assets/Cross.png")} />
       </TouchableOpacity>
 
@@ -80,58 +69,45 @@ const PlannerNewTrip = ({ route }) => {
       {/* Input Fields */}
       <View style={styles.inputContainer}>
         <TouchableOpacity onPress={openSearchBar} style={styles.input}>
-          <Text
-            style={[
-              styles.inputText,
-              { color: destination ? "#323232" : "#A9A9A9" },
-            ]}
-          >
+          <Text style={[styles.inputText, { color: destination ? "#323232" : "#A9A9A9" }]}>
             {destination || "Where to?"}
           </Text>
         </TouchableOpacity>
 
         {/* Date Input Field */}
         <TouchableOpacity onPress={openCalendar} style={styles.input}>
-          <Text
-            style={[
-              styles.inputText,
-              { color: selectedDate ? "#323232" : "#A9A9A9" },
-            ]}
-          >
+          <Text style={[styles.inputText, { color: selectedDate ? "#323232" : "#A9A9A9" }]}>
             {selectedDate || "Date?"}
           </Text>
         </TouchableOpacity>
       </View>
 
       {/* Confirm Button */}
-      <TouchableOpacity
-        onPress={handleConfirmTrip}
-        style={styles.confirmButton}
-      >
+      <TouchableOpacity onPress={handleConfirmTrip} style={styles.confirmButton}>
         <Text style={styles.confirmButtonText}>Confirm Trip</Text>
       </TouchableOpacity>
 
       {/* Calendar Modal */}
       <Modal visible={isCalendarVisible} animationType="slide">
         <View style={styles.modalContainer}>
-          <CustomCalendar
-            onDateSelect={handleDateSelection} // Pass the handler to the CustomCalendar
-          />
-          <TouchableOpacity onPress={closeCalendar} style={styles.closeButton}>
-            <Text style={styles.closeButtonText}>Close Calendar</Text>
-          </TouchableOpacity>
+          {/* Calendar and Close Button Container */}
+          <View style={styles.calendarWithClose}>
+            {/* Calendar */}
+            <CustomCalendar onDateSelect={handleDateSelection} />
+
+          </View>
         </View>
       </Modal>
 
       {/* Searchbar Modal */}
-      <Modal visible={isSearchbarVisible}>
+      {/* <Modal visible={isSearchbarVisible}>
         <View style={styles.modalSearchContainer}>
           <PlannerLocationSearchbar
             onLocationSelect={handleLocationSelection}
             onClose={closeSearchBar}
           />
         </View>
-      </Modal>
+      </Modal> */}
     </View>
   );
 };
@@ -199,12 +175,22 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    padding: 0,
+    backgroundColor: "#fff",
   },
-  modalSearchContainer: {
-    flex: 1,
+
+  calendarContainer: {
+    width: "100%",
+    height: "80%",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
+  },
+  closeButtonText: {
+    color: "#fff",
+    fontSize: 18,
   },
   closeButton: {
-    marginTop: 20,
     backgroundColor: "#F47966",
     padding: 15,
     borderRadius: 10,
