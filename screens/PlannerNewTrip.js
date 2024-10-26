@@ -3,6 +3,9 @@ import { View, Text, StyleSheet, TouchableOpacity, TextInput, Modal, Image } fro
 import { useNavigation } from "@react-navigation/native";
 import CustomCalendar from "../components/CustomCalendar"; // Import your CustomCalendar
 import PlannerLocationSearchbar from "../components/PlannerLocationSearchbar";
+import { LogBox } from "react-native";
+
+LogBox.ignoreLogs(["Non-serializable values were found in the navigation state"]);
 
 const PlannerNewTrip = ({ route }) => {
   const navigation = useNavigation();
@@ -94,7 +97,6 @@ const PlannerNewTrip = ({ route }) => {
           <View style={styles.calendarWithClose}>
             {/* Calendar */}
             <CustomCalendar onDateSelect={handleDateSelection} />
-
           </View>
         </View>
       </Modal>

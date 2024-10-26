@@ -12,7 +12,8 @@ import Startpagebackground from "../assets/Startpagebackground.png";
 import { useNavigation } from "@react-navigation/native";
 import { useState, useEffect } from "react";
 import Chatbot from "./Chatbot";
-import FrogIcon from "../assets/FrogHead.png";
+// import FrogIcon from "../assets/FrogHead.png";
+import FrogIcon from "../assets/FrogIcon.png";
 import ArrowLeft from "../assets/ArrowLeft.png";
 import plane from "../assets/Plane.png";
 import background from "../assets/background.png";
@@ -38,7 +39,7 @@ const Startpage = () => {
     <View style={styles.container}>
       <ImageBackground source={Startpagebackground} style={styles.backgroundImage}>
         <TouchableOpacity style={styles.iconContainer} onPress={toggleModal}>
-          <Image source={FrogIcon} style={styles.icon} />
+          <Image source={FrogIcon} style={styles.icon} resizeMode="contain" />
         </TouchableOpacity>
 
         <Modal
@@ -128,7 +129,7 @@ const styles = StyleSheet.create({
   },
   iconContainer: {
     position: "absolute",
-    backgroundColor: "#D9D9D9",
+    backgroundColor: "#002C30",
     padding: 10,
     borderRadius: 30,
     zIndex: 999,
