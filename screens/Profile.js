@@ -9,9 +9,9 @@ import {
   TextInput,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import ProfilePicture from "../assets/ProfilePicture.png";
+import ProfilePicture from "../assets/icons/ProfilePicture.png";
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import ArrowLeft from "../assets/ArrowLeft.png";
+import ArrowLeft from "../assets/icons/ArrowLeft.png";
 import { fetchUserData } from "../api/authAPI";
 
 const Profile = () => {

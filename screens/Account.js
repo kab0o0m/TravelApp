@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
-import ProfilePicture from "../assets/ProfilePicture.png";
+import ProfilePicture from "../assets/icons/ProfilePicture.png";
 import Footer from "../components/Footer";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -65,6 +65,9 @@ const Account = () => {
             onPress={() => navigation.navigate("Profile")}
           >
             <Text style={styles.accountItemText}>Personal Information</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.accountItem} onPress={() => navigation.navigate("SavedLocation")}>
+            <Text style={styles.accountItemText}>Saved Locations</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.accountItem}>
             <Text style={styles.accountItemText}>My Bookings</Text>

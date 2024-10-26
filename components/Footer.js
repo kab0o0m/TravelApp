@@ -1,9 +1,9 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
-import HomeIcon from "../assets/Home.png";
-import BudgetIcon from "../assets/Budget.png";
-import PlannerIcon from "../assets/Planner.png";
-import ProfileIcon from "../assets/Profile.png";
+import HomeIcon from "../assets/icons/Home.png";
+import BudgetIcon from "../assets/icons/Budget.png";
+import PlannerIcon from "../assets/icons/Planner.png";
+import ProfileIcon from "../assets/icons/Profile.png";
 import { useNavigation } from "@react-navigation/native";
 
 const Footer = () => {

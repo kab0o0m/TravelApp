@@ -59,8 +59,11 @@ const PlannerNewTrip = ({ route }) => {
   return (
     <View style={styles.container}>
       {/* Top Left X Button */}
-      <TouchableOpacity style={styles.exitButton} onPress={() => navigation.navigate("Planner")}>
-        <Image source={require("../assets/Cross.png")} />
+      <TouchableOpacity
+        style={styles.exitButton}
+        onPress={() => navigation.navigate("Planner")}
+      >
+        <Image source={require("../assets/icons/Cross.png")} />
       </TouchableOpacity>
 
       {/* Header */}

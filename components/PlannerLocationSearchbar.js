@@ -109,7 +109,7 @@ const PlannerLocationSearchbar = ({ onClose, onLocationSelect }) => {
           onPress={() => handleClearSearch(true)}
         >
           <Image
-            source={require("../assets/BackArrow.png")}
+            source={require("../assets/icons/BackArrow.png")}
             style={styles.searchIcon}
           />
         </TouchableOpacity>
@@ -126,7 +126,7 @@ const PlannerLocationSearchbar = ({ onClose, onLocationSelect }) => {
           style={styles.crossIconContainer}
         >
           <Image
-            source={require("../assets/Cross.png")}
+            source={require("../assets/icons/Cross.png")}
             style={styles.crossIcon}
           />
         </TouchableOpacity>
