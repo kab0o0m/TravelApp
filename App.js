@@ -31,7 +31,11 @@ export default function App() {
         <Stack.Screen name="AuthCheck" component={AuthCheck} options={{ headerShown: false }} />
         <Stack.Screen name="Startpage" component={Startpage} options={{ headerShown: false }} />
         <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
-        <Stack.Screen name="HomeFeatured" component={HomeFeatured} options={{ headerShown: false }} />
+        <Stack.Screen
+          name="HomeFeatured"
+          component={HomeFeatured}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen name="HomePopular" component={HomePopular} options={{ headerShown: false }} />
         <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
         <Stack.Screen name="Register" component={Register} options={{ headerShown: false }} />

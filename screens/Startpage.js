@@ -38,7 +38,7 @@ const Startpage = () => {
     <View style={styles.container}>
       <ImageBackground source={Startpagebackground} style={styles.backgroundImage}>
         <TouchableOpacity style={styles.iconContainer} onPress={toggleModal}>
-          <Image source={FrogIcon} style={styles.icon} />
+          <Image source={FrogIcon} style={styles.icon} resizeMode="contain" />
         </TouchableOpacity>
 
         <Modal
@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
   },
   iconContainer: {
     position: "absolute",
-    backgroundColor: "#D9D9D9",
+    backgroundColor: "#002C30",
     padding: 10,
     borderRadius: 30,
     zIndex: 999,

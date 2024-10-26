@@ -15,7 +15,8 @@ import { Card } from "react-native-paper";
 import Groq from "groq-sdk";
 import axios from "axios";
 import ArrowUp from "../assets/icons/ArrowUp.png";
-import FrogHead from "../assets/images/FrogHead.png";
+import pause from "../assets/pause.png";
+import FrogHead from "../assets/BigFrogHead.png";
 import { useNavigation } from "@react-navigation/native";
 import { GROQ_KEY } from "@env";
 
@@ -25,8 +26,7 @@ const Chatbot = () => {
   const [forecast, setForecast] = useState(null);
   const [date, setDate] = useState(null);
   const [latest, setLatest] = useState("");
-
-  const [schedule, setSchedule] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
 
   const initialMessage = "Hi, I'm Froggie, how can i help you today?";
 
@@ -89,20 +89,9 @@ const Chatbot = () => {
     Keyboard.dismiss();
   };
 
-  const extractEventDetails = (aiResponse) => {
-    const eventMatch = aiResponse.match(/Event: (.+?),/);
-    const dateMatch = aiResponse.match(/Date: (\d{2}-\d{2}-\d{4})/);
-    const timeMatch = aiResponse.match(/Time: (.+?)(?:$|\.)/);
-
-    return {
-      event: eventMatch ? eventMatch[1].trim() : "Untitled Event",
-      date: dateMatch ? dateMatch[1] : null,
-      time: timeMatch ? timeMatch[1].trim() : null,
-    };
-  };
-
   const handleSend = async () => {
     if (input.trim() === "") return;
+    setIsTyping(true);
     setMessages([...messages, { text: input, from: "user" }]);
     setInput("");
 
@@ -129,7 +118,7 @@ const Chatbot = () => {
         messages: [
           {
             role: "system",
-            content: `You are a Singapore travel planner to help users plan their day. Do not answer queries unrelated to Singapore. Today's date is: ${date}.The current forecast is: ${forecastString}. Only use forecast given, do not add in additional details such as temperature. Use the weather condition to give recommendations about the place that the user asks. Always include the current weather in your response and avoid providing uncertain or false information. Format any scheduling requests as follows: Event: '', Date: 'DD-MM-YYYY',  Time: 24-hour clock. Do not use markdown in your response.`,
+            content: `You are a Singapore travel planner to help users plan their day. Do not answer queries unrelated to Singapore. Today's date is: ${date}.The current forecast is: ${forecastString}. Only use forecast given, do not add in additional details such as temperature. Use the weather condition to give recommendations about the place that the user asks. Always include the current weather in your response and avoid providing uncertain or false information. Do not use markdown in your response.`,
           },
           { role: "user", content: input },
           ...groqMessages,
@@ -164,45 +153,12 @@ const Chatbot = () => {
         // Small delay to simulate typing effect (optional)
         await new Promise((resolve) => setTimeout(resolve, 50));
       }
+      setIsTyping(false);
     } catch (error) {
       console.error("Error fetching response:", error);
+      setIsTyping(false);
     }
   };
-
-  // const handleSchedule = async () => {
-  //   const groqMessages = messages.map((message) => ({
-  //     role: message.from === "user" ? "user" : "assistant",
-  //     content: message.text,
-  //   }));
-
-  //   // Add the current user input as the latest message in the chat history
-  //   groqMessages.push({ role: "user", content: input });
-  //   try {
-  //     const groq = new Groq({
-  //       apiKey: "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",
-  //       dangerouslyAllowBrowser: true,
-  //     });
-  //     const response = await groq.chat.completions.create({
-  //       messages: [
-  //         {
-  //           role: "system",
-  //           content: `You are a formatter to make user input into json object {"event": userEvent, "startDate": userStartDate, "endDate": userEndDate}. You will do nothing else but to format. Whole message will only contain the Json Object`,
-  //         },
-  //         { role: "user", content: input },
-  //         ...groqMessages,
-  //       ],
-
-  //       model: "llama3-8b-8192",
-  //     });
-  //     const jsonObject = response.choices[0].message.content;
-  //     console.log(jsonObject);
-  //     setSchedule(false);
-  //   } catch (error) {
-  //     console.error("Error fetching response:", error);
-  //   }
-
-  //   setSchedule(true);
-  // };
 
   return (
     <KeyboardAvoidingView
@@ -236,14 +192,9 @@ const Chatbot = () => {
           placeholderTextColor="#888"
         />
         <TouchableOpacity style={styles.sendButton} onPress={handleSend}>
-          <Image source={ArrowUp} />
+          <Image source={isTyping ? pause : ArrowUp} style={styles.arrow} resizeMode="contain" />
         </TouchableOpacity>
       </View>
-      {/* <View style={styles.scheduleContainer}>
-        <TouchableOpacity style={styles.scheduleButton} onPress={handleSchedule}>
-          <Text style={styles.scheduleText}>Schedule</Text>
-        </TouchableOpacity>
-      </View> */}
     </KeyboardAvoidingView>
   );
 };
@@ -282,7 +233,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
     borderBottomRightRadius: 25,
-    borderRadiusBottomRight: 0,
+    borderBottomLeftRadius: 0,
   },
   messageText: {
     fontSize: 16,
@@ -351,7 +302,7 @@ const styles = StyleSheet.create({
     padding: 10,
     height: 80,
     marginLeft: 15,
-    marginBottom: 0, // Remove margin to fit the schedule button closer
+    marginBottom: 20,
   },
   scheduleContainer: {
     marginTop: 10, // Adjust spacing between input and schedule button
@@ -369,6 +320,10 @@ const styles = StyleSheet.create({
   scheduleText: {
     color: "#FFF",
     fontSize: 16,
+  },
+  arrow: {
+    width: 20,
+    height: 20,
   },
 });
 
