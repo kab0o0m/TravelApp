@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View, SafeAreaView } from "react-native";
 import Toast from 'react-native-toast-message';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import Startpage from "./screens/Startpage";
 import AuthCheck from "./screens/AuthCheck";
@@ -11,14 +12,14 @@ import Profile from "./screens/Profile";
 import EditProfile from "./screens/EditProfile";
 import Home from "./screens/Home";
 import HomeFeatured from "./screens/HomeFeatured";
-import HomePopular from "./screens/HomePopular";
 import ResetPW from "./screens/ResetPW";
 import Planner from "./screens/Planner";
 import PlannerNewTrip from "./screens/PlannerNewTrip";
 import LocationSearch from "./screens/LocationSearch";
 import SavedLocation from "./screens/SavedLocation";
-
+import HomePopular from "./screens/HomePopular"
 import Test from "./screens/Test";
+import Expenses from "./screens/Expenses";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
@@ -26,8 +27,9 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 export default function App() {
   const Stack = createNativeStackNavigator();
   return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="AuthCheck">
+      <Stack.Navigator initialRouteName="Home">
         <Stack.Screen name="AuthCheck" component={AuthCheck} options={{ headerShown: false }} />
         <Stack.Screen name="Startpage" component={Startpage} options={{ headerShown: false }} />
         <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
@@ -49,9 +51,11 @@ export default function App() {
         <Stack.Screen name="LocationSearch" component={LocationSearch} options={{ headerShown: false }}/>
         <Stack.Screen name="SavedLocation" component={SavedLocation} options={{ headerShown: false }}/>
         <Stack.Screen name="Test" component={Test} options={{ headerShown: false }} />
+        <Stack.Screen name="Expenses" component={Expenses} options={{ headerShown: false }} />
       </Stack.Navigator>
       <Toast />
     </NavigationContainer>
+    </GestureHandlerRootView>
   );
 }
 
