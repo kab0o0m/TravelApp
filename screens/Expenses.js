@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, ScrollView } from 'react-native';
 import { useFonts, Nunito_400Regular, Nunito_700Bold } from '@expo-google-fonts/nunito';
 import { Picker } from '@react-native-picker/picker'; 
 import Button from "../components/Button"; 
 import Footer from "../components/Footer"; 
 import AddExpenseModal from './AddExpenseModal';
-import * as Progress from 'react-native-progress'; // Import progress bar library
+import * as Progress from 'react-native-progress';
+import RoundedSquareIcon from '../components/RoundedSquareIcon';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
@@ -16,33 +17,34 @@ const Expenses = () => {
   });
 
   const [selectedSortOption, setSelectedSortOption] = useState("date_latest");
-  const [expenses, setExpenses] = useState([]);
-  const [budget, setBudget] = useState(500); // Example budget value
-  const [totalSpent, setTotalSpent] = useState(100); // Example spent value for progress bar
+  const [expenses, setExpenses] = useState([
+    { id: 1, category: 'Food', title: 'Lunch', price: 30, date: '25 May 2024' },
+    { id: 2, category: 'Transport', title: 'Taxi', price: 20, date: '24 May 2024' },
+    { id: 3, category: 'Shopping', title: 'Groceries', price: 50, date: '23 May 2024' },
+  ]);
+  
+  const [budget, setBudget] = useState(500);
+  const [totalSpent, setTotalSpent] = useState(100);
   const [modalVisible, setModalVisible] = useState(false);
 
   if (!fontsLoaded) {
     return null;
   }
 
-  // Function to handle adding a new expense
   const handleAddExpense = (expense) => {
     setExpenses([...expenses, expense]);
   };
 
-  // Calculate progress as a percentage of budget used
   const progress = budget ? totalSpent / budget : 0;
 
   return (
     <View style={styles.container}>
       <Text style={styles.header}>EXPENSES</Text>
 
-      {/* Rectangular Box (Green) */}
       <View style={styles.box}>
         <View style={styles.innerBox}>
           <Text style={styles.amount}>SGD {totalSpent.toFixed(2)}</Text>
 
-          {/* Conditional Rendering for Budget with Progress Bar */}
           {budget === null ? (
             <Text style={styles.budgetText}>Set a budget</Text>
           ) : (
@@ -56,9 +58,7 @@ const Expenses = () => {
                 borderWidth={0}
               />
               <Text style={styles.progressText}>BUDGET: SGD {budget.toFixed(2)}</Text>
-
             </View>
-            
           )}
 
           <Button
@@ -77,8 +77,6 @@ const Expenses = () => {
         </View>
       </View>
 
-      {/* Other components remain unchanged */}
-      {/* Overlay Rectangular Box (White) */}
       <View style={styles.whiteBox}>
         <Text style={styles.topLeftText}>Your Expenses</Text>
 
@@ -97,7 +95,31 @@ const Expenses = () => {
         {expenses.length === 0 ? (
           <Text style={styles.noExpenses}>You haven’t added any expenses yet.</Text>
         ) : (
-          <Text>B</Text> // Replace this with actual expenses display logic
+          <ScrollView>
+            {expenses.map((expense) => (
+              <View key={expense.id} style={styles.expenseCard}>
+                <View style={styles.expenseDetailsContainer}>
+                  <RoundedSquareIcon 
+                    iconName="cash-outline" // Replace with the desired icon name
+                    iconSize={screenHeight*0.03}
+                    iconColor="#FFFFFF"
+                    backgroundColor="#006D77"
+                    size={screenHeight*0.07}
+                  />
+                  <View style={styles.expenseTextContainer}>
+                    <View style={styles.expenseRow}>
+                      <Text style={styles.expenseCategory}>{expense.category}</Text>
+                      <Text style={styles.expensePrice}>SGD {expense.price.toFixed(2)}</Text>
+                    </View>
+                    <View style={styles.expenseRow}>
+                      <Text style={styles.expenseTitle}>{expense.title}</Text>
+                      <Text style={styles.expenseDate}>{expense.date}</Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            ))}
+          </ScrollView>
         )}
       </View>
 
@@ -117,7 +139,6 @@ const Expenses = () => {
         <Footer />
       </View>
 
-      {/* Add Expense Modal */}
       <AddExpenseModal 
         visible={modalVisible} 
         onClose={() => setModalVisible(false)} 
@@ -185,7 +206,7 @@ const styles = StyleSheet.create({
     right: 0,
     paddingHorizontal: screenWidth * 0.05,
     paddingTop: screenHeight * 0.03, 
-    height: screenHeight * 0.65, 
+    height: screenHeight * 0.475, 
     backgroundColor: '#FCF7F7', 
     borderTopLeftRadius: screenWidth * 0.05, 
     borderTopRightRadius: screenWidth * 0.05, 
@@ -226,5 +247,43 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 0,
     width: "100%",
+  },
+  expenseCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 10,
+    padding: screenHeight * 0.02,
+    marginVertical: screenHeight * 0.01,
+    width: '100%',
+    elevation: 3, // Add shadow effect for Android
+  },
+  expenseCategory: {
+    fontSize: screenHeight * 0.025,
+    fontFamily: 'Nunito_700Bold',
+  },
+  expenseTitle: {
+    fontSize: screenHeight * 0.02,
+    fontFamily: 'Nunito_400Regular',
+  },
+  expensePrice: {
+    fontSize: screenHeight * 0.025,
+    fontFamily: 'Nunito_700Bold',
+  },
+  expenseDetailsContainer: {
+    flexDirection: 'row', // Align items in a row
+    alignItems: 'center', // Center vertically
+  },
+  expenseTextContainer: {
+    marginLeft: screenWidth * 0.04, // Space between icon and text
+    width: screenWidth*0.625,
+  },
+  expenseRow: {
+    flexDirection: 'row', // Align items in a row
+    justifyContent: 'space-between', // Space between items
+    alignItems: 'center', // Center vertically
+    marginVertical: screenHeight * 0.005, // Space between rows
+  },
+  expenseDate: {
+    fontSize: screenHeight * 0.02,
+    fontFamily: 'Nunito_400Regular',
   },
 });
