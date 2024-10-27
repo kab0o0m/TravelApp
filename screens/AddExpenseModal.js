@@ -6,19 +6,19 @@ import RoundedSquareIcon from '../components/RoundedSquareIcon';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 const scaleFont = (size) => (screenWidth / 375) * size;
-const iconSize = screenWidth * 0.20; // Slightly larger width for each icon
+const iconSize = screenWidth * 0.20;
 
 const iconData = [
-    { id: 'home', iconName: 'home', backgroundColor: '#4A90E2', label: 'Home' },
-    { id: 'car', iconName: 'car', backgroundColor: '#F5A623', label: 'Transportation' },
-    { id: 'cart', iconName: 'cart', backgroundColor: '#50E3C2', label: 'Shopping' },
-    { id: 'restaurant', iconName: 'restaurant', backgroundColor: '#B8E986', label: 'Dining Out' },
-    { id: 'airplane', iconName: 'airplane', backgroundColor: '#9013FE', label: 'Travel' },
-    { id: 'heart', iconName: 'heart', backgroundColor: '#D0021B', label: 'Health & Wellness' },
-    { id: 'paw', iconName: 'paw', backgroundColor: '#F8E71C', label: 'Pets' },
-    { id: 'game-controller', iconName: 'game-controller', backgroundColor: '#417505', label: 'Entertainment' },
-];
+    { id: 'shopping', iconName: 'cart', backgroundColor: '#EEF4F8', iconColor: '#81B2CA', label: 'Shopping' }, 
+    { id: 'lodging', iconName: 'home', backgroundColor: '#faeee6', iconColor: '#c46d33', label: 'Lodging' }, 
+    { id: 'food', iconName: 'restaurant', backgroundColor: '#EEEBED', iconColor: '#836F81', label: 'Food' }, 
+    { id: 'transport', iconName: 'bus', backgroundColor: '#E5EEED', iconColor: '#42887B', label: 'Transport' }, 
+    { id: 'activities', iconName: 'color-palette', backgroundColor: '#f5e4ef', iconColor: '#c957a5', label: 'Activities' }, 
+    { id: 'health', iconName: 'medkit', backgroundColor: '#faf6e1', iconColor: '#e3bc0e', label: 'Health' }, 
 
+    { id: 'souvenirs', iconName: 'gift', backgroundColor: '#f5e1e3', iconColor: '#c95762', label: 'Souvenirs' }, 
+    { id: 'others', iconName: 'albums', backgroundColor: '#e6fae7', iconColor: '#418743', label: 'Others' }, 
+];
 
 const AddExpenseModal = ({ visible, onClose, onAdd }) => {
     const [newExpense, setNewExpense] = useState("");
@@ -33,6 +33,10 @@ const AddExpenseModal = ({ visible, onClose, onAdd }) => {
             setSelectedCategory(null);
             onClose();
         }
+    };
+
+    const handleSelectCategory = (category) => {
+        setSelectedCategory(category);
     };
 
     return (
@@ -67,7 +71,7 @@ const AddExpenseModal = ({ visible, onClose, onAdd }) => {
                                     <RoundedSquareIcon
                                         iconName={item.iconName}
                                         iconSize={screenWidth * 0.08}
-                                        iconColor="#FFFFFF"
+                                        iconColor={item.iconColor} // Use the iconColor property here
                                         backgroundColor={selectedCategory === item.id ? '#FFCC00' : item.backgroundColor}
                                         size={iconSize}
                                     />
@@ -95,9 +99,8 @@ const AddExpenseModal = ({ visible, onClose, onAdd }) => {
     );
 };
 
-
 export default AddExpenseModal;
-export { iconData }; // Exporting the icon data
+export { iconData };
 
 const styles = StyleSheet.create({
     modalContainer: {
@@ -160,14 +163,14 @@ const styles = StyleSheet.create({
     iconGrid: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-        justifyContent: 'space-between', // Reduced space between icons
+        justifyContent: 'space-between',
         width: '100%',
         marginBottom: screenHeight * 0.02,
     },
     iconWrapper: {
         width: '24%', // Wider icons to fit 4 per row
         alignItems: 'center',
-        marginBottom: screenHeight * 0.03, // Reduced space between rows
+        marginBottom: screenHeight * 0.03,
     },
     iconLabel: {
         fontSize: scaleFont(12),
