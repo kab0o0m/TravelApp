@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions, Toucha
 import Button from '../components/Button';
 import GrayLine from '../components/GrayLine';
 import RoundedSquareIcon from '../components/RoundedSquareIcon';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 const scaleFont = (size) => (screenWidth / 375) * size;
@@ -15,7 +16,6 @@ const iconData = [
     { id: 'transport', iconName: 'bus', backgroundColor: '#E5EEED', iconColor: '#42887B', label: 'Transport' }, 
     { id: 'activities', iconName: 'color-palette', backgroundColor: '#f5e4ef', iconColor: '#c957a5', label: 'Activities' }, 
     { id: 'health', iconName: 'medkit', backgroundColor: '#faf6e1', iconColor: '#e3bc0e', label: 'Health' }, 
-
     { id: 'souvenirs', iconName: 'gift', backgroundColor: '#f5e1e3', iconColor: '#c95762', label: 'Souvenirs' }, 
     { id: 'others', iconName: 'albums', backgroundColor: '#e6fae7', iconColor: '#418743', label: 'Others' }, 
 ];
@@ -23,20 +23,34 @@ const iconData = [
 const AddExpenseModal = ({ visible, onClose, onAdd }) => {
     const [newExpense, setNewExpense] = useState("");
     const [selectedCategory, setSelectedCategory] = useState(null);
+    const [date, setDate] = useState(new Date());
+    const [showPicker, setShowPicker] = useState(false);
 
     if (!visible) return null;
 
     const handleAddExpense = () => {
         if (newExpense.trim() && selectedCategory) {
-            onAdd({ amount: newExpense.trim(), category: selectedCategory });
+            onAdd({ amount: newExpense.trim(), category: selectedCategory, date: date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) });
             setNewExpense("");
             setSelectedCategory(null);
+            setDate(new Date()); // Reset date to current date
             onClose();
         }
     };
 
     const handleSelectCategory = (category) => {
         setSelectedCategory(category);
+    };
+
+    const showDatePicker = () => {
+        setShowPicker(true);
+    };
+
+    const onDateChange = (event, selectedDate) => {
+        setShowPicker(false);
+        if (selectedDate) {
+            setDate(selectedDate);
+        }
     };
 
     return (
@@ -46,7 +60,16 @@ const AddExpenseModal = ({ visible, onClose, onAdd }) => {
                     <View style={styles.modalContent}>
                         <GrayLine width={screenWidth * 0.2} height={screenHeight * 0.005} marginBottom={screenHeight * 0.03} />
                         <Text style={styles.modalHeader}>Add Expense</Text>
-
+                        <View style={styles.inputContainer}>
+                            <Text style={styles.currencyText}>Description</Text>
+                            <TextInput
+                                style={styles.input}
+                                placeholder="Title"
+                                value={newExpense}
+                                onChangeText={setNewExpense}
+                                keyboardType="text"
+                            />
+                        </View>
                         <View style={styles.inputContainer}>
                             <Text style={styles.currencyText}>SGD</Text>
                             <TextInput
@@ -56,6 +79,20 @@ const AddExpenseModal = ({ visible, onClose, onAdd }) => {
                                 onChangeText={setNewExpense}
                                 keyboardType="numeric"
                             />
+                        </View>
+                        <View style={styles.inputContainer}>
+                            <Text style={styles.currencyText}>Date</Text>
+                            <TouchableOpacity style={styles.dateInput} onPress={showDatePicker}>
+                                <Text style={styles.dateText}>{date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</Text>
+                            </TouchableOpacity>
+                            {showPicker && (
+                                <DateTimePicker
+                                    value={date}
+                                    mode="date"
+                                    display="default"
+                                    onChange={onDateChange}
+                                />
+                            )}
                         </View>
 
                         <GrayLine width={screenWidth * 0.9} height={screenHeight * 0.0025} />
@@ -71,7 +108,7 @@ const AddExpenseModal = ({ visible, onClose, onAdd }) => {
                                     <RoundedSquareIcon
                                         iconName={item.iconName}
                                         iconSize={screenWidth * 0.08}
-                                        iconColor={item.iconColor} // Use the iconColor property here
+                                        iconColor={item.iconColor}
                                         backgroundColor={selectedCategory === item.id ? '#FFCC00' : item.backgroundColor}
                                         size={iconSize}
                                     />
@@ -137,7 +174,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         width: '100%',
-        marginBottom: 15,
+        marginBottom: screenHeight*0.005,
     },
     currencyText: {
         fontSize: scaleFont(16),
@@ -148,6 +185,17 @@ const styles = StyleSheet.create({
         height: 40,
         textAlign: 'right',
         fontSize: scaleFont(16),
+    },
+    dateInput: {
+        flex: 1,
+        height: 40,
+        justifyContent: 'center',
+        alignItems: 'flex-end',
+        paddingRight: 10,
+    },
+    dateText: {
+        fontSize: scaleFont(16),
+        color: '#333333',
     },
     buttonContainer: {
         position: 'absolute',
@@ -176,6 +224,5 @@ const styles = StyleSheet.create({
         fontSize: scaleFont(12),
         textAlign: 'center',
         marginTop: 5,
-        color: '#333333',
     },
 });
