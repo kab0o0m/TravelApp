@@ -59,7 +59,7 @@ const Home = () => {
         <View style={styles.headerContainer}>
           <Text style={styles.header}>Mapp!t</Text>
           <Image
-            source={require("../assets/HomePageBGWaves.png")}
+            source={require("../assets/images/HomePageBGWaves.png")}
             style={styles.headerImage}
           />
         </View>
@@ -67,7 +67,7 @@ const Home = () => {
         <TouchableOpacity onPress={() => navigation.navigate("LocationSearch")}>
           <View style={styles.searchContainer}>
             <Image
-              source={require("../assets/Search.png")}
+              source={require("../assets/icons/Search.png")}
               style={styles.searchIcon}
             />
             <TextInput
@@ -82,7 +82,7 @@ const Home = () => {
         <View style={styles.relativeContainer}>
           <View style={styles.absoluteBox} />
           <Image
-            source={require("../assets/AroundtheWorldBG.png")}
+            source={require("../assets/images/AroundtheWorldBG.png")}
             style={styles.absoluteImage}
           />
         </View>
@@ -101,7 +101,7 @@ const Home = () => {
             <View style={styles.destinationContainer}>
               <View style={styles.destinationBackground} />
               <Image
-                source={require("../assets/JapanBG.png")}
+                source={require("../assets/images/JapanBG.png")}
                 style={styles.destinationImage}
               />
               <View style={styles.textContainer}>
@@ -116,7 +116,7 @@ const Home = () => {
             >
               <View style={styles.destinationBackground} />
               <Image
-                source={require("../assets/SingaporeBG.png")}
+                source={require("../assets/images/SingaporeBG.png")}
                 style={styles.destinationImage}
               />
               <View style={styles.textContainer}>
@@ -128,7 +128,7 @@ const Home = () => {
             <View style={styles.destinationContainerLast}>
               <View style={styles.destinationBackground} />
               <Image
-                source={require("../assets/LondonBG.png")}
+                source={require("../assets/images/LondonBG.png")}
                 style={styles.destinationImage}
               />
               <View style={styles.textContainer}>
@@ -151,14 +151,14 @@ const Home = () => {
             <View style={styles.featuredContainer}>
               <View style={styles.featuredBackground} />
               <Image
-                source={require("../assets/SightseeingBG.png")}
+                source={require("../assets/images/SightseeingBG.png")}
                 style={styles.featuredImage}
               />
               <View style={styles.featuredTextContainer}>
                 <Text style={styles.featuredText}>Sightseeing</Text>
                 <View style={styles.subTextContainer}>
                   <Image
-                    source={require("../assets/HomeIcon.png")}
+                    source={require("../assets/icons/HomeIcon.png")}
                     style={styles.homeIcon}
                   />
                   <Text style={styles.featuredSubText}>Norway, Europe</Text>
@@ -173,14 +173,14 @@ const Home = () => {
             >
               <View style={styles.featuredBackground} />
               <Image
-                source={require("../assets/ThemeParkBG.png")}
+                source={require("../assets/images/ThemeParkBG.png")}
                 style={styles.featuredImage}
               />
               <View style={styles.featuredTextContainer}>
                 <Text style={styles.featuredText}>Theme Park</Text>
                 <View style={styles.subTextContainer}>
                   <Image
-                    source={require("../assets/HomeIcon.png")}
+                    source={require("../assets/icons/HomeIcon.png")}
                     style={styles.homeIcon}
                   />
                   <Text style={styles.featuredSubText}>Singapore, Asia</Text>
@@ -192,14 +192,14 @@ const Home = () => {
             <View style={styles.featuredContainer}>
               <View style={styles.featuredBackground} />
               <Image
-                source={require("../assets/SnorkelingBG.png")}
+                source={require("../assets/images/SnorkelingBG.png")}
                 style={styles.featuredImage}
               />
               <View style={styles.featuredTextContainer}>
                 <Text style={styles.featuredText}>Snorkeling</Text>
                 <View style={styles.subTextContainer}>
                   <Image
-                    source={require("../assets/HomeIcon.png")}
+                    source={require("../assets/icons/HomeIcon.png")}
                     style={styles.homeIcon}
                   />
                   <Text style={styles.featuredSubText}>Singapore, Asia</Text>
@@ -211,14 +211,14 @@ const Home = () => {
             <View style={styles.featuredContainerLast}>
               <View style={styles.featuredBackground} />
               <Image
-                source={require("../assets/FeastingBG.png")}
+                source={require("../assets/images/FeastingBG.png")}
                 style={styles.featuredImage}
               />
               <View style={styles.featuredTextContainer}>
                 <Text style={styles.featuredText}>Feasting</Text>
                 <View style={styles.subTextContainer}>
                   <Image
-                    source={require("../assets/HomeIcon.png")}
+                    source={require("../assets/icons/HomeIcon.png")}
                     style={styles.homeIcon}
                   />
                   <Text style={styles.featuredSubText}>Thailand, Asia</Text>

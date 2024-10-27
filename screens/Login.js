@@ -13,8 +13,8 @@ import {
 
 import { useNavigation } from "@react-navigation/native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import LoginImage from "../assets/LoginImage.png";
-import VectorBackground from "../assets/Vector.png";
+import LoginImage from "../assets/images/LoginImage.png";
+import VectorBackground from "../assets/images/Vector.png";
 import InputField from "../components/InputField.js";
 import PasswordField from "../components/PasswordField.js";
 import Button from "../components/Button";

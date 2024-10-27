@@ -25,13 +25,12 @@ import {
 import * as SplashScreen from "expo-splash-screen";
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
-  fetchLocations,
+  fetchSavedLocations,
   removeSavedLocation,
   addSavedLocation,
-  fetchSavedLocations,
 } from "../api/locationAPI";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import BASE_URL from "../config";
 
 const { width: screenWidth } = Dimensions.get("window");
@@ -39,7 +38,7 @@ const { height: screenHeight } = Dimensions.get("window");
 
 SplashScreen.preventAutoHideAsync(); // Prevent the splash screen from auto-hiding
 
-const HomePopular = () => {
+const SavedLocation = () => {
   const [fontsLoaded] = useFonts({
     Nunito_400Regular,
     Nunito_400Regular_Italic,
@@ -50,8 +49,9 @@ const HomePopular = () => {
     Nunito_800ExtraBold_Italic,
   });
 
-  const navigation = useNavigation();
+  const navigation = useNavigation(); // Get the navigation object
 
+  // State to track if each item is saved
   // State to store location data and save states
   const [locations, setLocations] = useState([]);
   const [savedItems, setSavedItems] = useState({});
@@ -67,25 +67,26 @@ const HomePopular = () => {
   // Fetch locations from API on component mount
   useEffect(() => {
     const loadLocations = async () => {
-      const userId = await AsyncStorage.getItem("userData"); // Get the user ID from AsyncStorage
-      const user = JSON.parse(userId);
-
-      if (!user?.id) {
-        Alert.alert("User ID missing", "Unable to find user information.");
-        return;
-      }
-
       try {
-        const data = await fetchLocations();
-        const savedData = await fetchSavedLocations(user.id);
+        const storedUserData = await AsyncStorage.getItem("userData");
+        const userData = JSON.parse(storedUserData);
+
+        const user_id = userData.id;
+
+        const data = await fetchSavedLocations(user_id);
         setLocations(data);
 
         const initialSavedItems = data.reduce((acc, location) => {
-          const isSaved = savedData.some((saved) => saved.id === location.id); // Check if location is in savedData
-          acc[location.id] = isSaved; // TODO: check with saved-location db
+          acc[location.id] = true; // TODO: check with saved-location db
           return acc;
         }, {});
         setSavedItems(initialSavedItems);
+
+        // Load "skip confirmation" preference from storage
+        const storedSkipConfirmation = await AsyncStorage.getItem(
+          "skipConfirmation"
+        );
+        setSkipConfirmation(storedSkipConfirmation === "true");
       } catch (error) {
         console.error("Error fetching locations:", error);
       } finally {
@@ -213,45 +214,34 @@ const HomePopular = () => {
     }
   };
 
+  if (loading || !fontsLoaded) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#006D77" />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
+      <View style={styles.headerContainer}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.navigate("Account")}
+        >
+          <Image
+            source={require("../assets/icons/BackArrow.png")}
+            style={styles.arrowIcon}
+          />
+        </TouchableOpacity>
+        <Text style={styles.backText}>Saved Locations</Text>
+      </View>
+
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
-        <View style={styles.topContainer}>
-          <View style={styles.headerContainer}>
-            <TouchableOpacity
-              style={styles.backButton}
-              onPress={() => navigation.navigate("Home")}
-            >
-              <Image
-                source={require("../assets/icons/BackArrow.png")}
-                style={styles.arrowIcon}
-              />
-              <Text style={styles.backText}>BACK</Text>
-            </TouchableOpacity>
-            <Text style={styles.header}>Mapp!t</Text>
-            <Image
-              source={require("../assets/images/HomePageBGWaves.png")}
-              style={styles.headerImage}
-            />
-          </View>
-
-          <View style={styles.popularContainer}>
-            <Image
-              source={require("../assets/images/TopPlacesSGBG.png")}
-              style={styles.popularImage}
-            />
-            <LinearGradient
-              colors={["#FFFFFF00", "rgba(0, 0, 0, 0.4)"]} // Linear gradient from white to black with 40% opacity
-              style={styles.popularOverlay}
-            />
-            <Text style={styles.popularTitle}>Top Places in Singapore</Text>
-          </View>
-        </View>
-
         {/* Populate data from API */}
         {locations.length === 0 ? (
           <View style={styles.noLocationsContainer}>
-            <Text style={styles.noLocationsText}>Loading...</Text>
+            <Text style={styles.noLocationsText}>No saved locations</Text>
           </View>
         ) : (
           <View style={styles.bottomContainer}>
@@ -318,13 +308,8 @@ const styles = StyleSheet.create({
   },
   scrollViewContent: {
     paddingBottom: 20,
-  },
-  topContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  bottomContainer: {
     marginHorizontal: 25,
+    marginTop: 10,
   },
   loadingContainer: {
     flex: 1,
@@ -332,14 +317,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   headerContainer: {
+    flexDirection: "row",
+    alignItems: "center",
     position: "relative",
-    marginBottom: 10,
+    marginBottom: 12,
+    marginHorizontal: 25,
   },
   backButton: {
-    position: "absolute",
-    left: 30,
-    top: 130,
-    zIndex: 2,
     flexDirection: "row",
     alignItems: "center",
   },
@@ -349,10 +333,9 @@ const styles = StyleSheet.create({
   },
   backText: {
     color: "#3A4646",
-    fontSize: 18,
+    fontSize: 24,
     fontFamily: "Nunito_700Bold",
-    marginLeft: 10,
-    top: 0.2,
+    marginLeft: 14,
   },
   header: {
     fontSize: 24,
@@ -371,13 +354,14 @@ const styles = StyleSheet.create({
 
   popularContainer: {
     width: 351,
-    height: 204,
+    height: 204.22,
     position: "relative",
-    marginBottom: 15,
+    marginTop: -5,
+    marginLeft: 21,
   },
   popularImage: {
     width: 351,
-    height: 204,
+    height: 204.22,
     borderRadius: 30,
   },
   popularOverlay: {
@@ -494,4 +478,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomePopular; // Ensure the component is exported
+export default SavedLocation; // Ensure the component is exported
