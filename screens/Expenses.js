@@ -4,7 +4,8 @@ import { useFonts, Nunito_400Regular, Nunito_700Bold } from '@expo-google-fonts/
 import { Picker } from '@react-native-picker/picker'; 
 import Button from "../components/Button"; 
 import Footer from "../components/Footer"; 
-import AddExpenseModal from './AddExpenseModal'; // Import the modal component
+import AddExpenseModal from './AddExpenseModal';
+import * as Progress from 'react-native-progress'; // Import progress bar library
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
@@ -14,19 +15,23 @@ const Expenses = () => {
     Nunito_700Bold,
   });
 
-  const [selectedSortOption, setSelectedSortOption] = useState("date_latest"); 
-  const [expenses, setExpenses] = useState([]); // State to track expenses
-  const [budget, setBudget] = useState(null); // State to track budget
-  const [modalVisible, setModalVisible] = useState(false); // State to control modal visibility
+  const [selectedSortOption, setSelectedSortOption] = useState("date_latest");
+  const [expenses, setExpenses] = useState([]);
+  const [budget, setBudget] = useState(500); // Example budget value
+  const [totalSpent, setTotalSpent] = useState(100); // Example spent value for progress bar
+  const [modalVisible, setModalVisible] = useState(false);
 
   if (!fontsLoaded) {
-    return null; // Add a loading spinner or screen here if needed
+    return null;
   }
 
   // Function to handle adding a new expense
   const handleAddExpense = (expense) => {
-    setExpenses([...expenses, expense]); // Add new expense to the list
+    setExpenses([...expenses, expense]);
   };
+
+  // Calculate progress as a percentage of budget used
+  const progress = budget ? totalSpent / budget : 0;
 
   return (
     <View style={styles.container}>
@@ -35,13 +40,25 @@ const Expenses = () => {
       {/* Rectangular Box (Green) */}
       <View style={styles.box}>
         <View style={styles.innerBox}>
-          <Text style={styles.amount}>SGD 0.00</Text>
+          <Text style={styles.amount}>SGD {totalSpent.toFixed(2)}</Text>
 
-          {/* Conditional Rendering for Budget */}
+          {/* Conditional Rendering for Budget with Progress Bar */}
           {budget === null ? (
             <Text style={styles.budgetText}>Set a budget</Text>
           ) : (
-            <Text>A</Text> // Replace this with actual budget display logic
+            <View style={styles.progressContainer}>
+              <Progress.Bar 
+                progress={progress} 
+                width={screenWidth * 0.8}
+                color="#F47966"
+                unfilledColor="#61A4AB"
+                height={screenHeight * 0.01}
+                borderWidth={0}
+              />
+              <Text style={styles.progressText}>BUDGET: SGD {budget.toFixed(2)}</Text>
+
+            </View>
+            
           )}
 
           <Button
@@ -49,20 +66,22 @@ const Expenses = () => {
             onPress={null}
             backgroundColor="#006D77" 
             textColor="#FFFFFF"
-            paddingVertical={8} 
+            paddingVertical={screenHeight*0.001} 
             borderRadius={25}
             width={screenWidth * 0.45} 
             borderColor="#FFFFFF" 
             borderWidth={2} 
+            height={screenHeight*0.055}
+            fontSize={screenHeight*0.02}
           />
         </View>
       </View>
 
+      {/* Other components remain unchanged */}
       {/* Overlay Rectangular Box (White) */}
       <View style={styles.whiteBox}>
         <Text style={styles.topLeftText}>Your Expenses</Text>
 
-        {/* Sort Text and Dropdown */}
         <View style={styles.sortContainer}>
           <Text style={styles.sortText}>Sort:</Text>
           <Picker
@@ -75,11 +94,10 @@ const Expenses = () => {
           </Picker>
         </View>
 
-        {/* Conditional Rendering for Expenses */}
         {expenses.length === 0 ? (
           <Text style={styles.noExpenses}>You haven’t added any expenses yet.</Text>
         ) : (
-          <Text>A</Text> // Replace this with actual expenses display logic
+          <Text>B</Text> // Replace this with actual expenses display logic
         )}
       </View>
 
@@ -87,7 +105,7 @@ const Expenses = () => {
         <View style={styles.buttonContainer}>
           <Button
             title="Add Expense"
-            onPress={() => setModalVisible(true)} // Open the modal when clicked
+            onPress={() => setModalVisible(true)}
             backgroundColor="#F47966"
             textColor="#FFFFFF"
             paddingVertical={10}
@@ -131,8 +149,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#006D77', 
     borderTopLeftRadius: screenWidth * 0.05, 
     borderTopRightRadius: screenWidth * 0.05, 
-    borderBottomLeftRadius: 0, 
-    borderBottomRightRadius: 0, 
     alignItems: 'center', 
     position: 'relative', 
   },
@@ -141,7 +157,7 @@ const styles = StyleSheet.create({
     marginTop: screenHeight * 0.025, 
   },
   amount: {
-    fontSize: screenHeight * 0.04, 
+    fontSize: screenHeight * 0.035, 
     fontFamily: 'Nunito_700Bold', 
     color: '#FFF', 
   },
@@ -152,9 +168,19 @@ const styles = StyleSheet.create({
     marginTop: screenHeight * 0.01, 
     marginBottom: screenHeight * 0.005,
   },
+  progressContainer: {
+    alignItems: 'center', 
+    marginVertical: screenHeight * 0.02,
+  },
+  progressText: {
+    fontSize: screenHeight * 0.02,
+    fontFamily: 'Nunito_400Regular',
+    color: '#FFF',
+    marginTop: screenHeight * 0.01,
+  },
   whiteBox: {
     position: 'absolute', 
-    top: screenHeight * 0.35, 
+    top: screenHeight * 0.375, 
     left: 0,
     right: 0,
     paddingHorizontal: screenWidth * 0.05,
@@ -190,7 +216,7 @@ const styles = StyleSheet.create({
     marginTop: screenHeight * 0.02, 
   },
   buttonContainer: {
-    bottom: screenHeight * 0.025, // Space above the footer
+    bottom: screenHeight * 0.025, 
     left: 0,
     right: 0,
     alignItems: 'center', 

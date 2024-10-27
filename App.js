@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View, SafeAreaView } from "react-native";
 import Toast from 'react-native-toast-message';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import Startpage from "./screens/Startpage";
 import AuthCheck from "./screens/AuthCheck";
@@ -16,7 +17,7 @@ import Planner from "./screens/Planner";
 import PlannerNewTrip from "./screens/PlannerNewTrip";
 import LocationSearch from "./screens/LocationSearch";
 import SavedLocation from "./screens/SavedLocation";
-
+import HomePopular from "./screens/HomePopular"
 import Test from "./screens/Test";
 import Expenses from "./screens/Expenses";
 import { NavigationContainer } from "@react-navigation/native";
