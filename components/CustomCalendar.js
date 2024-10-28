@@ -1,19 +1,55 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { Calendar } from "react-native-calendars";
+import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { Calendar, LocaleConfig } from "react-native-calendars";
 
-const CustomCalendar = () => {
-  const [selectedRange, setSelectedRange] = useState({ startDate: "", endDate: "" });
+LocaleConfig.locales["custom"] = {
+  monthNames: [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ],
+  monthNamesShort: [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ],
+  dayNames: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+  dayNamesShort: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+};
+LocaleConfig.defaultLocale = "custom";
+
+const CustomCalendar = ({ onDateSelect }) => {
+  const [selectedRange, setSelectedRange] = useState({
+    startDate: "",
+    endDate: "",
+  });
   const [markedDates, setMarkedDates] = useState({});
 
   useEffect(() => {
     markPastDates();
   }, []);
 
-  // Function to mark past dates as greyed out
   const markPastDates = () => {
     const today = new Date();
-    const pastDaysLimit = 30; // Limit to last 30 days
+    const pastDaysLimit = 300;
     let pastDatesMarked = {};
 
     for (let i = 1; i <= pastDaysLimit; i++) {
@@ -31,18 +67,22 @@ const CustomCalendar = () => {
     setMarkedDates(pastDatesMarked);
   };
 
+  const formatDate = (dateString) => {
+    const [year, month, day] = dateString.split("-");
+    return `${day}/${month}/${year}`;
+  };
+
   const onDaySelect = (day) => {
     const today = new Date();
     const selectedDate = new Date(day.dateString);
 
-    // Prevent selecting past dates
     if (selectedDate < today.setHours(0, 0, 0, 0)) {
-      return;
+      return; // Ignore past dates
     }
 
-    let newMarkedDates = { ...markedDates }; // Keep past dates greyed out
+    let newMarkedDates = { ...markedDates };
 
-    // Clear previous selected range but preserve greyed-out past dates
+    // Clear previous markings for non-disabled dates
     Object.keys(newMarkedDates).forEach((date) => {
       if (!newMarkedDates[date].disabled) {
         delete newMarkedDates[date];
@@ -50,45 +90,43 @@ const CustomCalendar = () => {
     });
 
     if (!selectedRange.startDate || (selectedRange.startDate && selectedRange.endDate)) {
-      // When no startDate is selected or both start and end are selected, reset
-      newMarkedDates = {
-        ...newMarkedDates, // Preserve past greyed out dates
-        [day.dateString]: {
-          selected: true,
-          startingDay: true,
-          color: "#D0D0D0", // Darker grey for the start date
-          textColor: "#fff",
-        },
+      newMarkedDates[day.dateString] = {
+        selected: true,
+        startingDay: true,
+        color: "#E5E6E1",
+        textColor: "#000",
+        borderRadius: 8,
       };
-      setSelectedRange({ startDate: day.dateString, endDate: "" });
+      setSelectedRange({ startDate: formatDate(day.dateString), endDate: "" });
     } else if (selectedRange.startDate && !selectedRange.endDate) {
-      // If a start date is selected, now select the end date
       const start = selectedRange.startDate;
-      const end = day.dateString;
+      const end = formatDate(day.dateString);
 
-      // Mark all the dates between startDate and endDate
+      if (new Date(day.dateString) < new Date(start.split("/").reverse().join("-"))) {
+        return;
+      }
+
       const rangeDates = getDatesInRange(start, end);
       rangeDates.forEach((date, index) => {
         newMarkedDates[date] = {
           selected: true,
-          color: "#eeeeee",
+          color: "#D9D9D9",
           textColor: "#000",
-          ...(index === 0 ? { startingDay: true, color: "#e6e6e6" } : {}),
-          ...(index === rangeDates.length - 1 ? { endingDay: true, color: "#e6e6e6" } : {}),
+          ...(index === 0 ? { startingDay: true } : {}),
+          ...(index === rangeDates.length - 1 ? { endingDay: true, borderRadius: 8 } : {}),
         };
       });
 
       setSelectedRange({ startDate: start, endDate: end });
     }
 
-    setMarkedDates(newMarkedDates); // Update marked dates while keeping past dates
+    setMarkedDates(newMarkedDates);
   };
 
-  // Helper function to get all dates between startDate and endDate
   const getDatesInRange = (startDate, endDate) => {
     const dates = [];
-    let currentDate = new Date(startDate);
-    const end = new Date(endDate);
+    let currentDate = new Date(startDate.split("/").reverse().join("-"));
+    const end = new Date(endDate.split("/").reverse().join("-"));
 
     while (currentDate <= end) {
       dates.push(currentDate.toISOString().split("T")[0]);
@@ -98,36 +136,34 @@ const CustomCalendar = () => {
     return dates;
   };
 
+  const handleConfirm = () => {
+    if (selectedRange.startDate && selectedRange.endDate) {
+      onDateSelect(selectedRange.startDate, selectedRange.endDate);
+    }
+  };
+
   return (
     <View style={styles.container}>
-      <View style={styles.calendarContainer}>
-        <Calendar
-          current={"2024-09-13"}
-          onDayPress={onDaySelect}
-          markedDates={markedDates}
-          markingType={"period"}
-          theme={{
-            selectedDayBackgroundColor: "#007BFF", // Blue background for selected dates
-            todayTextColor: "#FF6347", // Tomato color for today's date
-            arrowColor: "#000", // Blue arrows
-            monthTextColor: "#333", // Dark grey month text color
-            textDayFontWeight: "bold",
-            textDayHeaderFontWeight: "500",
-            textDayFontSize: 16,
-            textMonthFontSize: 18,
-            textMonthFontWeight: "bold",
-            todayBackgroundColor: "#FFF5F5", // Light red background for today's date
-            calendarBackground: "#FFF", // White background for the calendar
-          }}
-          style={styles.calendar}
-        />
-      </View>
+      <Calendar
+        current={new Date().toISOString().split("T")[0]}
+        onDayPress={onDaySelect}
+        markedDates={markedDates}
+        markingType={"period"}
+        theme={{
+          todayTextColor: "#FF4500",
+          arrowColor: "#333",
+          monthTextColor: "#333",
+          textDayFontSize: 22,
+          textMonthFontSize: 20,
+          textMonthFontWeight: "bold",
+          textDayHeaderFontSize: 15,
+        }}
+        style={styles.calendarStyle}
+      />
       {selectedRange.startDate && selectedRange.endDate && (
-        <View style={styles.tripSummary}>
-          <Text style={styles.tripText}>
-            Trip: {selectedRange.startDate} - {selectedRange.endDate}
-          </Text>
-        </View>
+        <TouchableOpacity style={styles.confirmButton} onPress={handleConfirm}>
+          <Text style={styles.confirmButtonText}>Confirm Date</Text>
+        </TouchableOpacity>
       )}
     </View>
   );
@@ -136,37 +172,24 @@ const CustomCalendar = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f4f4f4",
+    justifyContent: "center",
+    alignItems: "center",
     padding: 20,
   },
-  calendarContainer: {
-    borderRadius: 20,
-    overflow: "hidden",
-    backgroundColor: "#fff",
-    elevation: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    padding: 10,
+  calendarStyle: {
+    width: 350,
+    height: 400,
   },
-  calendar: {
-    borderRadius: 15,
-  },
-  tripSummary: {
-    marginTop: 20,
+  confirmButton: {
+    backgroundColor: "#F47966",
     padding: 15,
-    backgroundColor: "#fff",
-    borderRadius: 15,
-    elevation: 3,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
+    borderRadius: 10,
+    alignItems: "center",
+    marginTop: 30,
   },
-  tripText: {
-    fontSize: 16,
-    color: "#333",
+  confirmButtonText: {
+    color: "#fff",
+    fontSize: 20,
     fontWeight: "bold",
   },
 });

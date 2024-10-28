@@ -10,10 +10,10 @@ import {
   Keyboard,
   TouchableOpacity,
 } from "react-native";
-import ProfilePicture from "../assets/ProfilePicture.png";
+import ProfilePicture from "../assets/icons/ProfilePicture.png";
 import { useNavigation } from "@react-navigation/native";
-import ArrowLeft from "../assets/ArrowLeft.png";
-import Edit from "../assets/editprofile.png";
+import ArrowLeft from "../assets/icons/ArrowLeft.png";
+import Edit from "../assets/icons/editprofile.png";
 import {
   useFonts,
   Nunito_400Regular,
@@ -52,7 +52,6 @@ const EditProfile = () => {
             JSON.stringify(storedUserData)
           );
         }
-        
 
         const userData = JSON.parse(storedUserData);
 
@@ -62,7 +61,6 @@ const EditProfile = () => {
         setPhone(userData.phoneNumber);
         setGender(userData.gender);
         setDob(new Date(userData.dob)); // Assuming dob is in valid format
-
       } catch (error) {
         console.error("Failed to load user data", error);
 
@@ -89,6 +87,34 @@ const EditProfile = () => {
     loadUserData();
   }, []);
 
+  const updateUserDataInAsyncStorage = async (newUserData) => {
+    try {
+      // Get the stored user data
+      const storedUserData = await AsyncStorage.getItem("userData");
+      let userData = {};
+
+      // If there's existing data, parse it
+      if (storedUserData !== null) {
+        userData = JSON.parse(storedUserData);
+      }
+
+      // Update the fields with the new values
+      userData.firstName = newUserData.firstName || userData.firstName;
+      userData.lastName = newUserData.lastName || userData.lastName;
+      userData.email = newUserData.email || userData.email;
+      userData.phoneNumber = newUserData.phoneNumber || userData.phoneNumber;
+      userData.gender = newUserData.gender || userData.gender;
+      userData.dob = newUserData.dob || userData.dob;
+
+      // Save the updated user data back to AsyncStorage
+      await AsyncStorage.setItem("userData", JSON.stringify(userData));
+
+      console.log("[AsyncStorage] User data updated successfully");
+    } catch (error) {
+      console.error("Error updating user data in AsyncStorage", error);
+    }
+  };
+
   if (!fontsLoaded) {
     return null; // You can add a loading spinner or screen here if needed
   }
@@ -106,9 +132,25 @@ const EditProfile = () => {
         dob_string
       );
 
+      await updateUserDataInAsyncStorage(userData);
+
       navigation.navigate("EditProfile");
     } catch (error) {
-      Alert.alert("Update Failed", error.message);
+      Alert.alert(
+        "Session Expired",
+        "Your session has expired. Redirecting to the login page...",
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              setTimeout(() => {
+                navigation.navigate("Login");
+              }, 2000);
+            },
+          },
+        ],
+        { cancelable: false }
+      );
     }
   };
 
