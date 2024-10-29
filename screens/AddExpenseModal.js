@@ -1,9 +1,13 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions, TouchableWithoutFeedback, Keyboard, Alert } from 'react-native';
 import Button from '../components/Button';
 import GrayLine from '../components/GrayLine';
 import RoundedSquareIcon from '../components/RoundedSquareIcon';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { addExpense } from '../api/expensesAPI';
+import { fetchUserData } from "../api/authAPI";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "@react-navigation/native";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 const scaleFont = (size) => (screenWidth / 375) * size;
@@ -21,20 +25,67 @@ const iconData = [
 ];
 
 const AddExpenseModal = ({ visible, onClose, onAdd }) => {
+    const navigation = useNavigation();
     const [newExpense, setNewExpense] = useState("");
+    const [newDescription, setNewDescription] = useState("");
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [date, setDate] = useState(new Date());
     const [showPicker, setShowPicker] = useState(false);
+    const [userId, setUserId] = useState(null);
+
+    useEffect(() => {
+        const loadUserId = async () => {
+            try {
+                let storedUserData = await AsyncStorage.getItem("userData");
+                if (!storedUserData) {
+                    console.log("Fetching user data...");
+                    storedUserData = await fetchUserData();
+                    await AsyncStorage.setItem("userData", JSON.stringify(storedUserData));
+                }
+
+                const userData = JSON.parse(storedUserData);
+                setUserId(userData.user_id);
+            } catch (error) {
+                console.error("Failed to load user data:", error);
+                Alert.alert("Error", "Unable to load user data. Please try again.");
+            }
+        };
+
+        loadUserId();
+    }, []);
 
     if (!visible) return null;
 
-    const handleAddExpense = () => {
-        if (newExpense.trim() && selectedCategory) {
-            onAdd({ amount: newExpense.trim(), category: selectedCategory, date: date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) });
+    const handleAddExpense = async () => {
+        if (!newExpense.trim() || !selectedCategory) {
+            Alert.alert("Incomplete Input", "Please enter an amount and select a category.");
+            return;
+        }
+
+        const expenseData = {
+            amount: parseFloat(newExpense.trim()),
+            description: newDescription.trim(),
+            category: selectedCategory,
+            date: date.toISOString().split('T')[0], // Format as YYYY-MM-DD
+            user_id: userId, // Include user_id in the payload
+        };
+
+        console.log("expenseData: ", expenseData);
+
+        try {
+            const result = await addExpense(expenseData);
+            console.log("Expense added successfully:", result);
+            Alert.alert("Success", "Expense added successfully.");
+            onAdd(result);
             setNewExpense("");
+            setNewDescription("");
             setSelectedCategory(null);
-            setDate(new Date()); // Reset date to current date
+            setDate(new Date());
             onClose();
+            navigation.navigate("Expenses");
+        } catch (error) {
+            console.error("Error adding expense:", error);
+            Alert.alert("Error", "An error occurred while adding the expense. Please try again.");
         }
     };
 
@@ -65,9 +116,9 @@ const AddExpenseModal = ({ visible, onClose, onAdd }) => {
                             <TextInput
                                 style={styles.input}
                                 placeholder="Title"
-                                value={newExpense}
-                                onChangeText={setNewExpense}
-                                keyboardType="text"
+                                value={newDescription}
+                                onChangeText={setNewDescription}
+                                keyboardType="default"
                             />
                         </View>
                         <View style={styles.inputContainer}>

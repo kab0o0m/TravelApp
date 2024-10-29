@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Dimensions, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, Dimensions, ScrollView, Alert } from 'react-native';
 import { useFonts, Nunito_400Regular, Nunito_700Bold } from '@expo-google-fonts/nunito';
 import { Picker } from '@react-native-picker/picker'; 
 import Button from "../components/Button"; 
@@ -7,6 +7,8 @@ import Footer from "../components/Footer";
 import AddExpenseModal from './AddExpenseModal';
 import * as Progress from 'react-native-progress';
 import RoundedSquareIcon from '../components/RoundedSquareIcon';
+import { fetchExpenses } from '../api/expensesAPI';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
@@ -17,15 +19,43 @@ const Expenses = () => {
   });
 
   const [selectedSortOption, setSelectedSortOption] = useState("date_latest");
-  const [expenses, setExpenses] = useState([
-    { id: 1, category: 'Food', title: 'Lunch', price: 30, date: '25 May 2024' },
-    { id: 2, category: 'Transport', title: 'Taxi', price: 20, date: '24 May 2024' },
-    { id: 3, category: 'Shopping', title: 'Groceries', price: 50, date: '23 May 2024' },
-  ]);
-  
+  const [expenses, setExpenses] = useState([]);
   const [budget, setBudget] = useState(500);
-  const [totalSpent, setTotalSpent] = useState(100);
+  const [totalSpent, setTotalSpent] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
+  const [userId, setUserId] = useState(null);
+  // const [expenses, setExpenses] = useState([
+  //   { id: 1, category: 'Food', title: 'Lunch', price: 30, date: '25 May 2024' },
+  //   { id: 2, category: 'Transport', title: 'Taxi', price: 20, date: '24 May 2024' },
+  //   { id: 3, category: 'Shopping', title: 'Groceries', price: 50, date: '23 May 2024' },
+  // ]);
+
+  useEffect(() => {
+    const loadExpenses = async () => {
+      try {
+        const storedUserData = await AsyncStorage.getItem("userData");
+        if (!storedUserData) {
+          console.log("Fetching user data...");
+          storedUserData = await fetchUserData();
+          await AsyncStorage.setItem("userData", JSON.stringify(storedUserData));
+        }
+        const userData = JSON.parse(storedUserData);
+        setUserId(userData.user_id);
+  
+        const fetchedExpenses = await fetchExpenses(userData.user_id);
+        setExpenses(fetchedExpenses);
+  
+        // Calculate the total spent amount
+        const total = fetchedExpenses.reduce((sum, expense) => sum + expense.price, 0);
+        setTotalSpent(total);
+      } catch (error) {
+        console.error("Error loading expenses:", error);
+        Alert.alert("Error", "Failed to load expenses. Please try again later.");
+      }
+    };
+  
+    loadExpenses();
+  }, []);
 
   if (!fontsLoaded) {
     return null;
@@ -33,6 +63,7 @@ const Expenses = () => {
 
   const handleAddExpense = (expense) => {
     setExpenses([...expenses, expense]);
+    setTotalSpent((prevTotal) => prevTotal + expense.price);
   };
 
   const progress = budget ? totalSpent / budget : 0;
@@ -100,7 +131,7 @@ const Expenses = () => {
               <View key={expense.id} style={styles.expenseCard}>
                 <View style={styles.expenseDetailsContainer}>
                   <RoundedSquareIcon 
-                    iconName="cash-outline" // Replace with the desired icon name
+                    iconName="cash-outline"
                     iconSize={screenHeight*0.03}
                     iconColor="#FFFFFF"
                     backgroundColor="#006D77"
