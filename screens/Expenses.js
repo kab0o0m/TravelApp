@@ -65,8 +65,8 @@ const Expenses = () => {
   const toggleSummary = () => {
     setSummaryVisible(!summaryVisible);
     Animated.timing(slideAnim, {
-      toValue: summaryVisible ? 0 : screenHeight * 0.25, // Moves white box further down
-      duration: 500,
+      toValue: summaryVisible ? 0 : screenHeight * 0.35, // Moves white box further down
+      duration: 400,
       easing: Easing.ease,
       useNativeDriver: true,
     }).start();
@@ -244,7 +244,7 @@ const styles = StyleSheet.create({
   },
   whiteBox: {
     position: 'absolute', 
-    top: screenHeight * 0.5, 
+    top: screenHeight * 0.4, 
     left: 0,
     right: 0,
     paddingHorizontal: screenWidth * 0.05,
@@ -325,7 +325,7 @@ const styles = StyleSheet.create({
   },
   pieChartContainer: {
     position: 'absolute',
-    top: screenHeight * 0.65, // Position below the "View Summary" button
+    top: screenHeight * 0.4, // Position below the "View Summary" button
     left: 0,
     right: 0,
     alignItems: 'center',
