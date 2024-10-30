@@ -237,7 +237,7 @@ const styles = StyleSheet.create({
     right: 0,
     paddingHorizontal: screenWidth * 0.05,
     paddingTop: screenHeight * 0.03, 
-    height: screenHeight * 0.475, 
+    height: screenHeight * 0.55, 
     backgroundColor: '#FCF7F7', 
     borderTopLeftRadius: screenWidth * 0.05, 
     borderTopRightRadius: screenWidth * 0.05, 
@@ -267,18 +267,18 @@ const styles = StyleSheet.create({
     color: '#879192', 
     marginTop: screenHeight * 0.02, 
   },
-  buttonContainer: {
-    bottom: screenHeight * 0.025, 
-    left: 0,
-    right: 0,
-    alignItems: 'center', 
-    justifyContent: 'flex-end',
-  },
   footerContainer: {
     position: "absolute",
     bottom: 0,
     width: "100%",
+    backgroundColor: "#FCF7F7",
   },
+  buttonContainer: {
+    alignItems: 'center', 
+    justifyContent: 'center',
+    paddingVertical: screenHeight * 0.015,
+  },
+  
   expenseCard: {
     backgroundColor: '#FFFFFF',
     borderRadius: 10,
