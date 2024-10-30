@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Dimensions, ScrollView, Alert } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, ScrollView, Alert, Animated, Easing } from 'react-native';
 import { useFonts, Nunito_400Regular, Nunito_700Bold } from '@expo-google-fonts/nunito';
 import { Picker } from '@react-native-picker/picker'; 
 import Button from "../components/Button"; 
@@ -24,11 +24,8 @@ const Expenses = () => {
   const [totalSpent, setTotalSpent] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
   const [userId, setUserId] = useState(null);
-  // const [expenses, setExpenses] = useState([
-  //   { id: 1, category: 'Food', title: 'Lunch', price: 30, date: '25 May 2024' },
-  //   { id: 2, category: 'Transport', title: 'Taxi', price: 20, date: '24 May 2024' },
-  //   { id: 3, category: 'Shopping', title: 'Groceries', price: 50, date: '23 May 2024' },
-  // ]);
+  const [summaryVisible, setSummaryVisible] = useState(false);
+  const slideAnim = useState(new Animated.Value(0))[0];
 
   useEffect(() => {
     const loadExpenses = async () => {
@@ -45,7 +42,6 @@ const Expenses = () => {
         const fetchedExpenses = await fetchExpenses(userData.user_id);
         setExpenses(fetchedExpenses);
   
-        // Calculate the total spent amount
         const total = fetchedExpenses.reduce((sum, expense) => sum + expense.price, 0);
         setTotalSpent(total);
       } catch (error) {
@@ -64,6 +60,16 @@ const Expenses = () => {
   const handleAddExpense = (expense) => {
     setExpenses([...expenses, expense]);
     setTotalSpent((prevTotal) => prevTotal + expense.price);
+  };
+
+  const toggleSummary = () => {
+    setSummaryVisible(!summaryVisible);
+    Animated.timing(slideAnim, {
+      toValue: summaryVisible ? 0 : screenHeight * 0.25, // Moves white box further down
+      duration: 500,
+      easing: Easing.ease,
+      useNativeDriver: true,
+    }).start();
   };
 
   const progress = budget ? totalSpent / budget : 0;
@@ -94,7 +100,7 @@ const Expenses = () => {
 
           <Button
             title="View Summary"
-            onPress={null}
+            onPress={toggleSummary}
             backgroundColor="#006D77" 
             textColor="#FFFFFF"
             paddingVertical={screenHeight*0.001} 
@@ -108,7 +114,13 @@ const Expenses = () => {
         </View>
       </View>
 
-      <View style={styles.whiteBox}>
+      {summaryVisible && (
+        <View style={styles.pieChartContainer}>
+          <Text style={styles.pieChartPlaceholder}>[Pie Chart Placeholder]</Text>
+        </View>
+      )}
+
+      <Animated.View style={[styles.whiteBox, { transform: [{ translateY: slideAnim }] }]}>
         <Text style={styles.topLeftText}>Your Expenses</Text>
 
         <View style={styles.sortContainer}>
@@ -152,7 +164,7 @@ const Expenses = () => {
             ))}
           </ScrollView>
         )}
-      </View>
+      </Animated.View>
 
       <View style={styles.footerContainer}>
         <View style={styles.buttonContainer}>
@@ -197,7 +209,7 @@ const styles = StyleSheet.create({
   },
   box: {
     width: '100%', 
-    height: screenHeight * 0.5, 
+    height: screenHeight * 0.8, 
     backgroundColor: '#006D77', 
     borderTopLeftRadius: screenWidth * 0.05, 
     borderTopRightRadius: screenWidth * 0.05, 
@@ -232,89 +244,113 @@ const styles = StyleSheet.create({
   },
   whiteBox: {
     position: 'absolute', 
-    top: screenHeight * 0.375, 
+    top: screenHeight * 0.5, 
     left: 0,
     right: 0,
     paddingHorizontal: screenWidth * 0.05,
-    paddingTop: screenHeight * 0.03, 
-    height: screenHeight * 0.55, 
-    backgroundColor: '#FCF7F7', 
-    borderTopLeftRadius: screenWidth * 0.05, 
-    borderTopRightRadius: screenWidth * 0.05, 
+    paddingTop: screenHeight * 0.02,
+    paddingBottom: screenHeight * 0.1,
+    backgroundColor: '#FFF',
+    borderTopLeftRadius: screenWidth * 0.07,
+    borderTopRightRadius: screenWidth * 0.07,
+    height: screenHeight * 0.625,
   },
   topLeftText: {
-    fontSize: screenHeight * 0.03, 
-    fontFamily: 'Nunito_700Bold', 
-    color: '#000', 
+    fontSize: screenHeight * 0.02,
+    fontFamily: 'Nunito_700Bold',
+    color: '#333',
+    marginBottom: screenHeight * 0.02,
   },
   sortContainer: {
-    flexDirection: 'row', 
-    alignItems: 'center', 
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: screenHeight * 0.015,
   },
   sortText: {
-    fontSize: screenHeight * 0.025, 
-    fontFamily: 'Nunito_700Bold', 
-    color: '#000', 
-    marginRight: screenWidth * 0.01, 
+    fontSize: screenHeight * 0.02,
+    fontFamily: 'Nunito_400Regular',
+    color: '#333',
+    marginRight: screenWidth * 0.02,
   },
   picker: {
-    height: screenHeight * 0.025, 
-    width: screenWidth * 0.6, 
+    height: screenHeight * 0.05,
+    width: screenWidth * 0.5,
   },
   noExpenses: {
-    fontSize: screenHeight * 0.0225, 
-    fontFamily: 'Nunito_400Regular', 
-    color: '#879192', 
-    marginTop: screenHeight * 0.02, 
-  },
-  footerContainer: {
-    position: "absolute",
-    bottom: 0,
-    width: "100%",
-    backgroundColor: "#FCF7F7",
-  },
-  buttonContainer: {
-    alignItems: 'center', 
-    justifyContent: 'center',
-    paddingVertical: screenHeight * 0.015,
-  },
-  
-  expenseCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 10,
-    padding: screenHeight * 0.02,
-    marginVertical: screenHeight * 0.01,
-    width: '100%',
-    elevation: 3, // Add shadow effect for Android
-  },
-  expenseCategory: {
-    fontSize: screenHeight * 0.025,
-    fontFamily: 'Nunito_700Bold',
-  },
-  expenseTitle: {
     fontSize: screenHeight * 0.02,
     fontFamily: 'Nunito_400Regular',
+    color: '#888',
+    textAlign: 'center',
+    marginTop: screenHeight * 0.1,
   },
-  expensePrice: {
-    fontSize: screenHeight * 0.025,
-    fontFamily: 'Nunito_700Bold',
+  expenseCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: screenHeight * 0.015,
+    paddingHorizontal: screenWidth * 0.02,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
   },
   expenseDetailsContainer: {
-    flexDirection: 'row', // Align items in a row
-    alignItems: 'center', // Center vertically
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   expenseTextContainer: {
-    marginLeft: screenWidth * 0.04, // Space between icon and text
-    width: screenWidth*0.625,
+    flex: 1,
+    marginLeft: screenWidth * 0.02,
   },
   expenseRow: {
-    flexDirection: 'row', // Align items in a row
-    justifyContent: 'space-between', // Space between items
-    alignItems: 'center', // Center vertically
-    marginVertical: screenHeight * 0.005, // Space between rows
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  expenseCategory: {
+    fontSize: screenHeight * 0.02,
+    fontFamily: 'Nunito_700Bold',
+    color: '#333',
+  },
+  expensePrice: {
+    fontSize: screenHeight * 0.02,
+    fontFamily: 'Nunito_700Bold',
+    color: '#333',
+  },
+  expenseTitle: {
+    fontSize: screenHeight * 0.018,
+    fontFamily: 'Nunito_400Regular',
+    color: '#666',
   },
   expenseDate: {
-    fontSize: screenHeight * 0.02,
+    fontSize: screenHeight * 0.018,
     fontFamily: 'Nunito_400Regular',
+    color: '#666',
+  },
+  pieChartContainer: {
+    position: 'absolute',
+    top: screenHeight * 0.65, // Position below the "View Summary" button
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    paddingBottom: screenHeight * 0.02,
+  },
+  pieChartPlaceholder: {
+    fontSize: screenHeight * 0.02,
+    color: '#333',
+    backgroundColor: '#eee',
+    width: screenWidth * 0.6,
+    height: screenWidth * 0.6,
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    borderRadius: screenWidth * 0.3,
+  },
+  footerContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    paddingBottom: screenHeight * 0.025,
+    backgroundColor: '#FFF',
+  },
+  buttonContainer: {
+    marginVertical: screenHeight * 0.02,
   },
 });
