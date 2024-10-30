@@ -17,7 +17,7 @@ const Footer = () => {
       </TouchableOpacity>
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Expenses")}>
         <Image source={BudgetIcon} style={styles.image} resizeMode="cover" />
-        <Text style={styles.buttonText}>Budget</Text>
+        <Text style={styles.buttonText}>Expenses</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Planner")}>
         <Image source={PlannerIcon} style={styles.image} resizeMode="contain" />
@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   buttonText: {
-    fontSize: 16,
+    fontSize: 14,
     color: "#333",
   },
   image: {
