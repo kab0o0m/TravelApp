@@ -65,7 +65,7 @@ const Expenses = () => {
   const toggleSummary = () => {
     setSummaryVisible(!summaryVisible);
     Animated.timing(slideAnim, {
-      toValue: summaryVisible ? 0 : screenHeight * 0.35, // Moves white box further down
+      toValue: summaryVisible ? 0 : screenHeight * 0.4, // Moves white box further down
       duration: 400,
       easing: Easing.ease,
       useNativeDriver: true,
@@ -177,6 +177,9 @@ const Expenses = () => {
             borderRadius={25}
             width={screenWidth * 0.5} 
             iconName="add"
+            height={screenHeight*0.055}
+            fontSize={screenHeight*0.02}
+            paddingVertical={screenHeight*0.001} 
           />
         </View>
         <Footer />
@@ -347,10 +350,9 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     alignItems: 'center',
-    paddingBottom: screenHeight * 0.025,
     backgroundColor: '#FFF',
   },
   buttonContainer: {
-    marginVertical: screenHeight * 0.02,
+    marginVertical: screenHeight * 0.01,
   },
 });
