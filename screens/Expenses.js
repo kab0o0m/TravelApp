@@ -9,6 +9,7 @@ import * as Progress from 'react-native-progress';
 import RoundedSquareIcon from '../components/RoundedSquareIcon';
 import { fetchExpenses } from '../api/expensesAPI';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { PieChart } from 'react-native-chart-kit'; // Import the PieChart
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
@@ -30,7 +31,7 @@ const Expenses = () => {
   useEffect(() => {
     const loadExpenses = async () => {
       try {
-        const storedUserData = await AsyncStorage.getItem("userData");
+        let storedUserData = await AsyncStorage.getItem("userData");
         if (!storedUserData) {
           console.log("Fetching user data...");
           storedUserData = await fetchUserData();
@@ -74,6 +75,38 @@ const Expenses = () => {
 
   const progress = budget ? totalSpent / budget : 0;
 
+  // Dummy data for the pie chart
+  const pieChartData = [
+    {
+      name: "Food",
+      amtSpent: 215,
+      color: "#F47966",
+      legendFontColor: "#fff",
+      legendFontSize: 15,
+    },
+    {
+      name: "Transport",
+      amtSpent: 130,
+      color: "#61A4AB",
+      legendFontColor: "#fff",
+      legendFontSize: 15,
+    },
+    {
+      name: "Entertainment",
+      amtSpent: 80,
+      color: "#FFFFFF",
+      legendFontColor: "#fff",
+      legendFontSize: 15,
+    },
+    {
+      name: "Utilities",
+      amtSpent: 95,
+      color: "#FFBB00",
+      legendFontColor: "#fff",
+      legendFontSize: 15,
+    },
+  ];
+
   return (
     <View style={styles.container}>
       <Text style={styles.header}>EXPENSES</Text>
@@ -116,7 +149,24 @@ const Expenses = () => {
 
       {summaryVisible && (
         <View style={styles.pieChartContainer}>
-          <Text style={styles.pieChartPlaceholder}>[Pie Chart Placeholder]</Text>
+          <PieChart
+            data={pieChartData}
+            width={screenWidth * 0.8}
+            height={screenWidth * 0.5}
+            chartConfig={{
+              backgroundColor: "#fff",
+              backgroundGradientFrom: "#fff",
+              backgroundGradientTo: "#fff",
+              color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+              labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+              strokeWidth: 2,
+              barPercentage: 0.5,
+            }}
+            accessor="amtSpent"
+            backgroundColor="transparent"
+            paddingLeft="15"
+            absolute // This prop is necessary for a pie chart to show correctly
+          />
         </View>
       )}
 
@@ -173,7 +223,6 @@ const Expenses = () => {
             onPress={() => setModalVisible(true)}
             backgroundColor="#F47966"
             textColor="#FFFFFF"
-            paddingVertical={10}
             borderRadius={25}
             width={screenWidth * 0.5} 
             iconName="add"
@@ -355,4 +404,5 @@ const styles = StyleSheet.create({
   buttonContainer: {
     marginVertical: screenHeight * 0.01,
   },
+ 
 });
