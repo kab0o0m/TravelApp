@@ -10,11 +10,10 @@ import {
 } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import LocationDetailsModal from "./LocationDetailsModal";
+import AddLDestinationModal from "./AddDestinationModal";
 import axios from "axios";
 import BASE_URL from "../config"; // Ensure this points to your backend URL
 import Footer from "../components/Footer";
-import { fetchWeatherData } from "../api/weather";
 
 const Button = ({
   title,
@@ -29,7 +28,7 @@ const Button = ({
   </TouchableWithoutFeedback>
 );
 
-const PlannerAddLocation = () => {
+const PlannerAddDestination = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [mapRegion, setMapRegion] = useState({
     latitude: 1.3521,
@@ -70,29 +69,12 @@ const PlannerAddLocation = () => {
         });
         setMarkerPosition({ latitude: location.lat, longitude: location.lng });
         setLocationDetails(placeDetails);
-
-        // Fetch the weather data for the selected location
-        await fetchWeatherDataForLocation(location.lat, location.lng);
       } else {
         Alert.alert("No results found", "Please try a different location.");
       }
     } catch (error) {
       Alert.alert("Error", "Failed to search for the location");
       console.error("Error fetching location:", error);
-    }
-  };
-
-  const fetchWeatherDataForLocation = async (latitude, longitude) => {
-    try {
-      const result = await fetchWeatherData(latitude, longitude);
-      setWeatherData(result.data);
-    } catch (error) {
-      console.error("Error fetching weather data:", error);
-      setWeatherData({
-        area: "N/A",
-        forecast: "N/A",
-        timestamp: "N/A",
-      });
     }
   };
 
@@ -128,17 +110,16 @@ const PlannerAddLocation = () => {
           )}
         </MapView>
 
-        <LocationDetailsModal
+        <AddLocationModal
           visible={modalVisible}
           locationDetails={locationDetails}
-          weatherData={weatherData}
           onClose={closeDetailsModal}
         />
       </View>
 
-      {/* <View style={styles.footerContainer}>
+      <View style={styles.footerContainer}>
         <Footer />
-      </View> */}
+      </View>
     </TouchableWithoutFeedback>
   );
 };
@@ -160,7 +141,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginBottom: 10,
   },
-  map: { width: "100%", height: 720 },
+  map: { width: "100%", height: "100%" },
   button: {
     alignItems: "center",
     justifyContent: "center",
@@ -174,4 +155,4 @@ const styles = StyleSheet.create({
   },*/
 });
 
-export default PlannerAddLocation;
+export default PlannerAddDestination;
