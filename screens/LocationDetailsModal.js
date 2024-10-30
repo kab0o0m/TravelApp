@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
+  ActivityIndicator,
 } from "react-native";
 import BASE_URL from "../config"; // Make sure this points to your backend URL
 
@@ -16,8 +17,10 @@ const LocationDetailsModal = ({
   onClose,
 }) => {
   const [photoUrl, setPhotoUrl] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    setIsLoading(true);
     const fetchPhoto = async () => {
       if (locationDetails.photoReference) {
         try {
@@ -25,6 +28,7 @@ const LocationDetailsModal = ({
             `${BASE_URL}/api/place-details?photo_reference=${locationDetails.photoReference}&maxwidth=400`
           );
           setPhotoUrl(response.url); // This will be the direct URL to display the photo
+          console.log(response.url);
         } catch (error) {
           console.error("Error fetching place photo:", error);
         }
@@ -36,6 +40,7 @@ const LocationDetailsModal = ({
     } else {
       setPhotoUrl(null); // Reset photo URL when modal closes
     }
+    setIsLoading(false);
   }, [visible, locationDetails.photoReference]);
 
   return (
@@ -45,40 +50,50 @@ const LocationDetailsModal = ({
       visible={visible}
       onRequestClose={onClose}
     >
-      <View style={styles.modalContainer}>
-        <View style={styles.modalContent}>
-          <Text style={styles.title}>{locationDetails.title}</Text>
-          <Text style={styles.description}>{locationDetails.description}</Text>
+      {isLoading ? (
+        <ActivityIndicator size="large" />
+      ) : (
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.title}>{locationDetails.title}</Text>
+            <Text style={styles.description}>
+              {locationDetails.description}
+            </Text>
 
-          {/* Location Photo */}
-          {photoUrl && (
-            <Image source={{ uri: photoUrl }} style={styles.locationImage} />
-          )}
-
-          {/* Weather Data Section */}
-          <View style={styles.weatherContainer}>
-            <Text style={styles.weatherTitle}>Weather Forecast</Text>
-            {weatherData ? (
-              <>
-                <Text style={styles.weatherText}>Area: {weatherData.area}</Text>
-                <Text style={styles.weatherText}>
-                  Forecast: {weatherData.forecast}
-                </Text>
-                <Text style={styles.weatherText}>
-                  Last Updated:{" "}
-                  {new Date(weatherData.timestamp).toLocaleString()}
-                </Text>
-              </>
-            ) : (
-              <Text style={styles.weatherText}>Weather data not available</Text>
+            {/* Location Photo */}
+            {photoUrl && (
+              <Image source={{ uri: photoUrl }} style={styles.locationImage} />
             )}
-          </View>
 
-          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <Text style={styles.closeButtonText}>Close</Text>
-          </TouchableOpacity>
+            {/* Weather Data Section */}
+            <View style={styles.weatherContainer}>
+              <Text style={styles.weatherTitle}>Weather Forecast</Text>
+              {weatherData ? (
+                <>
+                  <Text style={styles.weatherText}>
+                    Area: {weatherData.area}
+                  </Text>
+                  <Text style={styles.weatherText}>
+                    Forecast: {weatherData.forecast}
+                  </Text>
+                  <Text style={styles.weatherText}>
+                    Last Updated:{" "}
+                    {new Date(weatherData.timestamp).toLocaleString()}
+                  </Text>
+                </>
+              ) : (
+                <Text style={styles.weatherText}>
+                  Weather data not available
+                </Text>
+              )}
+            </View>
+
+            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+              <Text style={styles.closeButtonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
+      )}
     </Modal>
   );
 };
