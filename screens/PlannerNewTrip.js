@@ -1,14 +1,16 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Modal } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import CustomCalendar from "../components/CustomCalendar"; // Import your CustomCalendar
 
-const PlannerNewTrip = ({ route }) => {
+const PlannerNewTrip = () => {
   const navigation = useNavigation();
-  const { onAddTrip } = route.params; 
+  const route = useRoute();
+  const { destination: initialDestination } = route.params || {}; // Get the destination from params
+  //const { onAddTrip } = route.params; 
   const [isCalendarVisible, setCalendarVisible] = useState(false); 
   const [selectedDate, setSelectedDate] = useState(""); 
-  const [destination, setDestination] = useState(""); 
+  const [destination, setDestination] = useState(initialDestination || ""); // Use initialDestination
 
   const openCalendar = () => {
     setCalendarVisible(true); 
@@ -25,7 +27,8 @@ const PlannerNewTrip = ({ route }) => {
 
   const handleConfirmTrip = () => {
     if (destination && selectedDate) {
-      onAddTrip({ destination, dates: selectedDate }); 
+      //onAddTrip({ destination, dates: selectedDate }); 
+      console.log("Trip confirmed:", { destination, dates: selectedDate });
       navigation.navigate("Planner");
     } else {
       alert("Please fill in all details."); 

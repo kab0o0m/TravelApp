@@ -11,6 +11,7 @@ import EditProfile from "./screens/EditProfile";
 import Home from "./screens/Home";
 import HomeFeatured from "./screens/HomeFeatured";
 import HomePopular from "./screens/HomePopular";
+import AIRandomiser from "./screens/AIRandomiser";
 import ResetPW from "./screens/ResetPW";
 import Planner from "./screens/Planner";
 import PlannerNewTrip from "./screens/PlannerNewTrip";
@@ -22,12 +23,13 @@ export default function App() {
   const Stack = createNativeStackNavigator();
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
+      <Stack.Navigator initialRouteName="AIRandomiser">
         <Stack.Screen name="AuthCheck" component={AuthCheck} options={{ headerShown: false }} />
         <Stack.Screen name="Startpage" component={Startpage} options={{ headerShown: false }} />
         <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
         <Stack.Screen name="HomeFeatured" component={HomeFeatured} options={{ headerShown: false }} />
         <Stack.Screen name="HomePopular" component={HomePopular} options={{ headerShown: false }} />
+        <Stack.Screen name="AIRandomiser" component={AIRandomiser} options={{ headerShown: false }} />
         <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
         <Stack.Screen name="Register" component={Register} options={{ headerShown: false }} />
         <Stack.Screen name="Chatbot" component={Chatbot} options={{ headerShown: false }} />
