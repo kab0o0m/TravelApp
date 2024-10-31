@@ -19,7 +19,7 @@ import {
 } from "@expo-google-fonts/nunito";
 import * as SplashScreen from "expo-splash-screen";
 import { useNavigation } from "@react-navigation/native";
-import Footer from "../components/NavBar";
+import NavBar from "../components/NavBar";
 import EastCoastPark from "../assets/thunderstorm.jpg";
 import MarinaBaySands from "../assets/MarinaBaySands.jpg";
 import Esplanade from "../assets/Esplanade.jpg";
@@ -250,8 +250,8 @@ const Home = () => {
         </View>
       </ScrollView>
 
-      <View style={styles.footerContainer}>
-        <Footer />
+      <View style={styles.NavBarContainer}>
+        <NavBar />
       </View>
     </View>
   );
@@ -450,7 +450,7 @@ const styles = StyleSheet.create({
     marginLeft: 16,
     marginRight: 60,
   },
-  footerContainer: {
+  NavBarContainer: {
     position: "absolute",
     bottom: 0,
     width: "100%",

@@ -49,7 +49,7 @@ const NavBar = () => {
   return (
     <View
       style={[
-        styles.footerContainer,
+        styles.NavBarContainer,
         { paddingHorizontal: screenWidth * 0.05 },
       ]}
     >
@@ -62,7 +62,7 @@ const NavBar = () => {
 };
 
 const styles = StyleSheet.create({
-  footerContainer: {
+  NavBarContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
     backgroundColor: "#fff",

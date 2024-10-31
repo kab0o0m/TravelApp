@@ -15,7 +15,7 @@ import {
 } from "@expo-google-fonts/nunito";
 import { Picker } from "@react-native-picker/picker";
 import Button from "../components/Button";
-import Footer from "../components/Footer";
+import NavBar from "../components/NavBar";
 import AddExpenseModal from "./AddExpenseModal";
 import * as Progress from "react-native-progress";
 import RoundedSquareIcon from "../components/RoundedSquareIcon";
@@ -204,7 +204,7 @@ const Expenses = () => {
         )}
       </View>
 
-      <View style={styles.footerContainer}>
+      <View style={styles.NavBarContainer}>
         <View style={styles.buttonContainer}>
           <Button
             title="Add Expense"
@@ -217,7 +217,7 @@ const Expenses = () => {
             iconName="add"
           />
         </View>
-        <Footer />
+        <NavBar />
       </View>
 
       <AddExpenseModal
@@ -324,7 +324,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "flex-end",
   },
-  footerContainer: {
+  NavBarContainer: {
     position: "absolute",
     bottom: 0,
     width: "100%",

@@ -6,7 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
-import Footer from "../components/NavBar";
+import NavBar from "../components/NavBar";
 import { useNavigation } from "@react-navigation/native";
 
 const Planner = () => {
@@ -51,7 +51,7 @@ const Planner = () => {
         </TouchableOpacity>
       </ScrollView>
 
-      <Footer />
+      <NavBar />
     </View>
   );
 };
