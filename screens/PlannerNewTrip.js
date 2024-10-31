@@ -7,7 +7,7 @@ import { LogBox } from "react-native";
 
 LogBox.ignoreLogs(["Non-serializable values were found in the navigation state"]);
 
-const PlannerNewTrip = ({ route }) => {
+const PlannerNewTrip = () => {
   const navigation = useNavigation();
   const { onAddTrip } = route.params || {};
   const [isCalendarVisible, setCalendarVisible] = useState(false);

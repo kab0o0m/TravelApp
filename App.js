@@ -12,6 +12,7 @@ import Profile from "./screens/Profile";
 import EditProfile from "./screens/EditProfile";
 import Home from "./screens/Home";
 import HomeFeatured from "./screens/HomeFeatured";
+import AIRandomiser from "./screens/AIRandomiser";
 import ResetPW from "./screens/ResetPW";
 import Planner from "./screens/Planner";
 import PlannerNewTrip from "./screens/PlannerNewTrip";
