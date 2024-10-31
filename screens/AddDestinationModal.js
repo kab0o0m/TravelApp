@@ -16,27 +16,27 @@ const AddDestinationModal = ({ visible, locationDetails, onClose, onAdd }) => {
 
   useEffect(() => {
     const fetchPhoto = async () => {
-      setIsLoading(true); // Start loading
+      setIsLoading(true);
       if (locationDetails?.photoReference) {
         try {
           const response = await fetch(
-            `${BASE_URL}/api/place-details?photo_reference=${locationDetails.photoReference}&maxwidth=400`
+            `${BASE_URL}/api/place-photo?photo_reference=${locationDetails.photoReference}&maxwidth=400`
           );
-          setPhotoUrl(response.url); // This will be the direct URL to display the photo
+          setPhotoUrl(response.url);
         } catch (error) {
           console.error("Error fetching place photo:", error);
         }
       } else {
-        setPhotoUrl(null); // No photo reference available
+        setPhotoUrl(null);
       }
-      setIsLoading(false); // Stop loading
+      setIsLoading(false);
     };
 
     if (visible) {
       fetchPhoto();
     } else {
-      setPhotoUrl(null); // Reset photo URL when modal closes
-      setIsLoading(false); // Ensure loading state is reset
+      setPhotoUrl(null);
+      setIsLoading(false);
     }
   }, [visible, locationDetails?.photoReference]);
 
@@ -56,6 +56,9 @@ const AddDestinationModal = ({ visible, locationDetails, onClose, onAdd }) => {
               {/* Location Title and Description */}
               <Text style={styles.title}>
                 {locationDetails?.title || "No Title"}
+              </Text>
+              <Text style={styles.address}>
+                {locationDetails?.address || "No address available"}
               </Text>
               <Text style={styles.description}>
                 {locationDetails?.description || "No description available"}

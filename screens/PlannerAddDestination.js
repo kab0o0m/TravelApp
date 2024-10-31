@@ -12,7 +12,7 @@ import MapView, { Marker } from "react-native-maps";
 import AddDestinationModal from "./AddDestinationModal";
 import axios from "axios";
 import BASE_URL from "../config";
-import Footer from "../components/NavBar";
+import NavBar from "../components/NavBar";
 import { useNavigation } from "@react-navigation/native";
 
 const PlannerAddDestination = ({ route }) => {
@@ -39,7 +39,7 @@ const PlannerAddDestination = ({ route }) => {
         const location = data[0].geometry.location;
         const placeDetails = {
           title: data[0].name,
-          description: data[0].formatted_address,
+          address: data[0].formatted_address,
           placeId: data[0].place_id,
           photoReference: data[0].photos
             ? data[0].photos[0].photo_reference
@@ -53,7 +53,20 @@ const PlannerAddDestination = ({ route }) => {
           longitudeDelta: 0.0421,
         });
         setMarkerPosition({ latitude: location.lat, longitude: location.lng });
-        setLocationDetails(placeDetails);
+
+        const detailsResponse = await axios.get(
+          `${BASE_URL}/api/place-details`,
+          {
+            params: { place_id: placeDetails.placeId },
+          }
+        );
+
+        setLocationDetails({
+          ...placeDetails,
+          description:
+            detailsResponse.data.description ||
+            "No additional description available",
+        });
       } else {
         Alert.alert("No results found", "Please try a different location.");
       }
@@ -100,7 +113,7 @@ const PlannerAddDestination = ({ route }) => {
           <Marker
             coordinate={markerPosition}
             title={locationDetails.title}
-            description={locationDetails.description}
+            description={locationDetails.address}
             onPress={() => setModalVisible(true)}
           />
         )}

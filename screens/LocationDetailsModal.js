@@ -25,7 +25,7 @@ const LocationDetailsModal = ({
       if (locationDetails.photoReference) {
         try {
           const response = await fetch(
-            `${BASE_URL}/api/place-details?photo_reference=${locationDetails.photoReference}&maxwidth=400`
+            `${BASE_URL}/api/place-photo?photo_reference=${locationDetails.photoReference}&maxwidth=400`
           );
           setPhotoUrl(response.url); // This will be the direct URL to display the photo
           console.log(response.url);
