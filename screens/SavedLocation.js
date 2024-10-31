@@ -322,6 +322,7 @@ const styles = StyleSheet.create({
     position: "relative",
     marginBottom: 12,
     marginHorizontal: 25,
+    marginTop: 50,
   },
   backButton: {
     flexDirection: "row",
