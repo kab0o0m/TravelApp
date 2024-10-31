@@ -269,7 +269,7 @@ const styles = StyleSheet.create({
     fontFamily: "Nunito_900Black",
     position: "absolute",
     left: 291, // Set the x-coordinate
-    top: 50, // Set the y-coordinate
+    top: 32, // Set the y-coordinate
     zIndex: 1,
   },
   headerImage: {
