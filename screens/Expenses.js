@@ -11,6 +11,7 @@ import {
   useFonts,
   Nunito_400Regular,
   Nunito_700Bold,
+  Nunito_900Black,
 } from "@expo-google-fonts/nunito";
 import { Picker } from "@react-native-picker/picker";
 import Button from "../components/Button";
@@ -28,6 +29,7 @@ const Expenses = () => {
   const [fontsLoaded] = useFonts({
     Nunito_400Regular,
     Nunito_700Bold,
+    Nunito_900Black,
   });
 
   const [selectedSortOption, setSelectedSortOption] = useState("date_latest");
@@ -235,7 +237,7 @@ const styles = StyleSheet.create({
   },
   header: {
     fontSize: screenHeight * 0.03,
-    fontFamily: "Nunito_700Bold",
+    fontFamily: "Nunito_900Black",
     color: "#006D77",
     marginBottom: screenHeight * 0.02,
     marginLeft: screenWidth * 0.05,
