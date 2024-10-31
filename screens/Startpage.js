@@ -8,14 +8,14 @@ import {
   Image,
   Modal,
 } from "react-native";
-import Startpagebackground from "../assets/Startpagebackground.png";
+import Startpagebackground from "../assets/images/Startpagebackground.png";
 import { useNavigation } from "@react-navigation/native";
 import { useState, useEffect } from "react";
 import Chatbot from "./Chatbot";
-import FrogIcon from "../assets/FrogHead.png";
-import ArrowLeft from "../assets/ArrowLeft.png";
-import plane from "../assets/Plane.png";
-import background from "../assets/background.png";
+import FrogIcon from "../assets/images/FrogHead.png";
+import ArrowLeft from "../assets/icons/ArrowLeft.png";
+import plane from "../assets/images/Plane.png";
+import background from "../assets/images/background.png";
 import * as SplashScreen from "expo-splash-screen";
 
 SplashScreen.preventAutoHideAsync(); // Prevent the splash screen from auto-hiding
@@ -36,19 +36,26 @@ const Startpage = () => {
 
   return (
     <View style={styles.container}>
-      <ImageBackground source={Startpagebackground} style={styles.backgroundImage}>
+      <ImageBackground
+        source={Startpagebackground}
+        style={styles.backgroundImage}
+      >
         <TouchableOpacity style={styles.iconContainer} onPress={toggleModal}>
-          <Image source={FrogIcon} style={styles.icon} />
+          <Image source={FrogIcon} style={styles.icon} resizeMode="contain" />
         </TouchableOpacity>
 
         <Modal
           animationType="slide"
           transparent={true}
           visible={modalVisible}
-          onRequestClose={toggleModal}>
+          onRequestClose={toggleModal}
+        >
           <View style={styles.modalOverlay}>
             <View style={styles.modalContainer}>
-              <TouchableOpacity onPress={toggleModal} style={styles.closeButton}>
+              <TouchableOpacity
+                onPress={toggleModal}
+                style={styles.closeButton}
+              >
                 <Image source={ArrowLeft} />
               </TouchableOpacity>
 
@@ -62,7 +69,10 @@ const Startpage = () => {
           <Text style={styles.subHeader}>Mapp!t</Text>
         </View>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Login")}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => navigation.navigate("Login")}
+          >
             <Text style={styles.buttonText}>Start My Journey</Text>
           </TouchableOpacity>
         </View>
@@ -128,7 +138,7 @@ const styles = StyleSheet.create({
   },
   iconContainer: {
     position: "absolute",
-    backgroundColor: "#D9D9D9",
+    backgroundColor: "#002C30",
     padding: 10,
     borderRadius: 30,
     zIndex: 999,

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
-import ProfilePicture from "../assets/ProfilePicture.png";
+import ProfilePicture from "../assets/icons/ProfilePicture.png";
+import Footer from "../components/Footer";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -27,7 +28,6 @@ const Account = () => {
 
         setFirstName(userData.firstName);
         setLastName(userData.lastName);
-
       } catch (error) {
         console.error("Failed to load user data", error);
       }
@@ -38,39 +38,54 @@ const Account = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerText}>ACCOUNT</Text>
-      </View>
-      <View style={styles.userInfoSection}>
-        <View>
-          <Image source={ProfilePicture} />
+      <View style={styles.innerContainer}>
+        <View style={styles.header}>
+          <Text style={styles.headerText}>ACCOUNT</Text>
         </View>
-        <View style={styles.userTextContainer}>
-          <Text style={styles.userName}>{firstName} {lastName}</Text>
+        <View style={styles.userInfoSection}>
+          <View>
+            <Image source={ProfilePicture} />
+          </View>
+          <View style={styles.userTextContainer}>
+            <Text style={styles.userName}>
+              {firstName} {lastName}
+            </Text>
+            <TouchableOpacity
+              style={styles.userInfoSectionProfileContainer}
+              onPress={() => navigation.navigate("Profile")}
+            >
+              <Text style={styles.userInfoSectionProfile}>View my profile</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        <View style={styles.accountSection}>
+          <Text style={styles.settings}>Settings</Text>
           <TouchableOpacity
-            style={styles.userInfoSectionProfileContainer}
-            onPress={() => navigation.navigate("Profile")}>
-            <Text style={styles.userInfoSectionProfile}>View my profile</Text>
+            style={styles.accountItem}
+            onPress={() => navigation.navigate("Profile")}
+          >
+            <Text style={styles.accountItemText}>Personal Information</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.accountItem} onPress={() => navigation.navigate("SavedLocation")}>
+            <Text style={styles.accountItemText}>Saved Locations</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.accountItem}>
+            <Text style={styles.accountItemText}>My Bookings</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.accountItem}>
+            <Text style={styles.accountItemText}>My Messages</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.accountItem}>
+            <Text style={styles.accountItemText}>Notification Settings</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.accountItem}>
+            <Text style={styles.accountItemText}>Help Centre</Text>
           </TouchableOpacity>
         </View>
       </View>
-      <View style={styles.accountSection}>
-        <Text style={styles.settings}>Settings</Text>
-        <TouchableOpacity style={styles.accountItem} onPress={() => navigation.navigate("Profile")}>
-          <Text style={styles.accountItemText}>Personal Information</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.accountItem}>
-          <Text style={styles.accountItemText}>My Bookings</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.accountItem}>
-          <Text style={styles.accountItemText}>My Messages</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.accountItem}>
-          <Text style={styles.accountItemText}>Notification Settings</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.accountItem}>
-          <Text style={styles.accountItemText}>Help Centre</Text>
-        </TouchableOpacity>
+
+      <View style={styles.footerContainer}>
+        <Footer />
       </View>
     </View>
   );
@@ -82,8 +97,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#FCF7F7",
-    paddingHorizontal: 20,
     paddingVertical: 30,
+  },
+  innerContainer: {
+    paddingHorizontal: 20,
   },
   header: {
     padding: 20,
@@ -141,5 +158,10 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     // alignItems: "center",
     marginLeft: 20,
+  },
+  footerContainer: {
+    position: "absolute",
+    bottom: 0,
+    width: "100%",
   },
 });

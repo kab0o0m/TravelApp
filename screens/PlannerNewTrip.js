@@ -1,45 +1,69 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Modal } from "react-native";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import React, { useState, useEffect } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Modal, Image } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import CustomCalendar from "../components/CustomCalendar"; // Import your CustomCalendar
+import PlannerLocationSearchbar from "../components/PlannerLocationSearchbar";
+import { LogBox } from "react-native";
+
+LogBox.ignoreLogs(["Non-serializable values were found in the navigation state"]);
 
 const PlannerNewTrip = () => {
   const navigation = useNavigation();
-  const route = useRoute();
-  const { destination: initialDestination } = route.params || {}; // Get the destination from params
-  //const { onAddTrip } = route.params; 
-  const [isCalendarVisible, setCalendarVisible] = useState(false); 
-  const [selectedDate, setSelectedDate] = useState(""); 
-  const [destination, setDestination] = useState(initialDestination || ""); // Use initialDestination
+  const { onAddTrip } = route.params || {};
+  const [isCalendarVisible, setCalendarVisible] = useState(false);
+  const [isSearchbarVisible, setSearchbarVisible] = useState(false);
+  const [selectedDate, setSelectedDate] = useState("");
+  const [destination, setDestination] = useState("");
+  const [destinationID, setDestinationID] = useState("");
+
+  useEffect(() => {
+    console.log("Destination ID updated:", destinationID);
+  }, [destinationID]); // This will run every time destinationID is updated
 
   const openCalendar = () => {
-    setCalendarVisible(true); 
+    setCalendarVisible(true);
   };
 
   const closeCalendar = () => {
-    setCalendarVisible(false); 
+    setCalendarVisible(false);
+  };
+
+  const openSearchBar = () => {
+    setSearchbarVisible(true);
+  };
+
+  const closeSearchBar = () => {
+    setSearchbarVisible(false);
   };
 
   const handleDateSelection = (startDate, endDate) => {
     setSelectedDate(`${startDate} to ${endDate}`);
-    closeCalendar(); 
+    closeCalendar();
+  };
+
+  const handleLocationSelection = (location) => {
+    setDestination(location.location_name);
+    setDestinationID(location.id);
+    closeSearchBar();
   };
 
   const handleConfirmTrip = () => {
     if (destination && selectedDate) {
-      //onAddTrip({ destination, dates: selectedDate }); 
-      console.log("Trip confirmed:", { destination, dates: selectedDate });
+      onAddTrip({ destination, dates: selectedDate });
       navigation.navigate("Planner");
     } else {
-      alert("Please fill in all details."); 
+      alert("Please fill in all details.");
     }
   };
 
   return (
     <View style={styles.container}>
       {/* Top Left X Button */}
-      <TouchableOpacity style={styles.exitButton} onPress={() => navigation.navigate("Planner")}>
-        <Text style={styles.exitButtonText}>X</Text>
+      <TouchableOpacity
+        style={styles.exitButton}
+        onPress={() => navigation.navigate("Planner")}
+      >
+        <Image source={require("../assets/icons/Cross.png")} />
       </TouchableOpacity>
 
       {/* Header */}
@@ -50,16 +74,17 @@ const PlannerNewTrip = () => {
 
       {/* Input Fields */}
       <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Where to?"
-          value={destination}
-          onChangeText={setDestination} // Update destination state
-        />
+        <TouchableOpacity onPress={openSearchBar} style={styles.input}>
+          <Text style={[styles.inputText, { color: destination ? "#323232" : "#A9A9A9" }]}>
+            {destination || "Where to?"}
+          </Text>
+        </TouchableOpacity>
 
         {/* Date Input Field */}
         <TouchableOpacity onPress={openCalendar} style={styles.input}>
-          <Text>{selectedDate || "Date?"}</Text>
+          <Text style={[styles.inputText, { color: selectedDate ? "#323232" : "#A9A9A9" }]}>
+            {selectedDate || "Date?"}
+          </Text>
         </TouchableOpacity>
       </View>
 
@@ -71,14 +96,23 @@ const PlannerNewTrip = () => {
       {/* Calendar Modal */}
       <Modal visible={isCalendarVisible} animationType="slide">
         <View style={styles.modalContainer}>
-          <CustomCalendar
-            onDateSelect={handleDateSelection} // Pass the handler to the CustomCalendar
-          />
-          <TouchableOpacity onPress={closeCalendar} style={styles.closeButton}>
-            <Text style={styles.closeButtonText}>Close Calendar</Text>
-          </TouchableOpacity>
+          {/* Calendar and Close Button Container */}
+          <View style={styles.calendarWithClose}>
+            {/* Calendar */}
+            <CustomCalendar onDateSelect={handleDateSelection} />
+          </View>
         </View>
       </Modal>
+
+      {/* Searchbar Modal */}
+      {/* <Modal visible={isSearchbarVisible}>
+        <View style={styles.modalSearchContainer}>
+          <PlannerLocationSearchbar
+            onLocationSelect={handleLocationSelection}
+            onClose={closeSearchBar}
+          />
+        </View>
+      </Modal> */}
     </View>
   );
 };
@@ -118,31 +152,50 @@ const styles = StyleSheet.create({
     marginTop: 50,
   },
   input: {
+    justifyContent: "center", // Center text vertically
+    color: "#000",
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 10,
     padding: 15,
-    fontSize: 16,
     marginBottom: 20,
+    height: 60,
+  },
+  inputText: {
+    fontSize: 20,
   },
   confirmButton: {
     backgroundColor: "#F47966",
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
+    marginTop: 30,
   },
   confirmButtonText: {
     color: "#fff",
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "bold",
   },
   modalContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    padding: 0,
+    backgroundColor: "#fff",
+  },
+
+  calendarContainer: {
+    width: "100%",
+    height: "80%",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
+  },
+  closeButtonText: {
+    color: "#fff",
+    fontSize: 18,
   },
   closeButton: {
-    marginTop: 20,
     backgroundColor: "#F47966",
     padding: 15,
     borderRadius: 10,

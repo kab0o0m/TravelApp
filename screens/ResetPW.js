@@ -11,7 +11,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import VectorBackground from "../assets/Vector.png";
+import VectorBackground from "../assets/images/Vector.png";
 import InputField from "../components/InputField.js";
 import Button from "../components/Button";
 import { useFonts, Nunito_400Regular, Nunito_700Bold } from "@expo-google-fonts/nunito";
