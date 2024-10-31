@@ -20,7 +20,15 @@ import {
 import * as SplashScreen from "expo-splash-screen";
 import { useNavigation } from "@react-navigation/native";
 import Footer from "../components/Footer";
-//import { populateEvents } from 'react-native-calendars/src/timeline/Packer';
+import EastCoastPark from "../assets/thunderstorm.jpg";
+import MarinaBaySands from "../assets/MarinaBaySands.jpg";
+import Esplanade from "../assets/Esplanade.jpg";
+import USS from "../assets/USS.webp";
+import SingaporeHome from "../assets/SingaporeHome.jpg";
+import Laksa from "../assets/Laksa.jpg";
+import Chickenrice from "../assets/Chickenrice.jpg";
+import Mutarbak from "../assets/ZamZam.jpg";
+import BeefKwayteow from "../assets/Geylang.jpg";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
@@ -52,10 +60,7 @@ const Home = () => {
 
   return (
     <View style={styles.mainContainer}>
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.scrollViewContent}
-      >
+      <ScrollView style={styles.container} contentContainerStyle={styles.scrollViewContent}>
         <View style={styles.headerContainer}>
           <Text style={styles.header}>Mapp!t</Text>
           <Image
@@ -66,25 +71,19 @@ const Home = () => {
 
         <TouchableOpacity onPress={() => navigation.navigate("LocationSearch")}>
           <View style={styles.searchContainer}>
-            <Image
-              source={require("../assets/icons/Search.png")}
-              style={styles.searchIcon}
-            />
+            <Image source={require("../assets/icons/Search.png")} style={styles.searchIcon} />
             <TextInput
               style={styles.searchInput}
-              placeholder="Discover a Country"
+              placeholder="Discover Singapore"
               placeholderTextColor="#A9A9A9"
-              editable={false} // Disable editing since this is just for navigation
+              editable={false}
             />
           </View>
         </TouchableOpacity>
 
         <View style={styles.relativeContainer}>
           <View style={styles.absoluteBox} />
-          <Image
-            source={require("../assets/images/AroundtheWorldBG.png")}
-            style={styles.absoluteImage}
-          />
+          <Image source={SingaporeHome} style={styles.absoluteImage} resizeMode="cover" />
         </View>
 
         <View style={styles.sectionContainer}>
@@ -94,137 +93,135 @@ const Home = () => {
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            style={styles.popularScrollView}
-          >
-            {/* Japan Destination */}
-
-            <View style={styles.destinationContainer}>
-              <View style={styles.destinationBackground} />
-              <Image
-                source={require("../assets/images/JapanBG.png")}
-                style={styles.destinationImage}
-              />
-              <View style={styles.textContainer}>
-                <Text style={styles.destinationText}>Japan</Text>
-              </View>
-            </View>
-
-            {/* Singapore Destination*/}
+            style={styles.popularScrollView}>
             <TouchableOpacity
               style={styles.destinationContainer}
-              onPress={() => navigation.navigate("HomePopular")}
-            >
+              onPress={() => navigation.navigate("HomePopular")}>
               <View style={styles.destinationBackground} />
-              <Image
-                source={require("../assets/images/SingaporeBG.png")}
-                style={styles.destinationImage}
-              />
+              <Image source={MarinaBaySands} style={styles.destinationImage} />
               <View style={styles.textContainer}>
-                <Text style={styles.destinationText}>Singapore</Text>
+                <Text style={styles.destinationText}>📍Marina Bay Sands</Text>
               </View>
             </TouchableOpacity>
 
-            {/*London Destination */}
-            <View style={styles.destinationContainerLast}>
+            <TouchableOpacity
+              style={styles.destinationContainer}
+              onPress={() => navigation.navigate("HomePopular")}>
               <View style={styles.destinationBackground} />
-              <Image
-                source={require("../assets/images/LondonBG.png")}
-                style={styles.destinationImage}
-              />
+              <Image source={Esplanade} style={styles.destinationImage} />
               <View style={styles.textContainer}>
-                <Text style={styles.destinationText}>London</Text>
+                <Text style={styles.destinationText}>📍The Esplanade</Text>
               </View>
-            </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.destinationContainer}
+              onPress={() => navigation.navigate("HomePopular")}>
+              <View style={styles.destinationContainer}>
+                <View style={styles.destinationBackground} />
+                <Image source={EastCoastPark} style={styles.destinationImage} />
+                <View style={styles.textContainer}>
+                  <Text style={styles.destinationText}>📍East Coast Park</Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.destinationContainer}
+              onPress={() => navigation.navigate("HomePopular")}>
+              <View style={styles.destinationContainerLast}>
+                <View style={styles.destinationBackground} />
+                <Image source={USS} style={styles.destinationImage} />
+                <View style={styles.textContainer}>
+                  <Text style={styles.destinationText}>📍Universal Studios</Text>
+                </View>
+              </View>
+            </TouchableOpacity>
           </ScrollView>
         </View>
 
         <View style={styles.sectionContainer}>
-          <Text style={styles.sectionHeader}>Featured</Text>
+          <Text style={styles.sectionHeader}>Food Choices</Text>
 
-          {/* ScrollView for Featured Destinations */}
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            style={styles.featuredScrollView}
-          >
-            {/* Sightseeing Section */}
-            <View style={styles.featuredContainer}>
-              <View style={styles.featuredBackground} />
-              <Image
-                source={require("../assets/images/SightseeingBG.png")}
-                style={styles.featuredImage}
-              />
-              <View style={styles.featuredTextContainer}>
-                <Text style={styles.featuredText}>Sightseeing</Text>
-                <View style={styles.subTextContainer}>
-                  <Image
-                    source={require("../assets/icons/HomeIcon.png")}
-                    style={styles.homeIcon}
-                  />
-                  <Text style={styles.featuredSubText}>Norway, Europe</Text>
-                </View>
-              </View>
-            </View>
-
-            {/* Theme Park Section */}
+            style={styles.featuredScrollView}>
             <TouchableOpacity
-              style={styles.featuredContainer}
-              onPress={() => navigation.navigate("HomeFeatured")}
-            >
-              <View style={styles.featuredBackground} />
-              <Image
-                source={require("../assets/images/ThemeParkBG.png")}
-                style={styles.featuredImage}
-              />
-              <View style={styles.featuredTextContainer}>
-                <Text style={styles.featuredText}>Theme Park</Text>
-                <View style={styles.subTextContainer}>
-                  <Image
-                    source={require("../assets/icons/HomeIcon.png")}
-                    style={styles.homeIcon}
-                  />
-                  <Text style={styles.featuredSubText}>Singapore, Asia</Text>
+              style={styles.destinationContainer}
+              onPress={() => navigation.navigate("HomePopular")}>
+              <View style={styles.destinationContainer}>
+                <View style={styles.destinationBackground} />
+                <Image source={Chickenrice} style={styles.destinationImage} />
+                <View style={styles.featuredTextContainer}>
+                  <Text style={styles.featuredText}>Hainanese Chicken Rice</Text>
+                  <View style={styles.subTextContainer}>
+                    <Image
+                      source={require("../assets/icons/HomeIcon.png")}
+                      style={styles.homeIcon}
+                    />
+                    <Text style={styles.featuredSubText}>Maxwell Hawker</Text>
+                  </View>
                 </View>
               </View>
             </TouchableOpacity>
 
-            {/* Snorkeling Section */}
-            <View style={styles.featuredContainer}>
-              <View style={styles.featuredBackground} />
-              <Image
-                source={require("../assets/images/SnorkelingBG.png")}
-                style={styles.featuredImage}
-              />
-              <View style={styles.featuredTextContainer}>
-                <Text style={styles.featuredText}>Snorkeling</Text>
-                <View style={styles.subTextContainer}>
-                  <Image
-                    source={require("../assets/icons/HomeIcon.png")}
-                    style={styles.homeIcon}
-                  />
-                  <Text style={styles.featuredSubText}>Singapore, Asia</Text>
+            <TouchableOpacity
+              style={styles.destinationContainer}
+              onPress={() => navigation.navigate("HomePopular")}>
+              <View style={styles.destinationContainer}>
+                <View style={styles.destinationBackground} />
+                <Image source={Laksa} style={styles.destinationImage} />
+                <View style={styles.featuredTextContainer}>
+                  <Text style={styles.featuredText}>Katong Laksa</Text>
+                  <View style={styles.subTextContainer}>
+                    <Image
+                      source={require("../assets/icons/HomeIcon.png")}
+                      style={styles.homeIcon}
+                    />
+                    <Text style={styles.featuredSubText}>Roxy Square</Text>
+                  </View>
                 </View>
               </View>
-            </View>
+            </TouchableOpacity>
 
-            {/* Feasting Section */}
-            <View style={styles.featuredContainerLast}>
-              <View style={styles.featuredBackground} />
-              <Image
-                source={require("../assets/images/FeastingBG.png")}
-                style={styles.featuredImage}
-              />
-              <View style={styles.featuredTextContainer}>
-                <Text style={styles.featuredText}>Feasting</Text>
-                <View style={styles.subTextContainer}>
-                  <Image
-                    source={require("../assets/icons/HomeIcon.png")}
-                    style={styles.homeIcon}
-                  />
-                  <Text style={styles.featuredSubText}>Thailand, Asia</Text>
+            <TouchableOpacity
+              style={styles.destinationContainer}
+              onPress={() => navigation.navigate("HomePopular")}>
+              <View style={styles.destinationContainer}>
+                <View style={styles.destinationBackground} />
+                <Image source={Mutarbak} style={styles.destinationImage} />
+                <View style={styles.featuredTextContainer}>
+                  <Text style={styles.featuredText}>Murtabak</Text>
+                  <View style={styles.subTextContainer}>
+                    <Image
+                      source={require("../assets/icons/HomeIcon.png")}
+                      style={styles.homeIcon}
+                    />
+                    <Text style={styles.featuredSubText}>Zam Zam</Text>
+                  </View>
                 </View>
               </View>
-            </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.destinationContainer}
+              onPress={() => navigation.navigate("HomePopular")}>
+              <View style={styles.destinationContainer}>
+                <View style={styles.destinationBackground} />
+                <Image source={BeefKwayteow} style={styles.destinationImage} />
+                <View style={styles.featuredTextContainer}>
+                  <Text style={styles.featuredText}>Beef Kway Teow</Text>
+                  <View style={styles.subTextContainer}>
+                    <Image
+                      source={require("../assets/icons/HomeIcon.png")}
+                      style={styles.homeIcon}
+                    />
+                    <Text style={styles.featuredSubText}>Geylang</Text>
+                  </View>
+                </View>
+              </View>
+            </TouchableOpacity>
           </ScrollView>
         </View>
       </ScrollView>
@@ -259,17 +256,17 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   header: {
-    fontSize: 24,
+    fontSize: 30,
     color: "white",
     fontFamily: "Nunito_900Black",
     position: "absolute",
     left: 291, // Set the x-coordinate
-    top: 17, // Set the y-coordinate
+    top: 50, // Set the y-coordinate
     zIndex: 1,
   },
   headerImage: {
     width: screenWidth,
-    height: 181,
+    height: 240,
     resizeMode: "cover",
   },
   searchContainer: {
@@ -281,14 +278,14 @@ const styles = StyleSheet.create({
     padding: 10,
     boxShadow: "1px 35px 83px 1px rgba(146, 183, 218, 0.12)",
     alignItems: "center",
-    marginHorizontal: (screenWidth - 375) / 2, // Center the container horizontally
+    marginHorizontal: (screenWidth - 375) / 2,
     marginBottom: 12,
   },
   searchIcon: {
-    width: 25, // Set the width of the icon
-    height: 25, // Set the height of the icon
-    marginRight: 12, // Space between icon and text
-    marginLeft: 10, // Shift the icon to the right
+    width: 25,
+    height: 25,
+    marginRight: 12,
+    marginLeft: 10,
   },
   searchInput: {
     color: "#006D77",
@@ -301,33 +298,18 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 252,
     position: "relative",
-    alignItems: "center", // Center the absolute elements
-  },
-  absoluteBox: {
-    width: 351,
-    height: 204,
-    left: 0,
-    top: 24,
-    position: "absolute",
-    backgroundColor: "rgba(16, 58, 62, 0.78)",
-    shadowColor: "rgba(146, 183, 218, 0.12)",
-    shadowOffset: { width: 1, height: 35 },
-    shadowOpacity: 1,
-    shadowRadius: 83,
-    borderRadius: 30,
-    top: 24, // Positioning from the top
-    left: (screenWidth - 351) / 2, // Center the box
+    alignItems: "center",
   },
   absoluteImage: {
-    width: 320,
-    height: 252,
-    left: (screenWidth - 320) / 2, // Center the image horizontally
+    width: 350,
+    height: 250,
     top: 0,
     position: "absolute",
+    borderRadius: 50,
+    marginVertical: 10,
   },
   sectionContainer: {
     marginBottom: 20,
-    marginTop: 12, // Add margin to create space between the image and the section header (Popular Destinations)
   },
   sectionHeader: {
     fontSize: 24,
@@ -338,41 +320,33 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   textContainer: {
-    position: "absolute", // Position text absolutely
-    bottom: 5, // Align text to the bottom
-    width: "100%", // Take full width of the parent
-    alignItems: "center", // Center text horizontally
+    bottom: 0, // Align text to the bottom
+    width: "100%",
+    alignItems: "start",
   },
   destinationBackground: {
     width: 148,
     height: 204,
     position: "absolute",
-    backgroundColor: "rgba(230, 241, 242, 1)", // Background color for the gradient effect
     borderRadius: 30,
-    shadowColor: "rgba(146, 183, 218, 0.12)",
-    shadowOffset: { width: 1, height: 35 },
-    shadowOpacity: 1,
-    shadowRadius: 83,
   },
   destinationImage: {
-    width: 148,
-    height: 204,
+    width: 250,
+    height: 150,
     borderRadius: 30,
     marginRight: 5,
   },
   destinationText: {
     fontSize: 20,
-    color: "#FBFCFE",
-    fontFamily: "Nunito_800ExtraBold",
-    textAlign: "center", // Center the text
-    zIndex: 2, // Ensure text is above the background
-    lineHeight: 24, // Set line height for better spacing
-    textShadowColor: "rgba(0, 0, 0, 0.5)", // Black color with 50% opacity
-    textShadowOffset: { width: 0, height: 2 }, // x: 0, y: 2
-    textShadowRadius: 4, // Blur radius
+    color: "#000",
+    fontFamily: "Nunito_700Bold",
+    textAlign: "center",
+    lineHeight: 24,
+    marginTop: 10,
+    marginLeft: 10,
   },
   featuredBackground: {
-    width: 148,
+    width: "100%",
     height: 204,
     position: "absolute",
     backgroundColor: "rgba(230, 241, 242, 1)", // Background color for the gradient effect
@@ -389,24 +363,26 @@ const styles = StyleSheet.create({
     top: 12,
   },
   featuredTextContainer: {
-    bottom: -14, // Align text to the bottom
+    bottom: -14,
     width: "100%", // Take full width of the parent
     marginTop: 150,
     marginBottom: -10,
-    alignItems: "flex-start",
+    alignItems: "flex-start", // Align text container to the start (left)
+    paddingHorizontal: 10, // Add some padding if needed
   },
   featuredText: {
     fontSize: 20,
     color: "#3A4646",
     fontFamily: "Nunito_600SemiBold",
-    textAlign: "left",
+    textAlign: "left", // Align text to the left
     marginTop: -146,
     zIndex: 2,
-    lineHeight: 30, // Set line height for better spacing
+    lineHeight: 30,
   },
   subTextContainer: {
-    flexDirection: "row", // Align icon and text horizontally
-    alignItems: "center", // Center vertically
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-start", // Align icon and text to the left
   },
   homeIcon: {
     width: 16, // Set the width of the icon
@@ -428,31 +404,27 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
   },
   destinationContainer: {
-    position: "relative", // Set position relative for absolute children
+    position: "relative",
     marginRight: 10,
-    alignItems: "center",
+    alignItems: "flex-start",
   },
   destinationContainerLast: {
-    position: "relative", // Set position relative for absolute children
+    position: "relative",
     marginRight: 55,
-    alignItems: "center",
+    alignItems: "flex-start",
   },
   featuredScrollView: {
     paddingHorizontal: 25,
   },
   featuredContainer: {
-    position: "relative",
     marginBottom: 40,
     marginRight: 20,
     marginLeft: 16,
-    alignItems: "center",
   },
   featuredContainerLast: {
-    position: "relative",
     marginBottom: 20,
     marginLeft: 16,
     marginRight: 60,
-    alignItems: "center",
   },
   footerContainer: {
     position: "absolute",
