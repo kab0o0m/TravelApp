@@ -60,7 +60,10 @@ const Home = () => {
 
   return (
     <View style={styles.mainContainer}>
-      <ScrollView style={styles.container} contentContainerStyle={styles.scrollViewContent}>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.scrollViewContent}
+      >
         <View style={styles.headerContainer}>
           <Text style={styles.header}>Mapp!t</Text>
           <Image
@@ -71,7 +74,10 @@ const Home = () => {
 
         <TouchableOpacity onPress={() => navigation.navigate("LocationSearch")}>
           <View style={styles.searchContainer}>
-            <Image source={require("../assets/icons/Search.png")} style={styles.searchIcon} />
+            <Image
+              source={require("../assets/icons/Search.png")}
+              style={styles.searchIcon}
+            />
             <TextInput
               style={styles.searchInput}
               placeholder="Discover Singapore"
@@ -82,143 +88,145 @@ const Home = () => {
         </TouchableOpacity>
 
         <View style={styles.relativeContainer}>
-          <View style={styles.absoluteBox} />
-          <Image source={SingaporeHome} style={styles.absoluteImage} resizeMode="cover" />
+          <Image
+            source={SingaporeHome}
+            style={styles.absoluteImage}
+            resizeMode="cover"
+          />
         </View>
 
+        {/* Popular Destinations */}
         <View style={styles.sectionContainer}>
           <Text style={styles.sectionHeader}>Popular Destinations</Text>
 
-          {/* ScrollView for Destinations */}
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            style={styles.popularScrollView}>
+            style={styles.popularScrollView}
+          >
             <TouchableOpacity
               style={styles.destinationContainer}
-              onPress={() => navigation.navigate("HomePopular")}>
+              onPress={() => navigation.navigate("HomePopular")}
+            >
               <View style={styles.destinationBackground} />
               <Image source={MarinaBaySands} style={styles.destinationImage} />
               <View style={styles.textContainer}>
-                <Text style={styles.destinationText}>📍Marina Bay Sands</Text>
+                <Text style={styles.destinationText}>Marina Bay Sands</Text>
               </View>
             </TouchableOpacity>
 
             <TouchableOpacity
               style={styles.destinationContainer}
-              onPress={() => navigation.navigate("HomePopular")}>
+              onPress={() => navigation.navigate("HomePopular")}
+            >
               <View style={styles.destinationBackground} />
               <Image source={Esplanade} style={styles.destinationImage} />
               <View style={styles.textContainer}>
-                <Text style={styles.destinationText}>📍The Esplanade</Text>
+                <Text style={styles.destinationText}>The Esplanade</Text>
               </View>
             </TouchableOpacity>
 
             <TouchableOpacity
               style={styles.destinationContainer}
-              onPress={() => navigation.navigate("HomePopular")}>
-              <View style={styles.destinationContainer}>
-                <View style={styles.destinationBackground} />
-                <Image source={EastCoastPark} style={styles.destinationImage} />
-                <View style={styles.textContainer}>
-                  <Text style={styles.destinationText}>📍East Coast Park</Text>
-                </View>
+              onPress={() => navigation.navigate("HomePopular")}
+            >
+              <View style={styles.destinationBackground} />
+              <Image source={EastCoastPark} style={styles.destinationImage} />
+              <View style={styles.textContainer}>
+                <Text style={styles.destinationText}>East Coast Park</Text>
               </View>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={styles.destinationContainer}
-              onPress={() => navigation.navigate("HomePopular")}>
-              <View style={styles.destinationContainerLast}>
-                <View style={styles.destinationBackground} />
-                <Image source={USS} style={styles.destinationImage} />
-                <View style={styles.textContainer}>
-                  <Text style={styles.destinationText}>📍Universal Studios</Text>
-                </View>
+              style={styles.destinationContainerLast}
+              onPress={() => navigation.navigate("HomePopular")}
+            >
+              <View style={styles.destinationBackground} />
+              <Image source={USS} style={styles.destinationImage} />
+              <View style={styles.textContainer}>
+                <Text style={styles.destinationText}>Universal Studios</Text>
               </View>
             </TouchableOpacity>
           </ScrollView>
         </View>
 
+        {/* Food choices */}
         <View style={styles.sectionContainer}>
           <Text style={styles.sectionHeader}>Food Choices</Text>
 
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            style={styles.featuredScrollView}>
+            style={styles.featuredScrollView}
+          >
             <TouchableOpacity
               style={styles.destinationContainer}
-              onPress={() => navigation.navigate("HomePopular")}>
-              <View style={styles.destinationContainer}>
-                <View style={styles.destinationBackground} />
-                <Image source={Chickenrice} style={styles.destinationImage} />
-                <View style={styles.featuredTextContainer}>
-                  <Text style={styles.featuredText}>Hainanese Chicken Rice</Text>
-                  <View style={styles.subTextContainer}>
-                    <Image
-                      source={require("../assets/icons/HomeIcon.png")}
-                      style={styles.homeIcon}
-                    />
-                    <Text style={styles.featuredSubText}>Maxwell Hawker</Text>
-                  </View>
+              onPress={() => navigation.navigate("HomePopular")}
+            >
+              <View style={styles.destinationBackground} />
+              <Image source={Chickenrice} style={styles.destinationImage} />
+              <View style={styles.featuredTextContainer}>
+                <Text style={styles.featuredText}>Hainanese Chicken Rice</Text>
+                <View style={styles.subTextContainer}>
+                  <Image
+                    source={require("../assets/icons/HomeIcon.png")}
+                    style={styles.homeIcon}
+                  />
+                  <Text style={styles.featuredSubText}>Maxwell Hawker</Text>
                 </View>
               </View>
             </TouchableOpacity>
 
             <TouchableOpacity
               style={styles.destinationContainer}
-              onPress={() => navigation.navigate("HomePopular")}>
-              <View style={styles.destinationContainer}>
-                <View style={styles.destinationBackground} />
-                <Image source={Laksa} style={styles.destinationImage} />
-                <View style={styles.featuredTextContainer}>
-                  <Text style={styles.featuredText}>Katong Laksa</Text>
-                  <View style={styles.subTextContainer}>
-                    <Image
-                      source={require("../assets/icons/HomeIcon.png")}
-                      style={styles.homeIcon}
-                    />
-                    <Text style={styles.featuredSubText}>Roxy Square</Text>
-                  </View>
+              onPress={() => navigation.navigate("HomePopular")}
+            >
+              <View style={styles.destinationBackground} />
+              <Image source={Laksa} style={styles.destinationImage} />
+              <View style={styles.featuredTextContainer}>
+                <Text style={styles.featuredText}>Katong Laksa</Text>
+                <View style={styles.subTextContainer}>
+                  <Image
+                    source={require("../assets/icons/HomeIcon.png")}
+                    style={styles.homeIcon}
+                  />
+                  <Text style={styles.featuredSubText}>Roxy Square</Text>
                 </View>
               </View>
             </TouchableOpacity>
 
             <TouchableOpacity
               style={styles.destinationContainer}
-              onPress={() => navigation.navigate("HomePopular")}>
-              <View style={styles.destinationContainer}>
-                <View style={styles.destinationBackground} />
-                <Image source={Mutarbak} style={styles.destinationImage} />
-                <View style={styles.featuredTextContainer}>
-                  <Text style={styles.featuredText}>Murtabak</Text>
-                  <View style={styles.subTextContainer}>
-                    <Image
-                      source={require("../assets/icons/HomeIcon.png")}
-                      style={styles.homeIcon}
-                    />
-                    <Text style={styles.featuredSubText}>Zam Zam</Text>
-                  </View>
+              onPress={() => navigation.navigate("HomePopular")}
+            >
+              <View style={styles.destinationBackground} />
+              <Image source={Mutarbak} style={styles.destinationImage} />
+              <View style={styles.featuredTextContainer}>
+                <Text style={styles.featuredText}>Murtabak</Text>
+                <View style={styles.subTextContainer}>
+                  <Image
+                    source={require("../assets/icons/HomeIcon.png")}
+                    style={styles.homeIcon}
+                  />
+                  <Text style={styles.featuredSubText}>Zam Zam</Text>
                 </View>
               </View>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={styles.destinationContainer}
-              onPress={() => navigation.navigate("HomePopular")}>
-              <View style={styles.destinationContainer}>
-                <View style={styles.destinationBackground} />
-                <Image source={BeefKwayteow} style={styles.destinationImage} />
-                <View style={styles.featuredTextContainer}>
-                  <Text style={styles.featuredText}>Beef Kway Teow</Text>
-                  <View style={styles.subTextContainer}>
-                    <Image
-                      source={require("../assets/icons/HomeIcon.png")}
-                      style={styles.homeIcon}
-                    />
-                    <Text style={styles.featuredSubText}>Geylang</Text>
-                  </View>
+              style={styles.destinationContainerLast}
+              onPress={() => navigation.navigate("HomePopular")}
+            >
+              <View style={styles.destinationBackground} />
+              <Image source={BeefKwayteow} style={styles.destinationImage} />
+              <View style={styles.featuredTextContainer}>
+                <Text style={styles.featuredText}>Beef Kway Teow</Text>
+                <View style={styles.subTextContainer}>
+                  <Image
+                    source={require("../assets/icons/HomeIcon.png")}
+                    style={styles.homeIcon}
+                  />
+                  <Text style={styles.featuredSubText}>Geylang</Text>
                 </View>
               </View>
             </TouchableOpacity>
@@ -299,14 +307,16 @@ const styles = StyleSheet.create({
     height: 252,
     position: "relative",
     alignItems: "center",
+    marginTop: 30,
+    marginBottom: 50,
   },
   absoluteImage: {
-    width: 350,
-    height: 250,
+    width: "94%",
+    height: 280,
     top: 0,
     position: "absolute",
     borderRadius: 50,
-    marginVertical: 10,
+    marginBottom: 50,
   },
   sectionContainer: {
     marginBottom: 20,
@@ -317,12 +327,12 @@ const styles = StyleSheet.create({
     fontFamily: "Nunito_700Bold",
     marginLeft: 30,
     marginBottom: 10,
-    marginTop: 20,
+    marginTop: 25,
   },
   textContainer: {
-    bottom: 0, // Align text to the bottom
     width: "100%",
-    alignItems: "start",
+    alignItems: "flex-start",
+    justifyContent: "center",
   },
   destinationBackground: {
     width: 148,
@@ -342,7 +352,7 @@ const styles = StyleSheet.create({
     fontFamily: "Nunito_700Bold",
     textAlign: "center",
     lineHeight: 24,
-    marginTop: 10,
+    marginTop: 14,
     marginLeft: 10,
   },
   featuredBackground: {
@@ -375,7 +385,7 @@ const styles = StyleSheet.create({
     color: "#3A4646",
     fontFamily: "Nunito_600SemiBold",
     textAlign: "left", // Align text to the left
-    marginTop: -146,
+    marginTop: -155,
     zIndex: 2,
     lineHeight: 30,
   },
@@ -401,7 +411,7 @@ const styles = StyleSheet.create({
     marginBottom: -20,
   },
   popularScrollView: {
-    paddingHorizontal: 30,
+    paddingHorizontal: 25,
   },
   destinationContainer: {
     position: "relative",
@@ -415,6 +425,7 @@ const styles = StyleSheet.create({
   },
   featuredScrollView: {
     paddingHorizontal: 25,
+    marginBottom: 20,
   },
   featuredContainer: {
     marginBottom: 40,
