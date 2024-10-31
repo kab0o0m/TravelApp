@@ -8,7 +8,7 @@ import {
   Image,
   ActivityIndicator,
 } from "react-native";
-import BASE_URL from "../config"; // Make sure this points to your backend URL
+import BASE_URL from "../config";
 
 const LocationDetailsModal = ({
   visible,

@@ -19,7 +19,7 @@ import {
 } from "@expo-google-fonts/nunito";
 import * as SplashScreen from "expo-splash-screen";
 import { useNavigation } from "@react-navigation/native";
-import Footer from "../components/Footer";
+import Footer from "../components/NavBar";
 //import { populateEvents } from 'react-native-calendars/src/timeline/Packer';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");

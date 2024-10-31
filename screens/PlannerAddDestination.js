@@ -4,31 +4,19 @@ import {
   Text,
   TextInput,
   StyleSheet,
-  TouchableWithoutFeedback,
-  Alert,
+  TouchableOpacity,
   Keyboard,
+  Image,
 } from "react-native";
 import MapView, { Marker } from "react-native-maps";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import AddLDestinationModal from "./AddDestinationModal";
+import AddDestinationModal from "./AddDestinationModal";
 import axios from "axios";
-import BASE_URL from "../config"; // Ensure this points to your backend URL
-import Footer from "../components/Footer";
+import BASE_URL from "../config";
+import Footer from "../components/NavBar";
+import { useNavigation } from "@react-navigation/native";
 
-const Button = ({
-  title,
-  onPress,
-  backgroundColor = "#F47966",
-  textColor = "#FFFFFF",
-}) => (
-  <TouchableWithoutFeedback onPress={onPress}>
-    <View style={[styles.button, { backgroundColor }]}>
-      <Text style={{ color: textColor, textAlign: "center" }}>{title}</Text>
-    </View>
-  </TouchableWithoutFeedback>
-);
-
-const PlannerAddDestination = () => {
+const PlannerAddDestination = ({ route }) => {
+  const navigation = useNavigation();
   const [searchQuery, setSearchQuery] = useState("");
   const [mapRegion, setMapRegion] = useState({
     latitude: 1.3521,
@@ -39,9 +27,6 @@ const PlannerAddDestination = () => {
   const [markerPosition, setMarkerPosition] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [locationDetails, setLocationDetails] = useState({});
-  const [weatherData, setWeatherData] = useState(null);
-
-  const dismissKeyboard = () => Keyboard.dismiss();
 
   const handleSearch = async () => {
     try {
@@ -78,60 +63,75 @@ const PlannerAddDestination = () => {
     }
   };
 
-  const openDetailsModal = () => {
-    setModalVisible(true);
-  };
-
-  const closeDetailsModal = () => {
-    setModalVisible(false);
+  const handleAddLocation = () => {
+    const onLocationSelect = route.params?.onLocationSelect;
+    if (onLocationSelect) {
+      onLocationSelect(locationDetails);
+    }
+    navigation.goBack();
   };
 
   return (
-    <TouchableWithoutFeedback onPress={dismissKeyboard}>
-      <View style={styles.container}>
-        <View style={styles.searchContainer}>
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search for a location..."
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-          />
-          <Button title="Search" onPress={handleSearch} />
-        </View>
+    <View style={styles.container}>
+      {/* Exit Button */}
+      <TouchableOpacity
+        style={styles.exitButton}
+        onPress={() => navigation.goBack()}
+      >
+        <Image source={require("../assets/icons/Cross.png")} />
+      </TouchableOpacity>
 
-        <MapView style={styles.map} region={mapRegion}>
-          {markerPosition && (
-            <Marker
-              coordinate={markerPosition}
-              title={locationDetails.title}
-              description={locationDetails.description}
-              onPress={openDetailsModal}
-            />
-          )}
-        </MapView>
-
-        <AddLocationModal
-          visible={modalVisible}
-          locationDetails={locationDetails}
-          onClose={closeDetailsModal}
+      {/* Search Bar and Search Button */}
+      <View style={styles.searchContainer}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search for a location..."
+          value={searchQuery}
+          onChangeText={setSearchQuery}
         />
+        <TouchableOpacity onPress={handleSearch} style={styles.button}>
+          <Text style={styles.buttonText}>Search</Text>
+        </TouchableOpacity>
       </View>
 
-      <View style={styles.footerContainer}>
-        <Footer />
-      </View>
-    </TouchableWithoutFeedback>
+      {/* Map View */}
+      <MapView style={styles.map} region={mapRegion}>
+        {markerPosition && (
+          <Marker
+            coordinate={markerPosition}
+            title={locationDetails.title}
+            description={locationDetails.description}
+            onPress={() => setModalVisible(true)}
+          />
+        )}
+      </MapView>
+
+      {/* Add Destination Modal */}
+      <AddDestinationModal
+        visible={modalVisible}
+        locationDetails={locationDetails}
+        onClose={() => setModalVisible(false)}
+        onAdd={handleAddLocation}
+      />
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
+  exitButton: {
+    position: "absolute",
+    top: 40,
+    left: 20,
+    zIndex: 10, // Ensure it stays on top of other components
+  },
   searchContainer: {
     paddingHorizontal: 16,
     paddingVertical: 32,
     backgroundColor: "white",
     borderBottomWidth: 1,
     borderColor: "#ddd",
+    marginTop: 60, // Space for the exit button at the top
   },
   searchInput: {
     height: 40,
@@ -143,16 +143,16 @@ const styles = StyleSheet.create({
   },
   map: { width: "100%", height: "100%" },
   button: {
+    backgroundColor: "#F47966",
+    padding: 10,
+    borderRadius: 5,
     alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 15,
-    borderRadius: 25,
+    marginTop: 10,
   },
-  /*footerContainer: {
-    position: "absolute",
-    bottom: 0,
-    width: "100%",
-  },*/
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
+  },
 });
 
 export default PlannerAddDestination;

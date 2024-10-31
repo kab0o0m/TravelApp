@@ -14,7 +14,7 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import LocationDetailsModal from "./LocationDetailsModal";
 import axios from "axios";
 import BASE_URL from "../config"; // Ensure this points to your backend URL
-import Footer from "../components/Footer";
+import Footer from "../components/NavBar";
 import { fetchWeatherData } from "../api/weather";
 
 const Button = ({
