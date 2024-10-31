@@ -12,6 +12,7 @@ import Profile from "./screens/Profile";
 import EditProfile from "./screens/EditProfile";
 import Home from "./screens/Home";
 import HomeFeatured from "./screens/HomeFeatured";
+import AIRandomiser from "./screens/AIRandomiser";
 import ResetPW from "./screens/ResetPW";
 import Planner from "./screens/Planner";
 import PlannerNewTrip from "./screens/PlannerNewTrip";
@@ -29,7 +30,7 @@ export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Startpage">
+        <Stack.Navigator initialRouteName="AuthCheck">
           <Stack.Screen
             name="AuthCheck"
             component={AuthCheck}
@@ -53,6 +54,11 @@ export default function App() {
           <Stack.Screen
             name="HomePopular"
             component={HomePopular}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="AIRandomiser"
+            component={AIRandomiser}
             options={{ headerShown: false }}
           />
           <Stack.Screen
