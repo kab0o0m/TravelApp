@@ -11,15 +11,17 @@ import {
   useFonts,
   Nunito_400Regular,
   Nunito_700Bold,
+  Nunito_900Black,
 } from "@expo-google-fonts/nunito";
 import { Picker } from "@react-native-picker/picker";
 import Button from "../components/Button";
-import Footer from "../components/NavBar";
+import Footer from "../components/Footer";
 import AddExpenseModal from "./AddExpenseModal";
 import * as Progress from "react-native-progress";
 import RoundedSquareIcon from "../components/RoundedSquareIcon";
 import { fetchExpenses } from "../api/expensesAPI";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { fetchUserData } from "../api/authAPI";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
@@ -27,12 +29,13 @@ const Expenses = () => {
   const [fontsLoaded] = useFonts({
     Nunito_400Regular,
     Nunito_700Bold,
+    Nunito_900Black,
   });
 
   const [selectedSortOption, setSelectedSortOption] = useState("date_latest");
   const [expenses, setExpenses] = useState([]);
   const [budget, setBudget] = useState(500);
-  const [totalSpent, setTotalSpent] = useState(0);
+  const [totalSpent, setTotalSpent] = useState(2);
   const [modalVisible, setModalVisible] = useState(false);
   const [userId, setUserId] = useState(null);
   // const [expenses, setExpenses] = useState([
@@ -54,14 +57,13 @@ const Expenses = () => {
           );
         }
         const userData = JSON.parse(storedUserData);
-        setUserId(userData.user_id);
-
-        const fetchedExpenses = await fetchExpenses(userData.user_id);
+        setUserId(userData.id);
+        const fetchedExpenses = await fetchExpenses(userData.id);
         setExpenses(fetchedExpenses);
 
         // Calculate the total spent amount
         const total = fetchedExpenses.reduce(
-          (sum, expense) => sum + expense.price,
+          (sum, expense) => sum + expense.amount,
           0
         );
         setTotalSpent(total);
@@ -83,10 +85,24 @@ const Expenses = () => {
 
   const handleAddExpense = (expense) => {
     setExpenses([...expenses, expense]);
-    setTotalSpent((prevTotal) => prevTotal + expense.price);
+    setTotalSpent((prevTotal) => prevTotal + expense.amount);
   };
 
-  const progress = budget ? totalSpent / budget : 0;
+  const formatDate = (isoDate) => {
+    const date = new Date(isoDate);
+
+    if (isNaN(date.getTime())) {
+      return "Invalid Date"; // Return placeholder if date is invalid
+    }
+
+    return new Intl.DateTimeFormat("en-GB", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    }).format(date);
+  };
+
+  const progress = budget && budget > 0 ? totalSpent / budget : 0;
 
   return (
     <View style={styles.container}>
@@ -94,6 +110,7 @@ const Expenses = () => {
 
       <View style={styles.box}>
         <View style={styles.innerBox}>
+          {/* <Text style={styles.amount}>SGD {totalSpent.toFixed(2)}</Text> */}
           <Text style={styles.amount}>SGD {totalSpent.toFixed(2)}</Text>
 
           {budget === null ? (
@@ -109,7 +126,8 @@ const Expenses = () => {
                 borderWidth={0}
               />
               <Text style={styles.progressText}>
-                BUDGET: SGD {budget.toFixed(2)}
+                {/* BUDGET: SGD {budget.toFixed(2)} */}
+                BUDGET: SGD {budget}
               </Text>
             </View>
           )}
@@ -167,12 +185,16 @@ const Expenses = () => {
                         {expense.category}
                       </Text>
                       <Text style={styles.expensePrice}>
-                        SGD {expense.price.toFixed(2)}
+                        $ {expense.amount}
                       </Text>
                     </View>
                     <View style={styles.expenseRow}>
-                      <Text style={styles.expenseTitle}>{expense.title}</Text>
-                      <Text style={styles.expenseDate}>{expense.date}</Text>
+                      <Text style={styles.expenseDate}>
+                        {formatDate(expense.date)}
+                      </Text>
+                      <Text style={styles.expenseTitle}>
+                        {expense.payment_type}
+                      </Text>
                     </View>
                   </View>
                 </View>
@@ -217,7 +239,7 @@ const styles = StyleSheet.create({
   },
   header: {
     fontSize: screenHeight * 0.03,
-    fontFamily: "Nunito_700Bold",
+    fontFamily: "Nunito_900Black",
     color: "#006D77",
     marginBottom: screenHeight * 0.02,
     marginLeft: screenWidth * 0.05,

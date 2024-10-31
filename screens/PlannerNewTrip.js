@@ -17,7 +17,7 @@ LogBox.ignoreLogs([
   "Non-serializable values were found in the navigation state",
 ]);
 
-const PlannerNewTrip = ({ route }) => {
+const PlannerNewTrip = () => {
   const navigation = useNavigation();
   const { onAddTrip, selectedLocation } = route.params || {};
   const [isCalendarVisible, setCalendarVisible] = useState(false);
