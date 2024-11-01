@@ -226,12 +226,12 @@ const LocationSearch = () => {
   const navigation = useNavigation();
 
   // Animated value to control the search bar position
-  const searchBarY = useRef(new Animated.Value(120)).current; // Starts at Y offset of 100
+  const searchBarY = useRef(new Animated.Value(150)).current; // Starts at Y offset of 100
 
   // This useEffect hook will animate the search bar to the top
   useEffect(() => {
     Animated.timing(searchBarY, {
-      toValue: 0, // Move to the top (Y offset = 0)
+      toValue: 35, // Move to the top (Y offset = 35)
       duration: 300, // Duration of animation in ms
       useNativeDriver: true,
     }).start();

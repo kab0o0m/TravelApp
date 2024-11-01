@@ -4,6 +4,7 @@ import ProfilePicture from "../assets/icons/ProfilePicture.png";
 import Footer from "../components/Footer";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { logoutUser } from "../api/authAPI";
 
 const Account = () => {
   const navigation = useNavigation();
@@ -66,7 +67,10 @@ const Account = () => {
           >
             <Text style={styles.accountItemText}>Personal Information</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.accountItem} onPress={() => navigation.navigate("SavedLocation")}>
+          <TouchableOpacity
+            style={styles.accountItem}
+            onPress={() => navigation.navigate("SavedLocation")}
+          >
             <Text style={styles.accountItemText}>Saved Locations</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.accountItem}>
@@ -75,11 +79,20 @@ const Account = () => {
           <TouchableOpacity style={styles.accountItem}>
             <Text style={styles.accountItemText}>My Messages</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.accountItem}>
+          {/* <TouchableOpacity style={styles.accountItem}>
             <Text style={styles.accountItemText}>Notification Settings</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <TouchableOpacity style={styles.accountItem}>
             <Text style={styles.accountItemText}>Help Centre</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.accountItem}
+            onPress={async () => {
+              await logoutUser();
+              navigation.navigate("Login"); // Replace "Login" with your login screen route name
+            }}
+          >
+            <Text style={styles.accountItemText}>Logout</Text>
           </TouchableOpacity>
         </View>
       </View>
