@@ -24,6 +24,10 @@ const AIRandomiser = () => {
     const cup1Anim = useRef(new Animated.Value(0)).current;
     const cup2Anim = useRef(new Animated.Value(0)).current;
     const cup3Anim = useRef(new Animated.Value(0)).current;
+    const frogAnim = useRef(new Animated.Value(0)).current;
+
+    // Reference to the frog animation
+    const frogAnimationRef = useRef(null);
 
 
     useEffect(() => {
@@ -31,6 +35,33 @@ const AIRandomiser = () => {
         SplashScreen.hideAsync(); 
         }
     }, [fontsLoaded]);
+
+    useEffect(() => {
+        startFrogAnimation();
+        // Stop the animation when the component unmounts
+        return () => frogAnimationRef.current.stop();
+    }, []);
+
+    const startFrogAnimation = () => {
+        // Frog jumping animation
+        frogAnimationRef.current = Animated.loop(
+            Animated.sequence([
+                Animated.timing(frogAnim, {
+                    toValue: -20, // Jump up by 20 units
+                    duration: 300,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(frogAnim, {
+                    toValue: 0, // Return to original position
+                    duration: 300,
+                    useNativeDriver: true,
+                }),
+            ])
+            
+        );
+
+        frogAnimationRef.current.start();
+    };
 
     if (!fontsLoaded) {
         return (
@@ -154,8 +185,19 @@ const AIRandomiser = () => {
     // Trigger the animation on button press
     const handleShuffle = () => {
         setShowMessage(false); // Hide the message box before starting the animation
+        if (frogAnimationRef.current) {
+            frogAnimationRef.current.stop(); // Stop the frog animation
+            frogAnim.setValue(0); // Reset frog's position to original
+        }
         animateCups();
     };
+
+    // Handle the cancel button press
+    const handleCancel = () => {
+        setShowMessage(false); // Hide the message box
+        startFrogAnimation(); // Restart the frog animation
+    };
+
 
     // Define the animated styles for the cups
     const cup1Style = {
@@ -191,10 +233,19 @@ const AIRandomiser = () => {
         ],
     };
 
+    // Define the animated style for the frog
+    const frogStyle = {
+        transform: [
+            {
+                translateY: frogAnim, // Use the animated value for vertical movement
+            },
+        ],
+    };
+
     // Function to navigate to PlannerNewTrip (BACKEND)
     const navigateToPlannerNewTrip = () => {
         navigation.navigate("PlannerNewTrip", {
-            destination: "Paris" // Pass the destination
+            destination: "Marina Bay Sands" // Pass the destination
         });
     };
 
@@ -204,7 +255,6 @@ const AIRandomiser = () => {
             <View style={styles.headerContainer}>
                 <Image source={require('../assets/AITopBG.png')} style={styles.headerImage} />
                 <Text style={styles.header}>Discover Your Next Adventure!</Text>
-                <View style={styles.divider} />
             </View>
 
             
@@ -217,7 +267,7 @@ const AIRandomiser = () => {
 
             <View style={styles.bottomContainer}>
                 <Image source={require('../assets/AIBottomBG.png')} style={styles.bottomImage} />
-                <Image source={require('../assets/Frog.png')} style={styles.frogImage} />
+                <Animated.Image source={require('../assets/Frog.png')} style={[styles.frogImage, frogStyle]} />
 
                 <View style={styles.buttonContainer}>
                     <TouchableOpacity style={styles.shuffleButton} onPress={handleShuffle}> 
@@ -225,17 +275,38 @@ const AIRandomiser = () => {
                     </TouchableOpacity>
                 </View>
 
+            
+
                 {showMessage && (
                     <ImageBackground 
                         source={require('../assets/MessageBox.png')} 
                         style={styles.messageContainer}
                     >
                         <Text style={styles.messageText}>FROLIC TO</Text>
-                        <TouchableOpacity
-                            style={styles.destinationButton} onPress={navigateToPlannerNewTrip}>
-                            <Text style={styles.destinationText}>[DESTINATION]</Text>
-                        </TouchableOpacity>
-                        <Text style={styles.messageText}>FOR A RIBBITING TIME!</Text>
+                        <Text style={styles.destinationText}>MARINA BAY SANDS</Text>  
+                        <Text style={styles.activityHeader}>Activity Recommendations:</Text>
+                        
+                        <View style={styles.activityContainer}>
+                            <View style={styles.activityItem}>
+                                <Text style={styles.activityText}>CATCH A MUSICAL</Text>
+                            </View>
+                            <View style={styles.activityItem}>
+                                <Text style={styles.activityText}>WINE & DINE</Text>
+                            </View>
+                            <View style={styles.activityItem}>
+                                <Text style={styles.activityText}>SHOP LUXURY</Text>
+                            </View>
+                        </View>
+
+                        <View style={styles.buttonRow}>
+                            <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
+                                <Text style={styles.cancelText}>Cancel</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.addToPlannerButton} onPress={navigateToPlannerNewTrip}>
+                                <Text style={styles.addToPlannerText}>Add to Planner</Text>
+                            </TouchableOpacity>
+                        </View>
+
                     </ImageBackground>
                 )}
 
@@ -265,20 +336,13 @@ const styles = StyleSheet.create({
         left: 21, 
         fontSize: 28,
         fontFamily: 'Nunito_900Black',
-        color: 'black',
+        color: '#006D77',
         width: 252,
     },
     headerImage:{
         width: screenWidth,
         height: 181,
         resizeMode: 'cover',
-    },
-    divider: {
-        position: 'absolute',
-        width: '100%',
-        height: 1, 
-        backgroundColor: '#879192',
-        bottom: 30,
     },
     cupsContainer: {
         flexDirection: 'row',
@@ -303,7 +367,7 @@ const styles = StyleSheet.create({
     frogImage: {
         position: 'absolute',
         //marginBottom: -9,
-        bottom: 308,
+        bottom: 270,
         zIndex: 1,
     },
     buttonContainer:{
@@ -317,7 +381,6 @@ const styles = StyleSheet.create({
         borderRadius: 28,
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 40,
         boxShadow: '0px 4px 4px rgba(0, 0, 0, 0)',
     },
     shuffleButton: {
@@ -332,31 +395,91 @@ const styles = StyleSheet.create({
     messageContainer: {
         position: 'absolute',
         width: 352,
-        height: 336,
+        height: 460.98,
         borderRadius: 24,
         justifyContent: 'space-evenly',
         alignItems: 'center',
-        top: -275,
+        top: -325,
         left: screenWidth / 2 - 176,
         zIndex: 2,
     },
     messageText: {
-        top: -20,
-        fontSize: 24,
+        top: -15,
+        width: 300,
+        fontSize: 20,
         fontFamily: 'Nunito_800ExtraBold',
-        color: '#FF6F61',
+        color: '#006D77',
         textAlign: 'center',
     },
-    destinationButton: {
-        padding: 0,
-    },
+    
     destinationText: {
-        top: -20,
+        top: -50,
+        width: 300,
         fontSize: 36,
         fontFamily: 'Nunito_900Black',
-        color: '#FF6F61',
+        color: '#006D77',
+        textAlign: 'center',  
+    },
+    activityHeader:{
+        top: -70,
+        width: 300,
+        fontSize: 20,
+        fontFamily: 'Nunito_800ExtraBold',
+        color: '#006D77',
         textAlign: 'center',
-       
+    },
+    activityContainer: {
+        alignItems: 'center',
+    },
+    
+    activityItem: {
+        marginBottom: -10, // Adjust spacing between activity items
+    },
+    activityText: {
+        top: -100,
+        width: 300,
+        fontSize: 24,
+        fontFamily: 'Nunito_900Black',
+        color: '#006D77',
+        textAlign: 'center',
+        marginBottom: 10,
+    },
+    buttonRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        width: '95%',
+        paddingHorizontal: 50,
+        position: 'absolute',
+        bottom: 75,
+        gap: 60,
+    },
+    
+    cancelButton: {
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    
+    cancelText: {
+        color: '#A0A0A0',
+        fontSize: 16,
+        fontFamily: 'Nunito_700Bold',
+        textDecorationLine: "underline",
+    },
+    
+    addToPlannerButton: {
+        backgroundColor: '#F47966',
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 28,
+        justifyContent: 'center',
+        alignItems: 'center',
+        boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.10)',
+    },
+    
+    addToPlannerText: {
+        color: 'white',
+        fontSize: 16,
+        fontFamily: 'Nunito_700Bold',
     },
 
 });
