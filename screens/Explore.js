@@ -14,7 +14,7 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import LocationDetailsModal from "./LocationDetailsModal";
 import axios from "axios";
 import BASE_URL from "../config"; // Ensure this points to your backend URL
-import Footer from "../components/Footer";
+import NavBar from "../components/NavBar";
 import { fetchWeatherData } from "../api/weather";
 
 const Button = ({
@@ -146,8 +146,8 @@ const Explore = () => {
         </View>
       )}
 
-      {/* <View style={styles.footerContainer}>
-        <Footer />
+      {/* <View style={styles.NavBarContainer}>
+        <NavBar />
       </View> */}
     </TouchableWithoutFeedback>
   );
@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     borderRadius: 25,
   },
-  /*footerContainer: {
+  /*NavBarContainer: {
     position: "absolute",
     bottom: 0,
     width: "100%",

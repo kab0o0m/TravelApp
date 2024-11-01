@@ -1,7 +1,11 @@
 import { StyleSheet, Text, View, SafeAreaView } from "react-native";
 import Toast from "react-native-toast-message";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
+import NavBar from "./components/NavBar";
 import Startpage from "./screens/Startpage";
 import AuthCheck from "./screens/AuthCheck";
 import Login from "./screens/Login";
@@ -16,14 +20,13 @@ import AIRandomiser from "./screens/AIRandomiser";
 import ResetPW from "./screens/ResetPW";
 import Planner from "./screens/Planner";
 import PlannerNewTrip from "./screens/PlannerNewTrip";
+import PlannerAddDestination from "./screens/PlannerAddDestination";
 import LocationSearch from "./screens/LocationSearch";
 import SavedLocation from "./screens/SavedLocation";
 import HomePopular from "./screens/HomePopular";
 import Explore from "./screens/Explore";
 import Test from "./screens/Test";
 import Expenses from "./screens/Expenses";
-import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 export default function App() {
   const Stack = createNativeStackNavigator();
@@ -104,6 +107,11 @@ export default function App() {
           <Stack.Screen
             name="PlannerNewTrip"
             component={PlannerNewTrip}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="PlannerAddDestination"
+            component={PlannerAddDestination}
             options={{ headerShown: false }}
           />
           <Stack.Screen

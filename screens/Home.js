@@ -19,7 +19,7 @@ import {
 } from "@expo-google-fonts/nunito";
 import * as SplashScreen from "expo-splash-screen";
 import { useNavigation } from "@react-navigation/native";
-import Footer from "../components/Footer";
+import NavBar from "../components/NavBar";
 import EastCoastPark from "../assets/thunderstorm.jpg";
 import MarinaBaySands from "../assets/MarinaBaySands.jpg";
 import Esplanade from "../assets/Esplanade.jpg";
@@ -64,6 +64,10 @@ const Home = () => {
         style={styles.container}
         contentContainerStyle={styles.scrollViewContent}
       >
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.scrollViewContent}
+      >
         <View style={styles.headerContainer}>
           <Text style={styles.header}>Mapp!t</Text>
           <Image
@@ -78,6 +82,10 @@ const Home = () => {
               source={require("../assets/icons/Search.png")}
               style={styles.searchIcon}
             />
+            <Image
+              source={require("../assets/icons/Search.png")}
+              style={styles.searchIcon}
+            />
             <TextInput
               style={styles.searchInput}
               placeholder="Discover Singapore"
@@ -88,6 +96,12 @@ const Home = () => {
         </TouchableOpacity>
 
         <View style={styles.relativeContainer}>
+          <View style={styles.absoluteBox} />
+          <Image
+            source={SingaporeHome}
+            style={styles.absoluteImage}
+            resizeMode="cover"
+          />
           <Image
             source={SingaporeHome}
             style={styles.absoluteImage}
@@ -108,6 +122,8 @@ const Home = () => {
               style={styles.destinationContainer}
               onPress={() => navigation.navigate("HomePopular")}
             >
+              onPress={() => navigation.navigate("HomePopular")}
+            >
               <View style={styles.destinationBackground} />
               <Image source={MarinaBaySands} style={styles.destinationImage} />
               <View style={styles.textContainer}>
@@ -117,6 +133,8 @@ const Home = () => {
 
             <TouchableOpacity
               style={styles.destinationContainer}
+              onPress={() => navigation.navigate("HomePopular")}
+            >
               onPress={() => navigation.navigate("HomePopular")}
             >
               <View style={styles.destinationBackground} />
@@ -234,8 +252,8 @@ const Home = () => {
         </View>
       </ScrollView>
 
-      <View style={styles.footerContainer}>
-        <Footer />
+      <View style={styles.NavBarContainer}>
+        <NavBar />
       </View>
     </View>
   );
@@ -437,7 +455,7 @@ const styles = StyleSheet.create({
     marginLeft: 16,
     marginRight: 60,
   },
-  footerContainer: {
+  NavBarContainer: {
     position: "absolute",
     bottom: 0,
     width: "100%",

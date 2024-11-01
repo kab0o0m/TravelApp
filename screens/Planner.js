@@ -1,6 +1,12 @@
 import React, { useState } from "react";
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
-import Footer from "../components/Footer";
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
+import NavBar from "../components/NavBar";
 import { useNavigation } from "@react-navigation/native";
 
 const Planner = () => {
@@ -36,13 +42,16 @@ const Planner = () => {
         )}
 
         <TouchableOpacity
-          onPress={() => navigation.navigate("PlannerNewTrip", { onAddTrip: handleAddTrip })}
-          style={styles.addTripButton}>
+          onPress={() =>
+            navigation.navigate("PlannerNewTrip", { onAddTrip: handleAddTrip })
+          }
+          style={styles.addTripButton}
+        >
           <Text style={styles.addTripButtonText}>+ Add Trip</Text>
         </TouchableOpacity>
       </ScrollView>
 
-      <Footer />
+      <NavBar />
     </View>
   );
 };

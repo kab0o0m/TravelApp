@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import ProfilePicture from "../assets/icons/ProfilePicture.png";
-import Footer from "../components/Footer";
+import NavBar from "../components/NavBar";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { logoutUser } from "../api/authAPI";
@@ -97,8 +97,8 @@ const Account = () => {
         </View>
       </View>
 
-      <View style={styles.footerContainer}>
-        <Footer />
+      <View style={styles.NavBarContainer}>
+        <NavBar />
       </View>
     </View>
   );
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
     // alignItems: "center",
     marginLeft: 20,
   },
-  footerContainer: {
+  NavBarContainer: {
     position: "absolute",
     bottom: 0,
     width: "100%",
