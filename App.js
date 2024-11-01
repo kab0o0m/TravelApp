@@ -82,6 +82,11 @@ export default function App() {
             options={{ headerShown: false }}
           />
           <Stack.Screen
+            name="AIRandomiser"
+            component={AIRandomiser}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
             name="EditProfile"
             component={EditProfile}
             options={{ headerShown: false }}
