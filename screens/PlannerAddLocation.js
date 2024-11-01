@@ -7,7 +7,6 @@ import {
   TouchableWithoutFeedback,
   Alert,
   Keyboard,
-  ActivityIndicator,
 } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -30,7 +29,7 @@ const Button = ({
   </TouchableWithoutFeedback>
 );
 
-const Explore = () => {
+const PlannerAddLocation = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [mapRegion, setMapRegion] = useState({
     latitude: 1.3521,
@@ -42,12 +41,10 @@ const Explore = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [locationDetails, setLocationDetails] = useState({});
   const [weatherData, setWeatherData] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
 
   const dismissKeyboard = () => Keyboard.dismiss();
 
   const handleSearch = async () => {
-    setIsLoading(true);
     try {
       const response = await axios.get(`${BASE_URL}/api/places`, {
         params: { query: searchQuery },
@@ -76,15 +73,12 @@ const Explore = () => {
 
         // Fetch the weather data for the selected location
         await fetchWeatherDataForLocation(location.lat, location.lng);
-        setIsLoading(false);
       } else {
-        setIsLoading(false);
         Alert.alert("No results found", "Please try a different location.");
       }
     } catch (error) {
       Alert.alert("Error", "Failed to search for the location");
       console.error("Error fetching location:", error);
-      setIsLoading(false);
     }
   };
 
@@ -112,39 +106,35 @@ const Explore = () => {
 
   return (
     <TouchableWithoutFeedback onPress={dismissKeyboard}>
-      {isLoading ? (
-        <ActivityIndicator size="large" />
-      ) : (
-        <View style={styles.container}>
-          <View style={styles.searchContainer}>
-            <TextInput
-              style={styles.searchInput}
-              placeholder="Search for a location..."
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-            />
-            <Button title="Search" onPress={handleSearch} />
-          </View>
-
-          <MapView style={styles.map} region={mapRegion}>
-            {markerPosition && (
-              <Marker
-                coordinate={markerPosition}
-                title={locationDetails.title}
-                description={locationDetails.description}
-                onPress={openDetailsModal}
-              />
-            )}
-          </MapView>
-
-          <LocationDetailsModal
-            visible={modalVisible}
-            locationDetails={locationDetails}
-            weatherData={weatherData}
-            onClose={closeDetailsModal}
+      <View style={styles.container}>
+        <View style={styles.searchContainer}>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search for a location..."
+            value={searchQuery}
+            onChangeText={setSearchQuery}
           />
+          <Button title="Search" onPress={handleSearch} />
         </View>
-      )}
+
+        <MapView style={styles.map} region={mapRegion}>
+          {markerPosition && (
+            <Marker
+              coordinate={markerPosition}
+              title={locationDetails.title}
+              description={locationDetails.description}
+              onPress={openDetailsModal}
+            />
+          )}
+        </MapView>
+
+        <LocationDetailsModal
+          visible={modalVisible}
+          locationDetails={locationDetails}
+          weatherData={weatherData}
+          onClose={closeDetailsModal}
+        />
+      </View>
 
       {/* <View style={styles.footerContainer}>
         <Footer />
@@ -184,4 +174,4 @@ const styles = StyleSheet.create({
   },*/
 });
 
-export default Explore;
+export default PlannerAddLocation;

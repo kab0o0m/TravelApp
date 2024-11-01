@@ -15,7 +15,7 @@ import {
 } from "@expo-google-fonts/nunito";
 import { Picker } from "@react-native-picker/picker";
 import Button from "../components/Button";
-import NavBar from "../components/NavBar";
+import Footer from "../components/Footer";
 import AddExpenseModal from "./AddExpenseModal";
 import * as Progress from "react-native-progress";
 import RoundedSquareIcon from "../components/RoundedSquareIcon";
@@ -92,7 +92,7 @@ const Expenses = () => {
     const date = new Date(isoDate);
 
     if (isNaN(date.getTime())) {
-      return "Invalid Date"; // Return placeholder if date is invalid
+        return "Invalid Date"; // Return placeholder if date is invalid
     }
 
     return new Intl.DateTimeFormat("en-GB", {
@@ -189,9 +189,7 @@ const Expenses = () => {
                       </Text>
                     </View>
                     <View style={styles.expenseRow}>
-                      <Text style={styles.expenseDate}>
-                        {formatDate(expense.date)}
-                      </Text>
+                      <Text style={styles.expenseDate}>{formatDate(expense.date)}</Text>
                       <Text style={styles.expenseTitle}>
                         {expense.payment_type}
                       </Text>
@@ -204,7 +202,7 @@ const Expenses = () => {
         )}
       </View>
 
-      <View style={styles.NavBarContainer}>
+      <View style={styles.footerContainer}>
         <View style={styles.buttonContainer}>
           <Button
             title="Add Expense"
@@ -217,7 +215,7 @@ const Expenses = () => {
             iconName="add"
           />
         </View>
-        <NavBar />
+        <Footer />
       </View>
 
       <AddExpenseModal
@@ -324,7 +322,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "flex-end",
   },
-  NavBarContainer: {
+  footerContainer: {
     position: "absolute",
     bottom: 0,
     width: "100%",

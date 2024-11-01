@@ -1,35 +1,26 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  TextInput,
-  Modal,
-  Image,
-} from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Modal, Image } from "react-native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import CustomCalendar from "../components/CustomCalendar"; // Import your CustomCalendar
-//import PlannerLocationSearchbar from "../components/PlannerLocationSearchbar";
+import PlannerLocationSearchbar from "../components/PlannerLocationSearchbar";
 import { LogBox } from "react-native";
 
-LogBox.ignoreLogs([
-  "Non-serializable values were found in the navigation state",
-]);
+LogBox.ignoreLogs(["Non-serializable values were found in the navigation state"]);
 
-const PlannerNewTrip = ({ route }) => {
+const PlannerNewTrip = () => {
   const navigation = useNavigation();
-  const { onAddTrip, selectedLocation } = route.params || {};
+  const route = useRoute();
+  const { onAddTrip, destination: initialDestination } = route.params || {};
+
   const [isCalendarVisible, setCalendarVisible] = useState(false);
   const [isSearchbarVisible, setSearchbarVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState("");
-  const [destination, setDestination] = useState("");
+  const [destination, setDestination] = useState(initialDestination || "");;
+  const [destinationID, setDestinationID] = useState("");
 
   useEffect(() => {
-    if (selectedLocation) {
-      setDestination(selectedLocation.title);
-    }
-  }, [selectedLocation]);
+    console.log("Destination ID updated:", destinationID);
+  }, [destinationID]); // This will run every time destinationID is updated
 
   const openCalendar = () => {
     setCalendarVisible(true);
@@ -39,24 +30,24 @@ const PlannerNewTrip = ({ route }) => {
     setCalendarVisible(false);
   };
 
-  // const openSearchBar = () => {
-  //   setSearchbarVisible(true);
-  // };
+  const openSearchBar = () => {
+    setSearchbarVisible(true);
+  };
 
-  // const closeSearchBar = () => {
-  //   setSearchbarVisible(false);
-  // };
+  const closeSearchBar = () => {
+    setSearchbarVisible(false);
+  };
 
   const handleDateSelection = (startDate, endDate) => {
     setSelectedDate(`${startDate} to ${endDate}`);
     closeCalendar();
   };
 
-  // const handleLocationSelection = (location) => {
-  //   setDestination(location.location_name);
-  //   setDestinationID(location.id);
-  //   closeSearchBar();
-  // };
+  const handleLocationSelection = (location) => {
+    setDestination(location.location_name);
+    setDestinationID(location.id);
+    closeSearchBar();
+  };
 
   const handleConfirmTrip = () => {
     if (destination && selectedDate) {
@@ -85,42 +76,22 @@ const PlannerNewTrip = ({ route }) => {
 
       {/* Input Fields */}
       <View style={styles.inputContainer}>
-        <TouchableOpacity
-          onPress={() =>
-            navigation.navigate("PlannerAddDestination", {
-              onLocationSelect: (location) => setDestination(location.title),
-            })
-          }
-          style={styles.input}
-        >
-          <Text
-            style={[
-              styles.inputText,
-              { color: destination ? "#323232" : "#A9A9A9" },
-            ]}
-          >
+        <TouchableOpacity onPress={openSearchBar} style={styles.input}>
+          <Text style={[styles.inputText, { color: destination ? "#323232" : "#A9A9A9" }]}>
             {destination || "Where to?"}
           </Text>
         </TouchableOpacity>
 
         {/* Date Input Field */}
         <TouchableOpacity onPress={openCalendar} style={styles.input}>
-          <Text
-            style={[
-              styles.inputText,
-              { color: selectedDate ? "#323232" : "#A9A9A9" },
-            ]}
-          >
+          <Text style={[styles.inputText, { color: selectedDate ? "#323232" : "#A9A9A9" }]}>
             {selectedDate || "Date?"}
           </Text>
         </TouchableOpacity>
       </View>
 
       {/* Confirm Button */}
-      <TouchableOpacity
-        onPress={handleConfirmTrip}
-        style={styles.confirmButton}
-      >
+      <TouchableOpacity onPress={handleConfirmTrip} style={styles.confirmButton}>
         <Text style={styles.confirmButtonText}>Confirm Trip</Text>
       </TouchableOpacity>
 
