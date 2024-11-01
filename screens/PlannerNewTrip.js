@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Modal, Image } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import CustomCalendar from "../components/CustomCalendar"; // Import your CustomCalendar
 import PlannerLocationSearchbar from "../components/PlannerLocationSearchbar";
 import { LogBox } from "react-native";
@@ -9,11 +9,13 @@ LogBox.ignoreLogs(["Non-serializable values were found in the navigation state"]
 
 const PlannerNewTrip = () => {
   const navigation = useNavigation();
-  const { onAddTrip } = route.params || {};
+  const route = useRoute();
+  const { onAddTrip, destination: initialDestination } = route.params || {};
+
   const [isCalendarVisible, setCalendarVisible] = useState(false);
   const [isSearchbarVisible, setSearchbarVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState("");
-  const [destination, setDestination] = useState("");
+  const [destination, setDestination] = useState(initialDestination || "");;
   const [destinationID, setDestinationID] = useState("");
 
   useEffect(() => {

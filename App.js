@@ -30,7 +30,7 @@ export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Home">
+        <Stack.Navigator initialRouteName="AIRandomiser">
           <Stack.Screen name="AuthCheck" component={AuthCheck} options={{ headerShown: false }} />
           <Stack.Screen name="Startpage" component={Startpage} options={{ headerShown: false }} />
           <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
@@ -49,6 +49,7 @@ export default function App() {
           <Stack.Screen name="Chatbot" component={Chatbot} options={{ headerShown: false }} />
           <Stack.Screen name="Account" component={Account} options={{ headerShown: false }} />
           <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
+          <Stack.Screen name="AIRandomiser" component={AIRandomiser} options={{ headerShown: false }} />
           <Stack.Screen
             name="EditProfile"
             component={EditProfile}
