@@ -64,10 +64,6 @@ const Home = () => {
         style={styles.container}
         contentContainerStyle={styles.scrollViewContent}
       >
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.scrollViewContent}
-      >
         <View style={styles.headerContainer}>
           <Text style={styles.header}>Mapp!t</Text>
           <Image
@@ -122,8 +118,6 @@ const Home = () => {
               style={styles.destinationContainer}
               onPress={() => navigation.navigate("HomePopular")}
             >
-              onPress={() => navigation.navigate("HomePopular")}
-            >
               <View style={styles.destinationBackground} />
               <Image source={MarinaBaySands} style={styles.destinationImage} />
               <View style={styles.textContainer}>
@@ -133,8 +127,6 @@ const Home = () => {
 
             <TouchableOpacity
               style={styles.destinationContainer}
-              onPress={() => navigation.navigate("HomePopular")}
-            >
               onPress={() => navigation.navigate("HomePopular")}
             >
               <View style={styles.destinationBackground} />
