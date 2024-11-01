@@ -20,6 +20,8 @@ import FrogHead from "../assets/BigFrogHead.png";
 import { useNavigation } from "@react-navigation/native";
 import { GROQ_KEY } from "@env";
 
+console.log("GROQ_KEY:", GROQ_KEY);
+
 const Chatbot = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
@@ -104,7 +106,9 @@ const Chatbot = () => {
     groqMessages.push({ role: "user", content: input });
 
     const formatForecastData = (forecast) => {
-      return forecast.map((f) => `${f.location}: ${f.weather_forecast}`).join(", ");
+      return forecast
+        .map((f) => `${f.location}: ${f.weather_forecast}`)
+        .join(", ");
     };
 
     // Inside your `handleSend` function
@@ -146,7 +150,8 @@ const Chatbot = () => {
         // Update the last message in the chat history (AI's message)
         setMessages((prevMessages) => {
           const updatedMessages = [...prevMessages];
-          updatedMessages[updatedMessages.length - 1].text = currentMessage.trim();
+          updatedMessages[updatedMessages.length - 1].text =
+            currentMessage.trim();
           return updatedMessages;
         });
 
@@ -163,7 +168,8 @@ const Chatbot = () => {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={styles.container}>
+      style={styles.container}
+    >
       <View style={styles.topContainer}>
         <Image source={FrogHead} />
         <Text style={styles.frogTitle}>Frog Assistant</Text>
@@ -171,12 +177,16 @@ const Chatbot = () => {
       </View>
       <ScrollView
         contentContainerStyle={styles.messagesContainer}
-        ref={(ref) => ref?.scrollToEnd({ animated: true })}>
+        ref={(ref) => ref?.scrollToEnd({ animated: true })}
+      >
         <View>
           {messages.map((message, index) => (
             <Card
               key={index}
-              style={message.from === "user" ? styles.userMessage : styles.aiMessage}>
+              style={
+                message.from === "user" ? styles.userMessage : styles.aiMessage
+              }
+            >
               <Text style={styles.messageText}>{message.text}</Text>
             </Card>
           ))}
@@ -192,7 +202,11 @@ const Chatbot = () => {
           placeholderTextColor="#888"
         />
         <TouchableOpacity style={styles.sendButton} onPress={handleSend}>
-          <Image source={isTyping ? pause : ArrowUp} style={styles.arrow} resizeMode="contain" />
+          <Image
+            source={isTyping ? pause : ArrowUp}
+            style={styles.arrow}
+            resizeMode="contain"
+          />
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
