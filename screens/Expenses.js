@@ -32,43 +32,42 @@ const Expenses = () => {
   const [budgetModalVisible, setBudgetModalVisible] = useState(false); 
 
   useEffect(() => {
-    // Dummy data for testing
-    const dummyExpenses = [
-      { id: 1, category: "Food", title: "Lunch", price: 15.00, date: "2024-11-01" },
-      { id: 2, category: "Transport", title: "Taxi", price: 25.00, date: "2024-11-01" },
-      { id: 3, category: "Entertainment", title: "Movie Ticket", price: 12.50, date: "2024-11-01" },
-      { id: 4, category: "Utilities", title: "Electricity Bill", price: 50.00, date: "2024-11-01" },
-    ];
+    // // Dummy data for testing
+    // const dummyExpenses = [
+    //   { id: 1, category: "Food", title: "Lunch", price: 15.00, date: "2024-11-01" },
+    //   { id: 2, category: "Transport", title: "Taxi", price: 25.00, date: "2024-11-01" },
+    //   { id: 3, category: "Entertainment", title: "Movie Ticket", price: 12.50, date: "2024-11-01" },
+    //   { id: 4, category: "Utilities", title: "Electricity Bill", price: 50.00, date: "2024-11-01" },
+    // ];
 
-    // Setting dummy expenses and calculating total
-    setExpenses(dummyExpenses);
-    const total = dummyExpenses.reduce((sum, expense) => sum + expense.price, 0);
-    setTotalSpent(total);
+    // // Setting dummy expenses and calculating total
+    // setExpenses(dummyExpenses);
+    // const total = dummyExpenses.reduce((sum, expense) => sum + expense.price, 0);
+    // setTotalSpent(total);
     
-    // Commenting out the fetch logic for now
-    // const loadExpenses = async () => {
-    //   try {
-    //     let storedUserData = await AsyncStorage.getItem("userData");
-    //     if (!storedUserData) {
-    //       console.log("Fetching user data...");
-    //       storedUserData = await fetchUserData();
-    //       await AsyncStorage.setItem("userData", JSON.stringify(storedUserData));
-    //     }
-    //     const userData = JSON.parse(storedUserData);
-    //     setUserId(userData.user_id);
+    const loadExpenses = async () => {
+      try {
+        let storedUserData = await AsyncStorage.getItem("userData");
+        if (!storedUserData) {
+          console.log("Fetching user data...");
+          storedUserData = await fetchUserData();
+          await AsyncStorage.setItem("userData", JSON.stringify(storedUserData));
+        }
+        const userData = JSON.parse(storedUserData);
+        setUserId(userData.user_id);
   
-    //     const fetchedExpenses = await fetchExpenses(userData.user_id);
-    //     setExpenses(fetchedExpenses);
+        const fetchedExpenses = await fetchExpenses(userData.user_id);
+        setExpenses(fetchedExpenses);
   
-    //     const total = fetchedExpenses.reduce((sum, expense) => sum + expense.price, 0);
-    //     setTotalSpent(total);
-    //   } catch (error) {
-    //     console.error("Error loading expenses:", error);
-    //     Alert.alert("Error", "Failed to load expenses. Please try again later.");
-    //   }
-    // };
+        const total = fetchedExpenses.reduce((sum, expense) => sum + expense.price, 0);
+        setTotalSpent(total);
+      } catch (error) {
+        console.error("Error loading expenses:", error);
+        Alert.alert("Error", "Failed to load expenses. Please try again later.");
+      }
+    };
   
-    // loadExpenses();
+    loadExpenses();
   }, []);
 
   if (!fontsLoaded) {
