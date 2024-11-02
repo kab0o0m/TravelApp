@@ -244,7 +244,7 @@ const HomePopular = () => {
               colors={["#FFFFFF00", "rgba(0, 0, 0, 0.4)"]} // Linear gradient from white to black with 40% opacity
               style={styles.popularOverlay}
             />
-            <Text style={styles.popularTitle}>Top Places in Singapore</Text>
+            <Text style={styles.popularTitle}>Top Places to Visit</Text>
           </View>
         </View>
 
@@ -349,7 +349,7 @@ const styles = StyleSheet.create({
   },
   backText: {
     color: "#3A4646",
-    fontSize: 18,
+    fontSize: 16,
     fontFamily: "Nunito_700Bold",
     marginLeft: 10,
     top: 0.2,
@@ -399,6 +399,7 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 18,
     fontFamily: "Nunito_800ExtraBold",
+    fontWeight: '800',
     zIndex: 2,
   },
   infoContainer: {
