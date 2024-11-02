@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Dimensions, ScrollView, Alert, Animated, Easing, TouchableOpacity } from 'react-native';
-import { useFonts, Nunito_400Regular, Nunito_700Bold } from '@expo-google-fonts/nunito';
+import { useFonts, Nunito_400Regular, Nunito_700Bold, Nunito_900Black, } from '@expo-google-fonts/nunito';
 import { Picker } from '@react-native-picker/picker'; 
 import Button from "../components/Button"; 
-import Footer from "../components/Footer"; 
 import AddExpenseModal from './AddExpenseModal';
 import * as Progress from 'react-native-progress';
 import RoundedSquareIcon from '../components/RoundedSquareIcon';
@@ -13,6 +12,7 @@ import { fetchUserData } from "../api/authAPI";
 import { PieChart } from 'react-native-chart-kit'; // Import the PieChart
 import SetBudgetModal from './SetBudgetModal'; // Import the SetBudgetModal
 import { Swipeable } from 'react-native-gesture-handler';
+import NavBar from "../components/NavBar";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
@@ -63,7 +63,7 @@ const Expenses = () => {
         const fetchedExpenses = await fetchExpenses(userData.id);
         setExpenses(fetchedExpenses);
   
-        const total = fetchedExpenses.reduce((sum, expense) => sum + expense.price, 0);
+        const total = fetchedExpenses.reduce((sum, expense) => sum + expense.amount, 0);
         setTotalSpent(total);
       } catch (error) {
         console.error("Error loading expenses:", error);
@@ -86,6 +86,37 @@ const Expenses = () => {
     setTotalSpent((prevTotal) => prevTotal + expense.amount);
   };
 
+  const pieChartData = [
+    {
+      name: "Food",
+      population: 150, // Total amount spent on Food
+      color: "#FF6347", // Color for the Food slice
+      legendFontColor: "#333", // Color for the legend text
+      legendFontSize: 15 // Font size for the legend text
+    },
+    {
+      name: "Transport",
+      population: 80, // Total amount spent on Transport
+      color: "#FFD700", // Color for the Transport slice
+      legendFontColor: "#333",
+      legendFontSize: 15
+    },
+    {
+      name: "Entertainment",
+      population: 120, // Total amount spent on Entertainment
+      color: "#1E90FF", // Color for the Entertainment slice
+      legendFontColor: "#333",
+      legendFontSize: 15
+    },
+    {
+      name: "Utilities",
+      population: 60, // Total amount spent on Utilities
+      color: "#32CD32", // Color for the Utilities slice
+      legendFontColor: "#333",
+      legendFontSize: 15
+    }
+  ];
+
   const formatDate = (isoDate) => {
     const date = new Date(isoDate);
 
@@ -99,6 +130,15 @@ const Expenses = () => {
       year: "numeric",
     }).format(date);
   };
+
+  const renderRightActions = (id) => (
+    <TouchableOpacity
+      style={styles.deleteContainer}
+      onPress={() => handleDeleteExpense(id)}
+    >
+      <Text style={styles.deleteText}>Delete</Text>
+    </TouchableOpacity>
+  );
 
   // const handleDeleteExpense = (id) => {
   //   const updatedExpenses = expenses.filter(expense => expense.id !== id);
@@ -133,7 +173,7 @@ const Expenses = () => {
     // Update totalSpent
     const deletedExpense = expenses.find(expense => expense.id === id);
     if (deletedExpense) {
-      setTotalSpent(prevTotal => prevTotal - deletedExpense.price);
+      setTotalSpent(prevTotal => prevTotal - deletedExpense.amount);
     }
   };
 
@@ -161,7 +201,7 @@ const Expenses = () => {
 
   <View style={styles.box}>
     <View style={styles.innerBox}>
-      <Text style={styles.amount}>SGD {totalSpent.toFixed(2)}</Text>
+      <Text style={styles.amount}>SGD {totalSpent}</Text>
 
       {budget === 0 ? (
         <TouchableOpacity onPress={() => setBudgetModalVisible(true)}>
@@ -177,7 +217,7 @@ const Expenses = () => {
             height={screenHeight * 0.01}
             borderWidth={0}
           />
-          <Text style={styles.progressText}>BUDGET: SGD {budget.toFixed(2)}</Text>
+          <Text style={styles.progressText}>BUDGET: SGD {budget}</Text>
         </View>
       )}
 
@@ -258,7 +298,7 @@ const Expenses = () => {
                     <View style={styles.expenseTextContainer}>
                       <View style={styles.expenseRow}>
                         <Text style={styles.expenseCategory}>{expense.category}</Text>
-                        <Text style={styles.expensePrice}>SGD {expense.price.toFixed(2)}</Text>
+                        <Text style={styles.expensePrice}>SGD {expense.amount}</Text>
                       </View>
                       <View style={styles.expenseRow}>
                         <Text style={styles.expenseTitle}>{expense.title}</Text>
