@@ -27,8 +27,6 @@ import HomePopular from "./screens/HomePopular";
 import Explore from "./screens/Explore";
 import Test from "./screens/Test";
 import Expenses from "./screens/Expenses";
-import PlannerItinerary from "./screens/PlannerItinerary";
-import PlannerOverview from "./screens/PlannerOverview";
 
 export default function App() {
   const Stack = createNativeStackNavigator();
@@ -114,16 +112,6 @@ export default function App() {
           <Stack.Screen
             name="PlannerAddDestination"
             component={PlannerAddDestination}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="PlannerItinerary"
-            component={PlannerItinerary}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="PlannerOverview"
-            component={PlannerOverview}
             options={{ headerShown: false }}
           />
           <Stack.Screen
