@@ -47,6 +47,19 @@ const Expenses = () => {
   const [summaryVisible, setSummaryVisible] = useState(false);
   const slideAnim = useState(new Animated.Value(0))[0];
   const [budgetModalVisible, setBudgetModalVisible] = useState(false);
+  const [pieChartData, setPieChartData] = useState([]);
+
+  // Define a color palette to be used in a consistent order
+  const colorPalette = [
+    "#FF6347",
+    "#FFD700",
+    "#1E90FF",
+    "#FF69B4",
+    "#32CD32",
+    "#20B2AA",
+    "#8A2BE2",
+    "#FF4500",
+  ];
 
   useEffect(() => {
     // // Dummy data for testing
@@ -83,6 +96,9 @@ const Expenses = () => {
           0
         );
         setTotalSpent(total);
+
+        updatePieChartData(fetchedExpenses);
+        
       } catch (error) {
         console.error("Error loading expenses:", error);
         Alert.alert(
@@ -104,51 +120,6 @@ const Expenses = () => {
     setTotalSpent((prevTotal) => prevTotal + expense.amount);
   };
 
-  const pieChartData = [
-    {
-      name: "Food",
-      population: 150, // Total amount spent on Food
-      color: "#FF6347", // Color for the Food slice
-      legendFontColor: "#333", // Color for the legend text
-      legendFontSize: 15, // Font size for the legend text
-    },
-    {
-      name: "Transport",
-      population: 80, // Total amount spent on Transport
-      color: "#FFD700", // Color for the Transport slice
-      legendFontColor: "#333",
-      legendFontSize: 15,
-    },
-    {
-      name: "Entertainment",
-      population: 120, // Total amount spent on Entertainment
-      color: "#1E90FF", // Color for the Entertainment slice
-      legendFontColor: "#333",
-      legendFontSize: 15,
-    },
-    {
-      name: "Utilities",
-      population: 60, // Total amount spent on Utilities
-      color: "#32CD32", // Color for the Utilities slice
-      legendFontColor: "#333",
-      legendFontSize: 15,
-    },
-  ];
-
-  const formatDate = (isoDate) => {
-    const date = new Date(isoDate);
-
-    if (isNaN(date.getTime())) {
-      return "Invalid Date"; // Return placeholder if date is invalid
-    }
-
-    return new Intl.DateTimeFormat("en-GB", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    }).format(date);
-  };
-
   const renderRightActions = (id) => (
     <TouchableOpacity
       style={styles.deleteContainer}
@@ -158,35 +129,32 @@ const Expenses = () => {
     </TouchableOpacity>
   );
 
-  // const handleDeleteExpense = (id) => {
-  //   const updatedExpenses = expenses.filter(expense => expense.id !== id);
-  //   setExpenses(updatedExpenses);
+  const updatePieChartData = (fetchedExpenses) => {
+    const categoryTotals = fetchedExpenses.reduce((acc, item) => {
+      if (!acc[item.category]) {
+        acc[item.category] = 0;
+      }
+      acc[item.category] += item.amount;
+      return acc;
+    }, {});
 
-  //   // Update totalSpent
-  //   const deletedExpense = expenses.find(expense => expense.id === id);
-  //   if (deletedExpense) {
-  //     setTotalSpent((prevTotal) => prevTotal + expense.amount);
-  //   };
-
-  //   const formatDate = (isoDate) => {
-  //     const date = new Date(isoDate);
-
-  //     if (isNaN(date.getTime())) {
-  //       return "Invalid Date"; // Return placeholder if date is invalid
-  //     }
-
-  //     return new Intl.DateTimeFormat("en-GB", {
-  //       day: "numeric",
-  //       month: "short",
-  //       year: "numeric",
-  //     }).format(date);
-
-  //   }
-  // };
+    const pieChartData = Object.entries(categoryTotals).map(([category, amount], index) => {
+      return {
+        name: category,
+        population: amount,
+        color: colorPalette[index % colorPalette.length], // Use colors in consistent order
+        legendFontColor: "#FFF",
+        legendFontSize: 15,
+      };
+    });
+    setPieChartData(pieChartData);
+  }
 
   const handleDeleteExpense = (id) => {
     const updatedExpenses = expenses.filter((expense) => expense.id !== id);
     setExpenses(updatedExpenses);
+
+    updatePieChartData(updatedExpenses);
 
     // Update totalSpent
     const deletedExpense = expenses.find((expense) => expense.id === id);
@@ -198,7 +166,7 @@ const Expenses = () => {
   const toggleSummary = () => {
     setSummaryVisible(!summaryVisible);
     Animated.timing(slideAnim, {
-      toValue: summaryVisible ? 0 : screenHeight * 0.4, // Moves white box further down
+      toValue: summaryVisible ? 0 : screenHeight * 0.3, // Moves white box further down
       duration: 400,
       easing: Easing.ease,
       useNativeDriver: true,
@@ -240,7 +208,7 @@ const Expenses = () => {
           )}
 
           <Button
-            title="View Summary"
+            title={summaryVisible ? "Close" : "View Summary"}
             onPress={toggleSummary}
             backgroundColor="#006D77"
             textColor="#FFFFFF"
@@ -259,20 +227,20 @@ const Expenses = () => {
         <View style={styles.pieChartContainer}>
           <PieChart
             data={pieChartData}
-            width={screenWidth * 0.8}
+            width={screenWidth * 0.85}
             height={screenWidth * 0.5}
+            style={styles.pieChart}
             chartConfig={{
               backgroundColor: "#fff",
               backgroundGradientFrom: "#fff",
               backgroundGradientTo: "#fff",
               color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-              labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+              labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
               strokeWidth: 2,
               barPercentage: 0.5,
             }}
             accessor="population"
             backgroundColor="transparent"
-            paddingLeft="15"
             absolute // This prop is necessary for a pie chart to show correctly
           />
         </View>
@@ -281,7 +249,17 @@ const Expenses = () => {
       <Animated.View
         style={[styles.whiteBox, { transform: [{ translateY: slideAnim }] }]}
       >
-        <Text style={styles.topLeftText}>Your Expenses</Text>
+        <View style={styles.expenseHeaderContainer}>
+          <Text style={styles.topLeftText}>Your Expenses</Text>
+          <View style={styles.buttonContainer}>
+            <Button
+              style={styles.buttonAddExpense}
+              title="Add"
+              onPress={() => setModalVisible(true)}
+              iconName="add"
+            />
+          </View>
+        </View>
 
         <View style={styles.sortContainer}>
           <Text style={styles.sortText}>Sort:</Text>
@@ -338,22 +316,6 @@ const Expenses = () => {
           </ScrollView>
         )}
       </Animated.View>
-
-      <View style={styles.buttonContainer}>
-        <Button
-          title="Add Expense"
-          onPress={() => setModalVisible(true)}
-          backgroundColor="#F47966"
-          textColor="#FFFFFF"
-          borderRadius={25}
-          width={screenWidth * 0.45}
-          iconName="add"
-          height={screenHeight * 0.065}
-          fontSize={screenHeight * 0.02}
-          paddingVertical={screenHeight * 0.001}
-          // style={{ opacity: 0.9 }}
-        />
-      </View>
 
       <AddExpenseModal
         visible={modalVisible}
@@ -446,19 +408,19 @@ const styles = StyleSheet.create({
   },
   whiteBox: {
     position: "absolute",
-    top: screenHeight * 0.4,
+    top: screenHeight * 0.39,
     left: 0,
     right: 0,
     paddingHorizontal: screenWidth * 0.05,
     paddingTop: screenHeight * 0.02,
-    paddingBottom: screenHeight * 0.15,
+    paddingBottom: 82,
     backgroundColor: "#FFF",
     borderTopLeftRadius: screenWidth * 0.07,
     borderTopRightRadius: screenWidth * 0.07,
     height: screenHeight * 0.625,
   },
   topLeftText: {
-    fontSize: screenHeight * 0.02,
+    fontSize: screenHeight * 0.025,
     fontFamily: "Nunito_700Bold",
     color: "#333",
     marginBottom: screenHeight * 0.02,
@@ -467,6 +429,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginBottom: screenHeight * 0.015,
+    paddingHorizontal: screenWidth * 0.03,
   },
   sortText: {
     fontSize: screenHeight * 0.02,
@@ -552,11 +515,19 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFF",
   },
   buttonContainer: {
-    position: "absolute",
-    bottom: 81, // Adjust this as necessary for spacing from the bottom
-    left: 0,
-    right: 0,
-    alignItems: "center", // Centers the button horizontally
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    alignItems: "center",
+  },
+  buttonAddExpense: {
+    backgroundColor: "#F47966",
+    textColor: "#FFFFFF",
+    borderRadius: 50,
+    // width={screenWidth * 0.45}
+    paddingHorizontal: 20,
+    height: screenHeight * 0.058,
+    fontSize: screenHeight * 0.02,
+    paddingVertical: screenHeight * 0.001,
   },
   deleteContainer: {
     backgroundColor: "#F47966",
@@ -575,5 +546,16 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 0,
     width: "100%",
+  },
+  expenseHeaderContainer: {
+    flexDirection: "row", // Aligns the texts in a row
+    alignItems: "baseline", // Aligns the texts at their baselines
+    justifyContent: "space-between", // Space between EXPENSES and Sentosa
+    marginBottom: 14, // Adjust margin for spacing below the header
+    paddingHorizontal: screenWidth * 0.03, // Added for uniform padding
+    paddingTop: 6,
+  },
+  pieChart: {
+    alignItems: "center",
   },
 });
