@@ -21,7 +21,7 @@ const Expenses = () => {
 
   const [selectedSortOption, setSelectedSortOption] = useState("date_latest");
   const [expenses, setExpenses] = useState([]);
-  const [budget, setBudget] = useState(500);
+  const [budget, setBudget] = useState(0);
   const [totalSpent, setTotalSpent] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
   const [userId, setUserId] = useState(null);
@@ -79,28 +79,28 @@ const Expenses = () => {
   const pieChartData = [
     {
       name: "Food",
-      amtSpent: 215,
+      population: 215,
       color: "#F47966",
       legendFontColor: "#fff",
       legendFontSize: 15,
     },
     {
       name: "Transport",
-      amtSpent: 130,
+      population: 130,
       color: "#61A4AB",
       legendFontColor: "#fff",
       legendFontSize: 15,
     },
     {
       name: "Entertainment",
-      amtSpent: 80,
+      population: 80,
       color: "#FFFFFF",
       legendFontColor: "#fff",
       legendFontSize: 15,
     },
     {
       name: "Utilities",
-      amtSpent: 95,
+      population: 95,
       color: "#FFBB00",
       legendFontColor: "#fff",
       legendFontSize: 15,
@@ -162,7 +162,7 @@ const Expenses = () => {
               strokeWidth: 2,
               barPercentage: 0.5,
             }}
-            accessor="amtSpent"
+            accessor="population"
             backgroundColor="transparent"
             paddingLeft="15"
             absolute // This prop is necessary for a pie chart to show correctly
