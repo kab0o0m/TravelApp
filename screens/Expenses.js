@@ -100,31 +100,31 @@ const Expenses = () => {
     }).format(date);
   };
 
-  const handleDeleteExpense = (id) => {
-    const updatedExpenses = expenses.filter(expense => expense.id !== id);
-    setExpenses(updatedExpenses);
+  // const handleDeleteExpense = (id) => {
+  //   const updatedExpenses = expenses.filter(expense => expense.id !== id);
+  //   setExpenses(updatedExpenses);
     
-    // Update totalSpent
-    const deletedExpense = expenses.find(expense => expense.id === id);
-    if (deletedExpense) {
-      setTotalSpent((prevTotal) => prevTotal + expense.amount);
-    };
+  //   // Update totalSpent
+  //   const deletedExpense = expenses.find(expense => expense.id === id);
+  //   if (deletedExpense) {
+  //     setTotalSpent((prevTotal) => prevTotal + expense.amount);
+  //   };
   
-    const formatDate = (isoDate) => {
-      const date = new Date(isoDate);
+  //   const formatDate = (isoDate) => {
+  //     const date = new Date(isoDate);
   
-      if (isNaN(date.getTime())) {
-        return "Invalid Date"; // Return placeholder if date is invalid
-      }
+  //     if (isNaN(date.getTime())) {
+  //       return "Invalid Date"; // Return placeholder if date is invalid
+  //     }
   
-      return new Intl.DateTimeFormat("en-GB", {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-      }).format(date);
+  //     return new Intl.DateTimeFormat("en-GB", {
+  //       day: "numeric",
+  //       month: "short",
+  //       year: "numeric",
+  //     }).format(date);
   
-    }
-  };
+  //   }
+  // };
 
   const handleDeleteExpense = (id) => {
     const updatedExpenses = expenses.filter(expense => expense.id !== id);
