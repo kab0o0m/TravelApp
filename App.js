@@ -21,6 +21,8 @@ import ResetPW from "./screens/ResetPW";
 import Planner from "./screens/Planner";
 import PlannerNewTrip from "./screens/PlannerNewTrip";
 import PlannerAddDestination from "./screens/PlannerAddDestination";
+import PlannerOverview from "./screens/PlannerOverview";
+import PlannerItinerary from "./screens/PlannerItinerary";
 import LocationSearch from "./screens/LocationSearch";
 import SavedLocation from "./screens/SavedLocation";
 import HomePopular from "./screens/HomePopular";
@@ -112,6 +114,16 @@ export default function App() {
           <Stack.Screen
             name="PlannerAddDestination"
             component={PlannerAddDestination}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="PlannerItinerary"
+            component={PlannerItinerary}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="PlannerOverview"
+            component={PlannerOverview}
             options={{ headerShown: false }}
           />
           <Stack.Screen
