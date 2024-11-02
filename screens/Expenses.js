@@ -111,29 +111,37 @@ const Expenses = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>EXPENSES</Text>
-
-      <View style={styles.box}>
-        <View style={styles.innerBox}>
-          <Text style={styles.amount}>SGD {totalSpent.toFixed(2)}</Text>
-
-          {budget === 0 ? (
-            <TouchableOpacity onPress={() => setBudgetModalVisible(true)}>
-              <Text style={styles.budgetText}>Set a budget</Text>
-            </TouchableOpacity>
-          ) : (
-  <View style={styles.progressContainer}>
-    <Progress.Bar 
-      progress={progress} 
-      width={screenWidth * 0.8}
-      color="#F47966"
-      unfilledColor="#61A4AB"
-      height={screenHeight * 0.01}
-      borderWidth={0}
-    />
-    <Text style={styles.progressText}>BUDGET: SGD {budget.toFixed(2)}</Text>
+  <View style={styles.headerContainer}>
+    <Text style={styles.header}>EXPENSES</Text>
+    <View style={styles.tripContainer}>
+      <Text style={styles.tripText}>Sentosa</Text>
+      <View style={styles.line} />
+    </View>
   </View>
-)}
+
+  <View style={styles.box}>
+    <View style={styles.innerBox}>
+      <Text style={styles.amount}>SGD {totalSpent.toFixed(2)}</Text>
+
+      {budget === 0 ? (
+        <TouchableOpacity onPress={() => setBudgetModalVisible(true)}>
+          <Text style={styles.budgetText}>Set a budget</Text>
+        </TouchableOpacity>
+      ) : (
+        <View style={styles.progressContainer}>
+          <Progress.Bar 
+            progress={progress} 
+            width={screenWidth * 0.8}
+            color="#F47966"
+            unfilledColor="#61A4AB"
+            height={screenHeight * 0.01}
+            borderWidth={0}
+          />
+          <Text style={styles.progressText}>BUDGET: SGD {budget.toFixed(2)}</Text>
+        </View>
+      )}
+
+
 
 
           <Button
@@ -263,13 +271,31 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
     paddingTop: screenHeight * 0.075, 
   },
+
+  headerContainer: {
+    flexDirection: 'row', // Aligns the texts in a row
+    alignItems: 'baseline', // Aligns the texts at their baselines
+    justifyContent: 'space-between', // Space between EXPENSES and Sentosa
+    marginBottom: 10, // Adjust margin for spacing below the header
+    paddingHorizontal: screenWidth * 0.05, // Added for uniform padding
+  },
   header: {
-    fontSize: screenHeight * 0.03, 
-    fontFamily: 'Nunito_700Bold', 
-    color: '#006D77', 
-    marginBottom: screenHeight * 0.02, 
-    marginLeft: screenWidth * 0.05, 
-    marginRight: screenWidth * 0.05, 
+    fontSize: screenHeight * 0.03,
+    fontFamily: 'Nunito_700Bold',
+    color: '#006D77',
+  },
+  tripText: {
+    fontSize: screenHeight * 0.025, // Adjusted size for better balance with header
+    fontWeight: 'bold',
+    marginBottom: 2, // Adjust bottom margin if needed
+  },
+  tripContainer: {
+    alignItems: 'center', // Center align Sentosa text and line
+  },
+  line: {
+    width: '100%', // Full width of the parent
+    height: 2, // Height of the line
+    backgroundColor: '#F47966', // Line color
   },
   box: {
     width: '100%', 

@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
-import { View, Dimensions, Text, Modal, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Dimensions, Text, Modal, TouchableOpacity, StyleSheet, TextInput, Animated } from 'react-native';
 import Button from '../components/Button';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
 const SetBudgetModal = ({ visible, onClose, onSetBudget }) => {
   const [budget, setBudget] = useState('');
+  const [scaleValue] = useState(new Animated.Value(0)); // Initialize scaling value
 
   const handleSetBudget = () => {
     if (budget) {
@@ -17,10 +18,26 @@ const SetBudgetModal = ({ visible, onClose, onSetBudget }) => {
     }
   };
 
+  useEffect(() => {
+    if (visible) {
+      Animated.spring(scaleValue, {
+        toValue: 1,
+        friction: 5,
+        useNativeDriver: true, // Use native driver for better performance
+      }).start();
+    } else {
+      Animated.spring(scaleValue, {
+        toValue: 0,
+        friction: 5,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [visible]);
+
   return (
-    <Modal visible={visible} transparent={true} animationType="slide">
+    <Modal visible={visible} transparent={true} animationType="none">
       <View style={styles.modalContainer}>
-        <View style={styles.modalContent}>
+        <Animated.View style={[styles.modalContent, { transform: [{ scale: scaleValue }] }]}>
           <TouchableOpacity onPress={onClose} style={styles.closeButtonContainer}>
             <Text style={styles.closeButton}>x</Text>
           </TouchableOpacity>
@@ -36,7 +53,7 @@ const SetBudgetModal = ({ visible, onClose, onSetBudget }) => {
           <View style={styles.buttonContainer}>
             <Button
               title="Set Budget"
-              onPress={handleSetBudget} // Use handleSetBudget to set the budget
+              onPress={handleSetBudget}
               backgroundColor="#F47966"
               textColor="#FFFFFF"
               borderRadius={25}
@@ -46,7 +63,7 @@ const SetBudgetModal = ({ visible, onClose, onSetBudget }) => {
               paddingVertical={screenHeight * 0.001}
             />
           </View>
-        </View>
+        </Animated.View>
       </View>
     </Modal>
   );
@@ -64,16 +81,16 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 10,
     padding: screenWidth * 0.07,
-    position: 'relative', // Set position to relative for absolute positioning of close button
+    position: 'relative',
   },
   closeButtonContainer: {
-    position: 'absolute', // Positioning the close button
-    top: screenHeight*0.005, // Space from the top
-    right: screenWidth*0.04, // Space from the right
+    position: 'absolute',
+    top: screenHeight * 0.005,
+    right: screenWidth * 0.04,
   },
   closeButton: {
-    color: 'grey', // Grey color for the 'X'
-    fontSize: screenHeight*0.04, // Adjust size of the 'X'
+    color: 'grey',
+    fontSize: screenHeight * 0.04,
   },
   title: {
     fontSize: 20,
@@ -91,8 +108,8 @@ const styles = StyleSheet.create({
     marginBottom: screenHeight * 0.03,
   },
   buttonContainer: {
-    alignItems: 'center', // Center the button horizontally
-    marginBottom: screenHeight * 0.02, // Add some space below the button
+    alignItems: 'center',
+    marginBottom: screenHeight * 0.02,
   },
 });
 
