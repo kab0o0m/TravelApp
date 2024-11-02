@@ -1,11 +1,25 @@
-import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, Image, Dimensions, ScrollView, ActivityIndicator, TextInput, TouchableOpacity } from 'react-native';
-import { useFonts, Nunito_600SemiBold, Nunito_700Bold, Nunito_800ExtraBold, Nunito_900Black } from '@expo-google-fonts/nunito';
-import * as SplashScreen from 'expo-splash-screen';
-import { useNavigation } from '@react-navigation/native';
-import { LinearGradient } from 'expo-linear-gradient'; 
-
-import Footer from "../components/Footer";
+import React, { useEffect } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  Dimensions,
+  ScrollView,
+  ActivityIndicator,
+  TextInput,
+  TouchableOpacity,
+} from "react-native";
+import {
+  useFonts,
+  Nunito_600SemiBold,
+  Nunito_700Bold,
+  Nunito_800ExtraBold,
+  Nunito_900Black,
+} from "@expo-google-fonts/nunito";
+import * as SplashScreen from "expo-splash-screen";
+import { useNavigation } from "@react-navigation/native";
+import NavBar from "../components/NavBar";
 import EastCoastPark from "../assets/thunderstorm.jpg";
 import MarinaBaySands from "../assets/MarinaBaySands.jpg";
 import Esplanade from "../assets/Esplanade.jpg";
@@ -64,6 +78,10 @@ const Home = () => {
               source={require("../assets/icons/Search.png")}
               style={styles.searchIcon}
             />
+            <Image
+              source={require("../assets/icons/Search.png")}
+              style={styles.searchIcon}
+            />
             <TextInput
               style={styles.searchInput}
               placeholder="Discover Singapore"
@@ -73,6 +91,12 @@ const Home = () => {
         </TouchableOpacity>
 
         <View style={styles.relativeContainer}>
+          <View style={styles.absoluteBox} />
+          <Image
+            source={SingaporeHome}
+            style={styles.absoluteImage}
+            resizeMode="cover"
+          />
           <Image
             source={SingaporeHome}
             style={styles.absoluteImage}
@@ -259,8 +283,8 @@ const Home = () => {
         </View>
       </ScrollView>
 
-      <View style={styles.footerContainer}>
-        <Footer />
+      <View style={styles.NavBarContainer}>
+        <NavBar />
       </View>
     </View>
   );
@@ -479,7 +503,7 @@ const styles = StyleSheet.create({
     marginRight: 60,
     alignItems: 'center',
   },
-  footerContainer: {
+  NavBarContainer: {
     position: "absolute",
     bottom: 0,
     width: "100%",
