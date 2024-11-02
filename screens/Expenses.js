@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Dimensions, ScrollView, Alert, Animated, Easing } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, ScrollView, Alert, Animated, Easing, TouchableOpacity } from 'react-native';
 import { useFonts, Nunito_400Regular, Nunito_700Bold } from '@expo-google-fonts/nunito';
 import { Picker } from '@react-native-picker/picker'; 
 import Button from "../components/Button"; 
@@ -10,6 +10,7 @@ import RoundedSquareIcon from '../components/RoundedSquareIcon';
 import { fetchExpenses } from '../api/expensesAPI';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { PieChart } from 'react-native-chart-kit'; // Import the PieChart
+import SetBudgetModal from './SetBudgetModal'; // Import the SetBudgetModal
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
@@ -27,6 +28,7 @@ const Expenses = () => {
   const [userId, setUserId] = useState(null);
   const [summaryVisible, setSummaryVisible] = useState(false);
   const slideAnim = useState(new Animated.Value(0))[0];
+  const [budgetModalVisible, setBudgetModalVisible] = useState(false); 
 
   useEffect(() => {
     const loadExpenses = async () => {
@@ -115,21 +117,24 @@ const Expenses = () => {
         <View style={styles.innerBox}>
           <Text style={styles.amount}>SGD {totalSpent.toFixed(2)}</Text>
 
-          {budget === null ? (
-            <Text style={styles.budgetText}>Set a budget</Text>
+          {budget === 0 ? (
+            <TouchableOpacity onPress={() => setBudgetModalVisible(true)}>
+              <Text style={styles.budgetText}>Set a budget</Text>
+            </TouchableOpacity>
           ) : (
-            <View style={styles.progressContainer}>
-              <Progress.Bar 
-                progress={progress} 
-                width={screenWidth * 0.8}
-                color="#F47966"
-                unfilledColor="#61A4AB"
-                height={screenHeight * 0.01}
-                borderWidth={0}
-              />
-              <Text style={styles.progressText}>BUDGET: SGD {budget.toFixed(2)}</Text>
-            </View>
-          )}
+  <View style={styles.progressContainer}>
+    <Progress.Bar 
+      progress={progress} 
+      width={screenWidth * 0.8}
+      color="#F47966"
+      unfilledColor="#61A4AB"
+      height={screenHeight * 0.01}
+      borderWidth={0}
+    />
+    <Text style={styles.progressText}>BUDGET: SGD {budget.toFixed(2)}</Text>
+  </View>
+)}
+
 
           <Button
             title="View Summary"
@@ -238,6 +243,13 @@ const Expenses = () => {
         visible={modalVisible} 
         onClose={() => setModalVisible(false)} 
         onAdd={handleAddExpense} 
+      />
+
+      {/* SetBudgetModal implementation */}
+      <SetBudgetModal 
+        visible={budgetModalVisible} 
+        onClose={() => setBudgetModalVisible(false)} 
+        onSetBudget={setBudget} 
       />
     </View>
   );
