@@ -21,7 +21,7 @@ import Button from "../components/Button";
 import AddExpenseModal from "./AddExpenseModal";
 import * as Progress from "react-native-progress";
 import RoundedSquareIcon from "../components/RoundedSquareIcon";
-import { fetchExpenses } from "../api/expensesAPI";
+import { fetchExpenses, deleteExpense } from "../api/expensesAPI";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { fetchUserData } from "../api/authAPI";
 import { PieChart } from "react-native-chart-kit"; // Import the PieChart
@@ -41,7 +41,7 @@ const Expenses = () => {
   const [selectedSortOption, setSelectedSortOption] = useState("date_latest");
   const [expenses, setExpenses] = useState([]);
   const [budget, setBudget] = useState(500);
-  const [totalSpent, setTotalSpent] = useState(2);
+  const [totalSpent, setTotalSpent] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
   const [userId, setUserId] = useState(null);
   const [summaryVisible, setSummaryVisible] = useState(false);
@@ -60,6 +60,27 @@ const Expenses = () => {
     "#8A2BE2",
     "#FF4500",
   ];
+
+  const updatePieChartData = (fetchedExpenses) => {
+    const categoryTotals = fetchedExpenses.reduce((acc, item) => {
+      if (!acc[item.category]) {
+        acc[item.category] = 0;
+      }
+      acc[item.category] += item.amount;
+      return acc;
+    }, {});
+
+    const pieChartData = Object.entries(categoryTotals).map(([category, amount], index) => {
+      return {
+        name: category,
+        population: amount,
+        color: colorPalette[index % colorPalette.length], // Use colors in consistent order
+        legendFontColor: "#FFF",
+        legendFontSize: 15,
+      };
+    });
+    setPieChartData(pieChartData);
+  }
 
   useEffect(() => {
     // // Dummy data for testing
@@ -129,28 +150,7 @@ const Expenses = () => {
     </TouchableOpacity>
   );
 
-  const updatePieChartData = (fetchedExpenses) => {
-    const categoryTotals = fetchedExpenses.reduce((acc, item) => {
-      if (!acc[item.category]) {
-        acc[item.category] = 0;
-      }
-      acc[item.category] += item.amount;
-      return acc;
-    }, {});
-
-    const pieChartData = Object.entries(categoryTotals).map(([category, amount], index) => {
-      return {
-        name: category,
-        population: amount,
-        color: colorPalette[index % colorPalette.length], // Use colors in consistent order
-        legendFontColor: "#FFF",
-        legendFontSize: 15,
-      };
-    });
-    setPieChartData(pieChartData);
-  }
-
-  const handleDeleteExpense = (id) => {
+  const handleDeleteExpense = async(id) => {
     const updatedExpenses = expenses.filter((expense) => expense.id !== id);
     setExpenses(updatedExpenses);
 
@@ -160,6 +160,20 @@ const Expenses = () => {
     const deletedExpense = expenses.find((expense) => expense.id === id);
     if (deletedExpense) {
       setTotalSpent((prevTotal) => prevTotal - deletedExpense.amount);
+    }
+
+    // ====== API ======
+    try {
+      // Delete the expense
+      await deleteExpense(userId, id);
+      console.log("Expense deleted successfully.");
+      
+    } catch (error) {
+      console.error("Error deleting expense:", error);
+      Alert.alert(
+        "Error",
+        "Failed to delete expense. Please try again later."
+      );
     }
   };
 
