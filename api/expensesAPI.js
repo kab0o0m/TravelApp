@@ -77,3 +77,37 @@ export const fetchExpenses = async (userId) => {
     );
   }
 };
+
+export const deleteExpense = async (userId, expenseId) => {
+  try {
+    // Get the JWT token from AsyncStorage
+    const token = await AsyncStorage.getItem("token");
+
+    if (!token) {
+      throw new Error("User is not authenticated");
+    }
+
+    const response = await fetch(`${BASE_URL}/api/delete-expense`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ user_id: userId, expense_id: expenseId }), // Pass the expense ID to delete
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || "Failed to delete expense");
+    }
+
+    console.log("Expense deleted successfully:", result);
+    return result;
+  } catch (error) {
+    console.error("Error deleting expense:", error);
+    throw new Error(
+      "An error occurred while deleting the expense. Please try again."
+    );
+  }
+};
