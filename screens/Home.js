@@ -83,10 +83,6 @@ const Home = () => {
               source={require("../assets/icons/Search.png")}
               style={styles.searchIcon}
             />
-            <Image
-              source={require("../assets/icons/Search.png")}
-              style={styles.searchIcon}
-            />
             <TextInput
               style={styles.searchInput}
               placeholder="Discover Singapore"
