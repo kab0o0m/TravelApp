@@ -29,6 +29,7 @@ import Laksa from "../assets/Laksa.jpg";
 import Chickenrice from "../assets/Chickenrice.jpg";
 import Mutarbak from "../assets/ZamZam.jpg";
 import BeefKwayteow from "../assets/Geylang.jpg";
+import { LinearGradient } from "expo-linear-gradient";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
@@ -43,6 +44,10 @@ const Home = () => {
   });
 
   const navigation = useNavigation(); // Get the navigation object
+
+  const handlePress = (locationId) => {
+    navigation.navigate("HomePopular", { locationId: locationId });
+  };
 
   useEffect(() => {
     if (fontsLoaded) {
@@ -119,7 +124,7 @@ const Home = () => {
 
             <TouchableOpacity
               style={styles.destinationContainer}
-              onPress={() => navigation.navigate("HomePopular")}
+              onPress={() => handlePress(1)}
             >
               <View style={styles.destinationBackground} />
               <Image source={MarinaBaySands} style={styles.destinationImage} />
@@ -137,7 +142,7 @@ const Home = () => {
 
             <TouchableOpacity
               style={styles.destinationContainer}
-              onPress={() => navigation.navigate("HomePopular")}
+              onPress={() => handlePress(2)}
             >
               <View style={styles.destinationBackground} />
               <Image source={Esplanade} style={styles.destinationImage} />
@@ -155,7 +160,7 @@ const Home = () => {
 
             <TouchableOpacity
               style={styles.destinationContainer}
-              onPress={() => navigation.navigate("HomePopular")}
+              onPress={() => handlePress(3)}
             >
               <View style={styles.destinationBackground} />
               <Image source={EastCoastPark} style={styles.destinationImage} />
@@ -173,7 +178,7 @@ const Home = () => {
 
             <TouchableOpacity
               style={styles.destinationContainerLast}
-              onPress={() => navigation.navigate("HomePopular")}
+              onPress={() => handlePress(4)}
             >
               <View style={styles.destinationBackground} />
               <Image source={USS} style={styles.destinationImage} />
