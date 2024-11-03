@@ -26,6 +26,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import {
   removeSavedLocation,
   addSavedLocation,
+  fetchSavedLocations,
 } from "../api/locationAPI";
 import { fetchSublocationsByLocationId } from "../api/subLocationsAPI";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -68,9 +69,26 @@ const HomePopular = ({ route }) => {
 
   useEffect(() => {
     const fetchSublocations = async () => {
+      const userId = await AsyncStorage.getItem("userData");
+      const user = JSON.parse(userId);
+  
+      if (!user?.id) {
+        Alert.alert("User ID missing", "Unable to find user information.");
+        return;
+      }
+  
       try {
-        const data = await fetchSublocationsByLocationId(locationId);
+        const data = await fetchSublocationsByLocationId(locationId); // Fetch sublocation data first
+        const savedData = await fetchSavedLocations(user.id); // Then fetch saved locations
+  
+        const initialSavedItems = data.reduce((acc, location) => {
+          const isSaved = savedData.some((saved) => saved.id === location.id);
+          acc[location.id] = isSaved;
+          return acc;
+        }, {});
+  
         setSublocations(data);
+        setSavedItems(initialSavedItems);
       } catch (error) {
         console.error("Error fetching sublocations:", error);
         Alert.alert("Error", "There was a problem loading sublocations.");
@@ -78,8 +96,10 @@ const HomePopular = ({ route }) => {
         setLoading(false);
       }
     };
+  
     fetchSublocations();
   }, [locationId]);
+  
 
   useEffect(() => {
     if (fontsLoaded) SplashScreen.hideAsync();
