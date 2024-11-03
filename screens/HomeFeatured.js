@@ -72,6 +72,12 @@ const HomeFeatured = () => {
     );
   };
 
+  const navigateToPlannerNewTrip = () => {
+    navigation.navigate("PlannerNewTrip", {
+        destination: "Tian Tian Chicken Rice" // Pass the destination
+    });
+  };
+
   
 
   if (!fontsLoaded) {
@@ -128,7 +134,10 @@ const HomeFeatured = () => {
             source={require("../assets/icons/LocationIcon.png")}
             style={styles.icon}
           />
-          <Text style={styles.infoText}>1 Kadayanallur Street, #01-10/11, S069184</Text>
+          <TouchableOpacity onPress={handleMapPress}>
+            <Text style={styles.infoText}>1 Kadayanallur Street, #01-10/11, S069184</Text>
+          </TouchableOpacity>
+          
           
         </View>
 
@@ -166,9 +175,9 @@ const HomeFeatured = () => {
       <View style={styles.bookNowContainer}>
         <TouchableOpacity
           style={styles.bookNowButton}
-          onPress={handleMapPress}
+          onPress={navigateToPlannerNewTrip}
         >
-          <Text style={styles.bookNowText}>Find Me in Google Maps!</Text>
+          <Text style={styles.bookNowText}>Add to Planner!</Text>
         </TouchableOpacity>
       </View>
     </View>
