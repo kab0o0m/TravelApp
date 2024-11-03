@@ -49,21 +49,21 @@ const HomeFeatured = () => {
 
   const handleWebsitePress = () => {
     const url =
-      "https://www.rwsentosa.com/en/attractions/universal-studios-singapore#:~:text=Experience%20the%20thrill%20of%20Hollywood,%20New%20York,%20Sci-Fi%20City,%20Ancient";
+      "https://maxwellfoodcentre.com/tian-tian-hainanese-chicken-rice/";
     Linking.openURL(url).catch((err) =>
       console.error("Failed to open URL:", err)
     );
   };
 
   const handlePhonePress = () => {
-    const phoneNumber = "tel:65778888";
+    const phoneNumber = "tel:+65 9691 4852";
     Linking.openURL(phoneNumber).catch((err) =>
       console.error("Failed to open phone dialer:", err)
     );
   };
 
-  const handleAddressPress = () => {
-    const address = "8 Sentosa Gateway, 098269";
+  const handleMapPress = () => {
+    const address = "1 Kadayanallur Street, #01-10/11, S069184";
     const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
       address
     )}`;
@@ -72,13 +72,13 @@ const HomeFeatured = () => {
     );
   };
 
-  const handleKlookPress = () => {
-    const url =
-      "https://www.klook.com/en-SG/activity/117-universal-studios-singapore/";
-    Linking.openURL(url).catch((err) =>
-      console.error("Failed to open Klook URL:", err)
-    );
+  const navigateToPlannerNewTrip = () => {
+    navigation.navigate("PlannerNewTrip", {
+        destination: "Tian Tian Chicken Rice" // Pass the destination
+    });
   };
+
+  
 
   if (!fontsLoaded) {
     return (
@@ -110,7 +110,7 @@ const HomeFeatured = () => {
 
       <View style={styles.featuredContainer}>
         <Image
-          source={require("../assets/USSimage.png")}
+          source={require("../assets/Chickenrice.jpg")}
           style={styles.featuredImage}
         />
         <LinearGradient
@@ -118,7 +118,7 @@ const HomeFeatured = () => {
           style={styles.featuredOverlay}
         />
         <Text style={styles.featuredTitle}>
-          Universal Studios Singapore (USS)
+        Hainanese Chicken Rice
         </Text>
       </View>
 
@@ -126,9 +126,7 @@ const HomeFeatured = () => {
         <Text style={styles.about}>About:</Text>
 
         <Text style={styles.description}>
-          USS offers thrilling rides, live shows, and attractions based on your
-          favourite movies and TV shows. Perfect for families and
-          adventure-seekers!
+        Earning international acclaim, Tian Tian offers a delectable experience worth the wait. Enjoy the authentic taste of this beloved Singaporean dish!
         </Text>
 
         <View style={styles.infoContainer}>
@@ -136,9 +134,11 @@ const HomeFeatured = () => {
             source={require("../assets/icons/LocationIcon.png")}
             style={styles.icon}
           />
-          <TouchableOpacity onPress={handleAddressPress}>
-            <Text style={styles.infoText}>8 Sentosa Gateway, 098269</Text>
+          <TouchableOpacity onPress={handleMapPress}>
+            <Text style={styles.infoText}>1 Kadayanallur Street, #01-10/11, S069184</Text>
           </TouchableOpacity>
+          
+          
         </View>
 
         <View style={styles.infoContainer}>
@@ -147,16 +147,8 @@ const HomeFeatured = () => {
             style={styles.icon}
           />
           <TouchableOpacity onPress={handlePhonePress}>
-            <Text style={styles.infoText}>6577 8888</Text>
+            <Text style={styles.infoText}>+65 9691 4852</Text>
           </TouchableOpacity>
-        </View>
-
-        <View style={styles.infoContainer}>
-          <Image
-            source={require("../assets/icons/TimeIcon.png")}
-            style={styles.icon}
-          />
-          <Text style={styles.infoText}>Mon - Sun: 10AM - 8PM</Text>
         </View>
 
         <View style={styles.infoContainer}>
@@ -165,17 +157,27 @@ const HomeFeatured = () => {
             style={styles.icon}
           />
           <TouchableOpacity onPress={handleWebsitePress}>
-            <Text style={styles.website}>USS Website</Text>
+            <Text style={styles.website}>Our Website</Text>
           </TouchableOpacity>
         </View>
+
+        <View style={styles.infoContainer}>
+          <Image
+            source={require("../assets/icons/TimeIcon.png")}
+            style={styles.icon}
+          />
+          <Text style={styles.infoText}>Tue - Sun: 11AM - 8PM</Text>
+        </View>
+
+        
       </View>
 
       <View style={styles.bookNowContainer}>
         <TouchableOpacity
           style={styles.bookNowButton}
-          onPress={handleKlookPress}
+          onPress={navigateToPlannerNewTrip}
         >
-          <Text style={styles.bookNowText}>Book Now via Klook</Text>
+          <Text style={styles.bookNowText}>Add to Planner!</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -313,12 +315,12 @@ const styles = StyleSheet.create({
   },
   infoText: {
     color: "#F47966",
-    fontSize: 12,
+    fontSize: 14,
     fontFamily: "Nunito_400Regular",
   },
   website: {
     color: "#F47966",
-    fontSize: 12,
+    fontSize: 14,
     fontFamily: "Nunito_400Regular",
     textDecorationLine: "underline",
   },
