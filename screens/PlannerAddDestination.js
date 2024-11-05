@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Keyboard,
   Image,
+  Alert
 } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import AddDestinationModal from "./AddDestinationModal";

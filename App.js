@@ -35,7 +35,7 @@ export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="HomePopular">
+        <Stack.Navigator initialRouteName="AIRandomiser">
           <Stack.Screen
             name="AuthCheck"
             component={AuthCheck}

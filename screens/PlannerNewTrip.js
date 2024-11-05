@@ -7,63 +7,93 @@ import {
   TextInput,
   Modal,
   Image,
+  Alert,
 } from "react-native";
+import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import CustomCalendar from "../components/CustomCalendar"; // Import your CustomCalendar
-//import PlannerLocationSearchbar from "../components/PlannerLocationSearchbar";
-import { LogBox } from "react-native";
-
-LogBox.ignoreLogs([
-  "Non-serializable values were found in the navigation state",
-]);
+import BASE_URL from "../config"; // Assuming BASE_URL is defined in a config file
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { fetchUserData } from "../api/authAPI";
 
 const PlannerNewTrip = ({ route }) => {
   const navigation = useNavigation();
   const { onAddTrip, selectedLocation } = route.params || {};
   const [isCalendarVisible, setCalendarVisible] = useState(false);
-  const [isSearchbarVisible, setSearchbarVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState("");
   const [destination, setDestination] = useState("");
+  const [locationId, setLocationId] = useState(""); // Location ID state
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [userId, setUserId] = useState(null); // State to store dynamic user ID
+
+  // Fetch user ID from AsyncStorage or API
+  useEffect(() => {
+    const loadUserId = async () => {
+      try {
+        let storedUserData = await AsyncStorage.getItem("userData");
+        if (!storedUserData) {
+          console.log("Fetching user data...");
+          storedUserData = await fetchUserData();
+          await AsyncStorage.setItem("userData", JSON.stringify(storedUserData));
+        }
+        const userData = JSON.parse(storedUserData);
+        setUserId(userData.id);
+      } catch (error) {
+        console.error("Error loading user data:", error);
+      }
+    };
+
+    loadUserId();
+  }, []);
 
   useEffect(() => {
     if (selectedLocation) {
       setDestination(selectedLocation.title);
+      setLocationId(selectedLocation.placeId); // Assuming placeId represents the location ID
     }
   }, [selectedLocation]);
 
-  const openCalendar = () => {
-    setCalendarVisible(true);
-  };
+  const openCalendar = () => setCalendarVisible(true);
+  const closeCalendar = () => setCalendarVisible(false);
 
-  const closeCalendar = () => {
-    setCalendarVisible(false);
-  };
-
-  // const openSearchBar = () => {
-  //   setSearchbarVisible(true);
-  // };
-
-  // const closeSearchBar = () => {
-  //   setSearchbarVisible(false);
-  // };
-
-  const handleDateSelection = (startDate, endDate) => {
-    setSelectedDate(`${startDate} to ${endDate}`);
+  const handleDateSelection = (start, end) => {
+    setSelectedDate(`${start} to ${end}`);
+    setStartDate(start);
+    setEndDate(end);
     closeCalendar();
   };
 
-  // const handleLocationSelection = (location) => {
-  //   setDestination(location.location_name);
-  //   setDestinationID(location.id);
-  //   closeSearchBar();
-  // };
+  const handleConfirmTrip = async () => {
+    if (!userId) {
+      Alert.alert("User ID Missing", "Failed to retrieve user ID.");
+      return;
+    }
 
-  const handleConfirmTrip = () => {
-    if (destination && selectedDate) {
-      onAddTrip({ destination, dates: selectedDate });
-      navigation.navigate("Planner");
-    } else {
-      alert("Please fill in all details.");
+    if (!destination || !startDate || !endDate || !locationId) {
+      Alert.alert("Incomplete Details", "Please fill in all details.");
+      return;
+    }
+
+    const tripData = {
+      places_id: locationId,
+      location_name: destination, // Use destination directly as location name
+      start_date: startDate,
+      end_date: endDate,
+    };
+
+    try {
+      const response = await axios.post(`${BASE_URL}/api/users/${userId}/trips`, tripData);
+
+      if (response.status === 201) {
+        Alert.alert("Success", "Trip created successfully!");
+        navigation.navigate("Planner");
+      } else {
+        console.log("Server response:", response.data);
+      }
+    } catch (error) {
+      console.error("Error adding trip:", error);
+      Alert.alert("Error", "Failed to add trip.");
     }
   };
 
@@ -88,7 +118,10 @@ const PlannerNewTrip = ({ route }) => {
         <TouchableOpacity
           onPress={() =>
             navigation.navigate("PlannerAddDestination", {
-              onLocationSelect: (location) => setDestination(location.title),
+              onLocationSelect: (location) => {
+                setDestination(location.title);
+                setLocationId(location.placeId); // Use placeId as locationId
+              },
             })
           }
           style={styles.input}
@@ -127,29 +160,14 @@ const PlannerNewTrip = ({ route }) => {
       {/* Calendar Modal */}
       <Modal visible={isCalendarVisible} animationType="slide">
         <View style={styles.modalContainer}>
-          {/* Calendar and Close Button Container */}
-          <View style={styles.calendarWithClose}>
-            {/* Calendar */}
-            <CustomCalendar onDateSelect={handleDateSelection} />
-          </View>
+          <CustomCalendar onDateSelect={handleDateSelection} />
         </View>
       </Modal>
-
-      {/* Searchbar Modal */}
-      {/* <Modal visible={isSearchbarVisible}>
-        <View style={styles.modalSearchContainer}>
-          <PlannerLocationSearchbar
-            onLocationSelect={handleLocationSelection}
-            onClose={closeSearchBar}
-          />
-        </View>
-      </Modal> */}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  // Add your styles here
   container: {
     flex: 1,
     backgroundColor: "#fff",
@@ -160,10 +178,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 40,
     left: 20,
-  },
-  exitButtonText: {
-    fontSize: 24,
-    color: "#000",
   },
   headerContainer: {
     alignItems: "center",
@@ -183,8 +197,7 @@ const styles = StyleSheet.create({
     marginTop: 50,
   },
   input: {
-    justifyContent: "center", // Center text vertically
-    color: "#000",
+    justifyContent: "center",
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 10,
@@ -211,29 +224,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    padding: 0,
-    backgroundColor: "#fff",
-  },
-
-  calendarContainer: {
-    width: "100%",
-    height: "80%",
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#fff",
-  },
-  closeButtonText: {
-    color: "#fff",
-    fontSize: 18,
-  },
-  closeButton: {
-    backgroundColor: "#F47966",
-    padding: 15,
-    borderRadius: 10,
-  },
-  closeButtonText: {
-    color: "#fff",
-    fontSize: 18,
   },
 });
 
