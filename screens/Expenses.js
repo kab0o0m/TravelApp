@@ -31,6 +31,65 @@ import NavBar from "../components/NavBar";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
+const iconData = [
+  {
+    id: "shopping",
+    iconName: "cart",
+    backgroundColor: "#EEF4F8",
+    iconColor: "#81B2CA",
+    label: "Shopping",
+  },
+  {
+    id: "lodging",
+    iconName: "home",
+    backgroundColor: "#faeee6",
+    iconColor: "#c46d33",
+    label: "Lodging",
+  },
+  {
+    id: "food",
+    iconName: "restaurant",
+    backgroundColor: "#EEEBED",
+    iconColor: "#836F81",
+    label: "Food",
+  },
+  {
+    id: "transport",
+    iconName: "bus",
+    backgroundColor: "#E5EEED",
+    iconColor: "#42887B",
+    label: "Transport",
+  },
+  {
+    id: "activities",
+    iconName: "color-palette",
+    backgroundColor: "#f5e4ef",
+    iconColor: "#c957a5",
+    label: "Activities",
+  },
+  {
+    id: "health",
+    iconName: "medkit",
+    backgroundColor: "#faf6e1",
+    iconColor: "#e3bc0e",
+    label: "Health",
+  },
+  {
+    id: "souvenirs",
+    iconName: "gift",
+    backgroundColor: "#f5e1e3",
+    iconColor: "#c95762",
+    label: "Souvenirs",
+  },
+  {
+    id: "others",
+    iconName: "albums",
+    backgroundColor: "#e6fae7",
+    iconColor: "#418743",
+    label: "Others",
+  },
+];
+
 const Expenses = () => {
   const [fontsLoaded] = useFonts({
     Nunito_400Regular,
@@ -60,6 +119,11 @@ const Expenses = () => {
     "#8A2BE2",
     "#FF4500",
   ];
+
+  const getIconForCategory = (category) => {
+    const icon = iconData.find((item) => item.label.toLowerCase() === category.toLowerCase());
+    return icon || { iconName: "cash-outline", backgroundColor: "#e6fae7", iconColor: "#418743" };
+  };
 
   const updatePieChartData = (fetchedExpenses) => {
     const categoryTotals = fetchedExpenses.reduce((acc, item) => {
@@ -293,7 +357,11 @@ const Expenses = () => {
           </Text>
         ) : (
           <ScrollView>
-            {expenses.map((expense) => (
+            {expenses.map((expense) => {
+            // Get the icon data for the current expense category
+            const { iconName, backgroundColor, iconColor } = getIconForCategory(expense.category);
+
+            return (
               <Swipeable
                 key={expense.id}
                 renderRightActions={() => renderRightActions(expense.id)}
@@ -301,10 +369,10 @@ const Expenses = () => {
                 <View style={styles.expenseCard}>
                   <View style={styles.expenseDetailsContainer}>
                     <RoundedSquareIcon
-                      iconName="cash-outline"
+                      iconName={iconName}
                       iconSize={screenHeight * 0.03}
-                      iconColor="#FFFFFF"
-                      backgroundColor="#006D77"
+                      iconColor={iconColor}
+                      backgroundColor={backgroundColor}
                       size={screenHeight * 0.07}
                     />
                     <View style={styles.expenseTextContainer}>
@@ -317,7 +385,7 @@ const Expenses = () => {
                         </Text>
                       </View>
                       <View style={styles.expenseRow}>
-                        <Text style={styles.expenseTitle}>{expense.title}</Text>
+                        <Text style={styles.expenseTitle}>{expense.name}</Text>
                         <Text style={styles.expenseDate}>
                           {new Date(expense.date).toLocaleDateString()}
                         </Text>
@@ -326,7 +394,8 @@ const Expenses = () => {
                   </View>
                 </View>
               </Swipeable>
-            ))}
+            );
+          })}
           </ScrollView>
         )}
       </Animated.View>
