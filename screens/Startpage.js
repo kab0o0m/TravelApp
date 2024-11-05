@@ -25,6 +25,11 @@ const Startpage = () => {
   const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
+      navigation.setOptions({
+        gestureEnabled: false,
+      });
+      [navigation];
+
     if (!modalVisible) {
       SplashScreen.hideAsync(); // Hide the splash screen once fonts are loaded
     }

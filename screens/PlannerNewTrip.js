@@ -87,6 +87,11 @@ const PlannerNewTrip = ({ route }) => {
 
       if (response.status === 201) {
         Alert.alert("Success", "Trip created successfully!");
+        setDestination("");
+        setLocationId("");
+        setSelectedDate("");
+        setStartDate("");
+        setEndDate("");
         navigation.navigate("Planner");
       } else {
         console.log("Server response:", response.data);

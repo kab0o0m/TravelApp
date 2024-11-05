@@ -89,7 +89,7 @@ const Account = () => {
             style={styles.accountItem}
             onPress={async () => {
               await logoutUser();
-              navigation.navigate("Login"); // Replace "Login" with your login screen route name
+              navigation.navigate("Startpage"); // Replace "Login" with your login screen route name
             }}
           >
             <Text style={styles.accountItemText}>Logout</Text>
