@@ -6,40 +6,59 @@ import {
   StyleSheet,
   TouchableOpacity,
   Alert,
+  Image,
 } from "react-native";
+import { Swipeable } from "react-native-gesture-handler";
 import NavBar from "../components/NavBar";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import axios from "axios";
 import BASE_URL from "../config";
 import { format } from "date-fns";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { fetchUserData } from "../api/authAPI"; // Assuming this function is defined
+import { fetchUserData } from "../api/authAPI";
+import { getPlacePhotoByPlaceId, deleteTripById } from "../api/places";
 
 const Planner = () => {
   const navigation = useNavigation();
-  const [trips, setTrips] = useState([]); // State to store trips
-  const [userId, setUserId] = useState(null); // State to store user ID
+  const [trips, setTrips] = useState([]);
+  const [userId, setUserId] = useState(null);
 
-  // Function to fetch trips from the backend
   const fetchTrips = async () => {
     if (!userId) return;
     try {
       const response = await axios.get(`${BASE_URL}/api/users/${userId}/trips`);
-      setTrips(response.data);
+      
+      const tripsWithPhotos = await Promise.all(
+        response.data.map(async (trip) => {
+          const photoUrl = await getPlacePhotoByPlaceId(trip.places_id);
+          return { ...trip, photoUrl };
+        })
+      );
+
+      setTrips(tripsWithPhotos);
     } catch (error) {
       console.error("Error loading trips:", error);
       Alert.alert("Error", "Failed to load trips.");
     }
   };
 
-  // Fetch trips when the screen comes into focus
+  const handleDeleteTrip = async (tripId) => {
+    try {
+      await deleteTripById(tripId);
+      setTrips(trips.filter((trip) => trip.id !== tripId));
+      Alert.alert("Success", "Trip deleted successfully.");
+    } catch (error) {
+      console.error("Error deleting trip:", error);
+      Alert.alert("Error", "Failed to delete trip.");
+    }
+  };
+
   useFocusEffect(
     useCallback(() => {
       fetchTrips();
     }, [userId])
   );
 
-  // Load user ID from AsyncStorage or API
   useEffect(() => {
     const loadUserId = async () => {
       try {
@@ -59,15 +78,27 @@ const Planner = () => {
     loadUserId();
   }, []);
 
-  // Helper function to format dates
   const formatDate = (isoDate) => {
     const date = new Date(isoDate);
     return isNaN(date.getTime()) ? "Invalid Date" : format(date, "dd/MM/yyyy");
   };
 
   const handleAddTrip = (newTrip) => {
-    setTrips((prevTrips) => [...prevTrips, newTrip]); // Add new trip to the list
+    setTrips((prevTrips) => [...prevTrips, newTrip]);
   };
+
+  const handleTripPress = (trip) => {
+    navigation.navigate("PlannerOverview", { trip });
+  };
+
+  const renderRightActions = (tripId) => (
+    <TouchableOpacity
+      style={styles.deleteContainer}
+      onPress={() => handleDeleteTrip(tripId)}
+    >
+      <Text style={styles.deleteButtonText}>Delete</Text>
+    </TouchableOpacity>
+  );
 
   return (
     <View style={styles.container}>
@@ -84,28 +115,45 @@ const Planner = () => {
           <Text style={styles.noTripsText}>No trips added yet!</Text>
         ) : (
           trips.map((trip, index) => (
-            <View key={index} style={styles.tripItem}>
-              <View style={styles.tripDetails}>
-                {/* Display the location name fetched from the database */}
-                <Text style={styles.tripDestination}>{trip.location_name}</Text>
-                <Text style={styles.tripDates}>
-                  {`${formatDate(trip.start_date)} to ${formatDate(trip.end_date)}`}
-                </Text>
-              </View>
-            </View>
+            <Swipeable
+              key={index}
+              renderRightActions={() => renderRightActions(trip.id)}
+            >
+              <TouchableOpacity onPress={() => handleTripPress(trip)}>
+                <View style={styles.tripItem}>
+                  <View style={styles.tripDetails}>
+                    {trip.photoUrl ? (
+                      <Image source={{ uri: trip.photoUrl }} style={styles.tripImage} />
+                    ) : (
+                      <View style={styles.tripImagePlaceholder} />
+                    )}
+                    <View style={styles.tripInfo}>
+                      <Text
+                        style={styles.tripDestination}
+                        numberOfLines={2}
+                        ellipsizeMode="tail"
+                      >
+                        {trip.location_name}
+                      </Text>
+                      <Text style={styles.tripDates}>
+                        {`${formatDate(trip.start_date)} to ${formatDate(trip.end_date)}`}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+              </TouchableOpacity>
+            </Swipeable>
           ))
         )}
-
-        <TouchableOpacity
-          onPress={() =>
-            navigation.navigate("PlannerNewTrip", { onAddTrip: handleAddTrip })
-          }
-          style={styles.addTripButton}
-        >
-          <Text style={styles.addTripButtonText}>+ Add Trip</Text>
-        </TouchableOpacity>
       </ScrollView>
-
+      <TouchableOpacity
+        onPress={() =>
+          navigation.navigate("PlannerNewTrip", { onAddTrip: handleAddTrip })
+        }
+        style={styles.addTripButton}
+      >
+        <Text style={styles.addTripButtonText}>+ Add Trip</Text>
+      </TouchableOpacity>
       <NavBar />
     </View>
   );
@@ -145,6 +193,8 @@ const styles = StyleSheet.create({
   tripListContainer: {
     flex: 1,
     paddingHorizontal: 20,
+    marginTop: 10,
+    paddingBottom: 30,
     backgroundColor: "#fff",
   },
   noTripsText: {
@@ -154,11 +204,13 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   tripItem: {
+    flexDirection: "row",
+    alignItems: "center",
     paddingVertical: 15,
     paddingHorizontal: 20,
     marginVertical: 10,
     borderRadius: 10,
-    backgroundColor: "#F9F9F9", // Light background for trip items
+    backgroundColor: "#F9F9F9",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
@@ -166,28 +218,61 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   tripDetails: {
-    flexDirection: "column",
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+  },
+  tripImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 5,
+    marginRight: 15,
+  },
+  tripImagePlaceholder: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: "#ddd",
+    marginRight: 15,
+  },
+  tripInfo: {
+    flex: 1,
   },
   tripDestination: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: "600",
     color: "#333",
+    flexShrink: 1,
   },
   tripDates: {
-    fontSize: 18,
+    fontSize: 16,
     color: "#666",
   },
   addTripButton: {
-    backgroundColor: "#F47966", // Button background color
+    position: "absolute",
+    bottom: 80,
+    alignSelf: "center",
+    backgroundColor: "#F47966",
     paddingVertical: 10,
     paddingHorizontal: 20,
-    marginVertical: 20,
-    alignSelf: "center",
     borderRadius: 50,
   },
   addTripButtonText: {
     fontSize: 18,
-    color: "#fff", // Text color for add button
+    color: "#fff",
+    fontWeight: "bold",
+  },
+  deleteContainer: {
+    backgroundColor: "#F47966",
+    justifyContent: "center",
+    width: 80,
+    height: "80%",
+    borderRadius: 5,
+    marginTop: 13,
+    alignItems: "center",
+  },
+  deleteButtonText: {
+    color: "#fff",
     fontWeight: "bold",
   },
 });
