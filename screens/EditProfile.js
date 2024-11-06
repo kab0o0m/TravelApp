@@ -8,6 +8,7 @@ import {
   TextInput,
   TouchableWithoutFeedback,
   Keyboard,
+  Button,
   TouchableOpacity,
 } from "react-native";
 import ProfilePicture from "../assets/icons/ProfilePicture.png";
@@ -21,7 +22,10 @@ import {
 } from "@expo-google-fonts/nunito";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import DateTimePicker from "@react-native-community/datetimepicker";
+// import DateTimePicker from "@react-native-community/datetimepicker";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
+import Toast from 'react-native-toast-message';
+import { Picker } from "@react-native-picker/picker";
 import { updateProfile, fetchUserData } from "../api/authAPI";
 
 const EditProfile = () => {
@@ -31,7 +35,9 @@ const EditProfile = () => {
   const [email, setEmail] = useState(null);
   const [phone, setPhone] = useState(null);
   const [gender, setGender] = useState(null);
-  const [dob, setDob] = useState(new Date());
+  const [dobDate, setDobDate] = useState(null);
+  const [dobStr, setDobStr] = useState("--/--/----");
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
   const [fontsLoaded] = useFonts({
     Nunito_400Regular,
@@ -45,16 +51,20 @@ const EditProfile = () => {
         if (storedUserData == null) {
           console.log("fetching");
           const fetchedUserData = await fetchUserData();
-          await AsyncStorage.setItem("userData", JSON.stringify(fetchedUserData));
+          await AsyncStorage.setItem(
+            "userData",
+            JSON.stringify(fetchedUserData)
+          );
         }
 
-        const userData = JSON.parse(storedUserData || '{}');
+        const userData = JSON.parse(storedUserData || "{}");
         setFirstName(userData.firstName);
         setLastName(userData.lastName);
         setEmail(userData.email);
         setPhone(userData.phoneNumber);
         setGender(userData.gender);
-        setDob(new Date(userData.dob)); // Assuming dob is in valid format
+        setDobDate(new Date(userData.dob)); // Assuming dob is in valid format
+        setDobStr(formatDate(new Date(userData.dob)));
       } catch (error) {
         console.error("Failed to load user data", error);
 
@@ -64,7 +74,8 @@ const EditProfile = () => {
           [
             {
               text: "OK",
-              onPress: () => setTimeout(() => navigation.navigate("Login"), 2000),
+              onPress: () =>
+                setTimeout(() => navigation.navigate("Login"), 2000),
             },
           ],
           { cancelable: false }
@@ -74,6 +85,41 @@ const EditProfile = () => {
 
     loadUserData();
   }, []);
+
+  function formatDate(date, format = "dd/mm/yyyy") {
+    if (!(date instanceof Date) || isNaN(date)) {
+      throw new Error("Invalid Date object provided");
+    }
+
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are zero-indexed
+    const year = date.getFullYear();
+
+    if (format === "dd/mm/yyyy") {
+      return `${day}/${month}/${year}`;
+    } else if (format === "yyyy-mm-dd") {
+      return `${year}-${month}-${day}`;
+    } else {
+      throw new Error(
+        "Invalid format specified. Use 'dd/mm/yyyy' or 'yyyy-mm-dd'."
+      );
+    }
+  }
+
+  const showDatePicker = () => {
+    setDatePickerVisibility(true);
+  };
+
+  const hideDatePicker = () => {
+    setDatePickerVisibility(false);
+  };
+
+  const handleDateConfirm = (date) => {
+    console.log("A date has been picked: ", date);
+    setDobDate(date);
+    setDobStr(formatDate(date));
+    hideDatePicker();
+  };
 
   const updateUserDataInAsyncStorage = async (newUserData) => {
     try {
@@ -107,7 +153,7 @@ const EditProfile = () => {
 
   const handleUpdate = async () => {
     try {
-      let dob_string = dob.toISOString().split("T")[0];
+      let dob_string = dobDate.toISOString().split("T")[0];
       const userData = await updateProfile(
         firstName,
         lastName,
@@ -116,20 +162,17 @@ const EditProfile = () => {
         gender,
         dob_string
       );
-  
+
       await updateUserDataInAsyncStorage(userData);
-      
-      Alert.alert(
-        "Success",
-        "Your profile has been updated successfully.",
-        [
-          {
-            text: "OK",
-            onPress: () => navigation.navigate("Profile"),
-          },
-        ],
-        { cancelable: false }
-      );
+
+      // Show success toast from the bottom
+      Toast.show({
+        type: "success",
+        text1: "Profile Updated",
+        text2: "Your profile has been updated successfully.",
+        position: "bottom", // Show toast from the bottom
+      });
+      navigation.navigate("Profile");
     } catch (error) {
       Alert.alert(
         "Session Expired",
@@ -144,7 +187,6 @@ const EditProfile = () => {
       );
     }
   };
-  
 
   const dismissKeyboard = () => {
     Keyboard.dismiss();
@@ -176,10 +218,10 @@ const EditProfile = () => {
             </TouchableOpacity>
           </View>
         </View>
-        <View style={styles.inputContainer}>
-          <View style={styles.genderDOB}>
-            <View>
-              <Text style={styles.label}> First Name</Text>
+        <View style={styles.mainInputContainer}>
+          <View style={styles.inputContainer}>
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>First Name</Text>
               <TextInput
                 style={styles.nameInput}
                 value={firstName}
@@ -187,7 +229,7 @@ const EditProfile = () => {
                 onChangeText={setFirstName}
               />
             </View>
-            <View>
+            <View style={styles.inputGroup}>
               <Text style={styles.label}>Last Name</Text>
               <TextInput
                 style={styles.nameInput}
@@ -197,6 +239,7 @@ const EditProfile = () => {
               />
             </View>
           </View>
+
           <Text style={styles.label}>Email</Text>
           <TextInput
             style={styles.emailInput}
@@ -204,6 +247,7 @@ const EditProfile = () => {
             editable={false}
             onChangeText={setEmail}
           />
+
           <Text style={styles.label}>Phone Number</Text>
           <TextInput
             style={styles.input}
@@ -211,36 +255,42 @@ const EditProfile = () => {
             editable={true}
             onChangeText={setPhone}
           />
-          <View style={styles.genderDOB}>
-            <View>
+
+          <View style={styles.inputContainer}>
+            <View style={[styles.inputGroup, styles.genderGroup]}>
               <Text style={styles.label}>Gender</Text>
-              <TextInput
-                style={styles.genderInput}
-                value={gender}
-                editable={true}
-                onChangeText={setGender}
-              />
-            </View>
-            <View>
-              <Text style={styles.label}>Date of Birth</Text>
-              <View style={styles.DOBInputContainer}>
-                <DateTimePicker
-                  value={dob}
-                  mode="date"
-                  display="calendar"
-                  onChange={(event, selectedDate) => {
-                    const currentDate = selectedDate || dob;
-                    setDob(currentDate);
-                  }}
-                />
+              <View style={styles.pickerContainer}>
+                <Picker
+                  selectedValue={gender}
+                  onValueChange={(itemValue) => setGender(itemValue)}
+                  style={styles.picker}
+                >
+                  <Picker.Item label="Select" value="" />
+                  <Picker.Item label="Male" value="Male" />
+                  <Picker.Item label="Female" value="Female" />
+                  <Picker.Item label="Other" value="Other" />
+                </Picker>
               </View>
             </View>
+            <View style={[styles.inputGroup, styles.flexFill]}>
+              <Text style={styles.label}>Date of Birth</Text>
+              <TouchableOpacity onPress={showDatePicker}>
+                <Text style={styles.nameInput}>{dobStr}</Text>
+              </TouchableOpacity>
+              <DateTimePickerModal
+                isVisible={isDatePickerVisible}
+                mode="date"
+                onConfirm={handleDateConfirm}
+                onCancel={hideDatePicker}
+              />
+            </View>
           </View>
-        </View>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={handleUpdate}>
-            <Text style={styles.buttonText}>Save</Text>
-          </TouchableOpacity>
+
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.button} onPress={handleUpdate}>
+              <Text style={styles.buttonText}>Save</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </KeyboardAwareScrollView>
     </TouchableWithoutFeedback>
@@ -251,15 +301,15 @@ export default EditProfile;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // flex: 1,
     backgroundColor: "#FCF7F7",
     paddingHorizontal: 20,
-    paddingVertical: 30,
+    paddingTop: 30,
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
-    marginVertical: 40,
+    marginVertical: 30,
   },
   closeButton: {
     padding: 10,
@@ -277,18 +327,26 @@ const styles = StyleSheet.create({
     marginVertical: 20,
     alignItems: "center",
     justifyContent: "center",
+    marginBottom: 30,
   },
   image: {
     width: 100,
     height: 100,
   },
   inputContainer: {
-    marginTop: 20,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 20,
+  },
+  inputGroup: {
+    flex: 1, // Makes both input fields the same width
   },
   label: {
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 5,
+    marginTop: 20,
+    marginLeft: 5,
     color: "#F47966",
   },
   input: {
@@ -297,7 +355,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     fontSize: 18,
     color: "#777",
-    marginBottom: 20,
     borderWidth: 1,
     borderColor: "#3A4646",
   },
@@ -307,14 +364,13 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     fontSize: 18,
     color: "#b2b3b5",
-    marginBottom: 20,
     borderWidth: 1,
     borderColor: "#b2b3b5",
   },
   buttonContainer: {
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 20,
+    marginTop: 55,
     borderRadius: 30,
   },
   button: {
@@ -330,10 +386,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
   },
-  genderDOB: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
+  // genderDOB: {
+  //   flexDirection: "row",
+  //   justifyContent: "space-between",
+  // },
   genderInput: {
     backgroundColor: "#F2F2F2",
     padding: 15,
@@ -354,24 +410,47 @@ const styles = StyleSheet.create({
     borderColor: "#3A4646",
     marginBottom: 20,
     width: 200,
-    alignItems: 'center',
+    alignItems: "center",
+    height: 80,
   },
-
   nameInput: {
     backgroundColor: "#F2F2F2",
     padding: 15,
     borderRadius: 8,
     fontSize: 20,
     color: "#777",
-    marginBottom: 20,
     borderWidth: 1,
     borderColor: "#3A4646",
-    width: 175,
-    marginRight: 10,
   },
   editContainer: {
     position: "absolute",
     bottom: 0,
     right: -10,
+  },
+  mainInputContainer: {
+    marginHorizontal: 10,
+  },
+  pickerContainer: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+  },
+  flexFill: {
+    flex: 2, // Makes Date of Birth input larger
+  },
+  picker: {
+    height: 58,
+  },
+  dobInput: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    backgroundColor: "#F2F2F2",
+    padding: 15,
+    fontSize: 18,
+  },
+  genderGroup: {
+    minWidth: 150, // Minimum width for the gender dropdown
+    flex: 0, // Prevents it from growing, so Date of Birth can expand
   },
 });
