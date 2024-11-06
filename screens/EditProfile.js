@@ -21,7 +21,7 @@ import {
 } from "@expo-google-fonts/nunito";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import DatePicker from "react-native-date-picker";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { updateProfile, fetchUserData } from "../api/authAPI";
 
 const EditProfile = () => {
@@ -32,7 +32,6 @@ const EditProfile = () => {
   const [phone, setPhone] = useState(null);
   const [gender, setGender] = useState(null);
   const [dob, setDob] = useState(new Date());
-  const [open, setOpen] = useState(false);
 
   const [fontsLoaded] = useFonts({
     Nunito_400Regular,
@@ -45,16 +44,11 @@ const EditProfile = () => {
         const storedUserData = await AsyncStorage.getItem("userData");
         if (storedUserData == null) {
           console.log("fetching");
-          storedUserData = await fetchUserData();
-          // Save user data locally
-          await AsyncStorage.setItem(
-            "userData",
-            JSON.stringify(storedUserData)
-          );
+          const fetchedUserData = await fetchUserData();
+          await AsyncStorage.setItem("userData", JSON.stringify(fetchedUserData));
         }
 
-        const userData = JSON.parse(storedUserData);
-
+        const userData = JSON.parse(storedUserData || '{}');
         setFirstName(userData.firstName);
         setLastName(userData.lastName);
         setEmail(userData.email);
@@ -64,19 +58,13 @@ const EditProfile = () => {
       } catch (error) {
         console.error("Failed to load user data", error);
 
-        // Show an alert in case of error
         Alert.alert(
           "Session Expired",
           "Your session has expired. Redirecting to the login page...",
           [
             {
               text: "OK",
-              onPress: () => {
-                // Redirect after 2 seconds
-                setTimeout(() => {
-                  navigation.navigate("Login");
-                }, 2000);
-              },
+              onPress: () => setTimeout(() => navigation.navigate("Login"), 2000),
             },
           ],
           { cancelable: false }
@@ -89,7 +77,6 @@ const EditProfile = () => {
 
   const updateUserDataInAsyncStorage = async (newUserData) => {
     try {
-      // Get the stored user data
       const storedUserData = await AsyncStorage.getItem("userData");
       let userData = {};
 
@@ -108,7 +95,6 @@ const EditProfile = () => {
 
       // Save the updated user data back to AsyncStorage
       await AsyncStorage.setItem("userData", JSON.stringify(userData));
-
       console.log("[AsyncStorage] User data updated successfully");
     } catch (error) {
       console.error("Error updating user data in AsyncStorage", error);
@@ -116,13 +102,12 @@ const EditProfile = () => {
   };
 
   if (!fontsLoaded) {
-    return null; // You can add a loading spinner or screen here if needed
+    return null;
   }
 
   const handleUpdate = async () => {
     try {
-      let dob_string = dob.toISOString().split("T")[0]; // Format date as YYYY-MM-DD
-
+      let dob_string = dob.toISOString().split("T")[0];
       const userData = await updateProfile(
         firstName,
         lastName,
@@ -131,10 +116,20 @@ const EditProfile = () => {
         gender,
         dob_string
       );
-
+  
       await updateUserDataInAsyncStorage(userData);
-
-      navigation.navigate("EditProfile");
+      
+      Alert.alert(
+        "Success",
+        "Your profile has been updated successfully.",
+        [
+          {
+            text: "OK",
+            onPress: () => navigation.navigate("Profile"),
+          },
+        ],
+        { cancelable: false }
+      );
     } catch (error) {
       Alert.alert(
         "Session Expired",
@@ -142,17 +137,14 @@ const EditProfile = () => {
         [
           {
             text: "OK",
-            onPress: () => {
-              setTimeout(() => {
-                navigation.navigate("Login");
-              }, 2000);
-            },
+            onPress: () => setTimeout(() => navigation.navigate("Login"), 2000),
           },
         ],
         { cancelable: false }
       );
     }
   };
+  
 
   const dismissKeyboard = () => {
     Keyboard.dismiss();
@@ -164,7 +156,7 @@ const EditProfile = () => {
         style={styles.container}
         resetScrollToCoords={{ x: 0, y: 0 }}
         contentContainerStyle={styles.scrollContainer}
-        extraHeight={150} // This extra height helps prevent blocking
+        extraHeight={150}
         enableAutomaticScroll={true}
       >
         <View style={styles.header}>
@@ -195,7 +187,6 @@ const EditProfile = () => {
                 onChangeText={setFirstName}
               />
             </View>
-
             <View>
               <Text style={styles.label}>Last Name</Text>
               <TextInput
@@ -206,7 +197,6 @@ const EditProfile = () => {
               />
             </View>
           </View>
-
           <Text style={styles.label}>Email</Text>
           <TextInput
             style={styles.emailInput}
@@ -214,7 +204,6 @@ const EditProfile = () => {
             editable={false}
             onChangeText={setEmail}
           />
-
           <Text style={styles.label}>Phone Number</Text>
           <TextInput
             style={styles.input}
@@ -222,7 +211,6 @@ const EditProfile = () => {
             editable={true}
             onChangeText={setPhone}
           />
-
           <View style={styles.genderDOB}>
             <View>
               <Text style={styles.label}>Gender</Text>
@@ -235,37 +223,17 @@ const EditProfile = () => {
             </View>
             <View>
               <Text style={styles.label}>Date of Birth</Text>
-              <TouchableOpacity
-                onPress={() => setOpen(true)} // Open the date picker
-              >
-                <TextInput
-                  style={styles.DOBInput}
-                  value={
-                    dob
-                      ? `${dob.getDate().toString().padStart(2, "0")}/${(
-                          dob.getMonth() + 1
-                        )
-                          .toString()
-                          .padStart(2, "0")}/${dob.getFullYear()}`
-                      : ""
-                  }
-                  editable={false} // Disable manual editing
-                  onChangeText={setDob}
+              <View style={styles.DOBInputContainer}>
+                <DateTimePicker
+                  value={dob}
+                  mode="date"
+                  display="calendar"
+                  onChange={(event, selectedDate) => {
+                    const currentDate = selectedDate || dob;
+                    setDob(currentDate);
+                  }}
                 />
-              </TouchableOpacity>
-              <DatePicker
-                modal
-                mode="date"
-                open={open}
-                date={dob}
-                onConfirm={(date) => {
-                  setOpen(false);
-                  setDob(date); // Set the selected date
-                }}
-                onCancel={() => {
-                  setOpen(false);
-                }}
-              />
+              </View>
             </View>
           </View>
         </View>
@@ -314,22 +282,6 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
   },
-  userInfoSectionProfile: {
-    paddingVertical: 10,
-    borderRadius: 10,
-    color: "#006D77",
-  },
-  userName: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#232332",
-  },
-  userEmail: {
-    fontSize: 16,
-    color: "#777",
-    marginTop: 5,
-  },
-
   inputContainer: {
     marginTop: 20,
   },
@@ -392,18 +344,19 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#3A4646",
     width: 150,
+    marginRight: 10,
   },
-  DOBInput: {
+  DOBInputContainer: {
     backgroundColor: "#F2F2F2",
-    padding: 15,
+    paddingVertical: 9,
     borderRadius: 8,
-    fontSize: 18,
-    color: "#777",
-    marginBottom: 20,
     borderWidth: 1,
     borderColor: "#3A4646",
+    marginBottom: 20,
     width: 200,
+    alignItems: 'center',
   },
+
   nameInput: {
     backgroundColor: "#F2F2F2",
     padding: 15,
@@ -414,6 +367,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#3A4646",
     width: 175,
+    marginRight: 10,
   },
   editContainer: {
     position: "absolute",

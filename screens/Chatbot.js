@@ -20,6 +20,8 @@ import FrogHead from "../assets/BigFrogHead.png";
 import { useNavigation } from "@react-navigation/native";
 import { GROQ_KEY } from "@env";
 
+console.log("GROQ_KEY:", GROQ_KEY);
+
 const Chatbot = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
@@ -27,6 +29,8 @@ const Chatbot = () => {
   const [date, setDate] = useState(null);
   const [latest, setLatest] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [trips, setTrips] = useState([]);
+  const [userId, setUserId] = useState(null);
 
   const initialMessage = "Hi! I'm Ribb!t, how can i help you today?";
 
@@ -35,6 +39,51 @@ const Chatbot = () => {
     getWeather();
     setMessages([...messages, { text: initialMessage, from: "ai" }]);
   }, []);
+
+  useEffect(() => {
+    const loadUserId = async () => {
+      try {
+        let storedUserData = await AsyncStorage.getItem("userData");
+        if (!storedUserData) {
+          console.log("Fetching user data...");
+          storedUserData = await fetchUserData();
+          await AsyncStorage.setItem("userData", JSON.stringify(storedUserData));
+        }
+        const userData = JSON.parse(storedUserData);
+        setUserId(userData.id);
+      } catch (error) {
+        console.error("Error loading user data:", error);
+        Alert.alert("Error", "Failed to retrieve user data.");
+      }
+    };
+    loadUserId();
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchTrips();
+    }, [userId])
+  );
+
+  const fetchTrips = async () => {
+    if (!userId) return;
+    try {
+      const response = await axios.get(`${BASE_URL}/api/users/${userId}/trips`);
+
+      const tripsWithPhotos = await Promise.all(
+        response.data.map(async (trip) => {
+          const photoUrl = await getPlacePhotoByPlaceId(trip.places_id);
+          return { ...trip, photoUrl };
+        })
+      );
+
+      setTrips(tripsWithPhotos);
+      console.log(tripsWithPhotos);
+    } catch (error) {
+      console.error("Error loading trips:", error);
+      Alert.alert("Error", "Failed to load trips.");
+    }
+  };
 
   const getDate = () => {
     const date = new Date();
@@ -118,7 +167,7 @@ const Chatbot = () => {
         messages: [
           {
             role: "system",
-            content: `You are a Singapore travel planner to help users plan their day. Do not answer queries unrelated to Singapore. Today's date is: ${date}.The current forecast is: ${forecastString}. Only use forecast given, do not add in additional details such as temperature. Use the weather condition to give recommendations about the place that the user asks. Always include the current weather in your response and avoid providing uncertain or false information. Do not use markdown in your response.`,
+            content: `You are a Singapore travel planner to help users plan their day and give suggestions based on their response. Their trips that they plan are here ${trips}. Do not answer queries unrelated to Singapore. Today's date is: ${date}.The current forecast is: ${forecastString}. Only use forecast given, do not add in additional details such as temperature. Use the weather condition to give recommendations about the place that the user asks. Always include the current weather in your response and avoid providing uncertain or false information. Do not use markdown in your response.`,
           },
           { role: "user", content: input },
           ...groqMessages,

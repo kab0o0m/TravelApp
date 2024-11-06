@@ -26,7 +26,7 @@ const { height: screenHeight } = Dimensions.get("window");
 
 SplashScreen.preventAutoHideAsync(); // Prevent the splash screen from auto-hiding
 
-const HomeFeatured = () => {
+const HomeFeatured2 = () => {
   const [fontsLoaded] = useFonts({
     Nunito_400Regular,
     Nunito_600SemiBold,
@@ -49,21 +49,21 @@ const HomeFeatured = () => {
 
   const handleWebsitePress = () => {
     const url =
-      "https://www.rwsentosa.com/en/attractions/universal-studios-singapore#:~:text=Experience%20the%20thrill%20of%20Hollywood,%20New%20York,%20Sci-Fi%20City,%20Ancient";
+      "https://www.foodadvisor.com.sg/restaurant/the-original-katong-laksa-janggut-laksa-roxy-square/";
     Linking.openURL(url).catch((err) =>
       console.error("Failed to open URL:", err)
     );
   };
 
   const handlePhonePress = () => {
-    const phoneNumber = "tel:65778888";
+    const phoneNumber = "tel:+65 9622 1045";
     Linking.openURL(phoneNumber).catch((err) =>
       console.error("Failed to open phone dialer:", err)
     );
   };
 
-  const handleAddressPress = () => {
-    const address = "8 Sentosa Gateway, 098269";
+  const handleMapPress = () => {
+    const address = "50 East Coast Road #01-64 Roxy Square, S428769";
     const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
       address
     )}`;
@@ -72,13 +72,13 @@ const HomeFeatured = () => {
     );
   };
 
-  const handleKlookPress = () => {
-    const url =
-      "https://www.klook.com/en-SG/activity/117-universal-studios-singapore/";
-    Linking.openURL(url).catch((err) =>
-      console.error("Failed to open Klook URL:", err)
-    );
+  const navigateToPlannerNewTrip = () => {
+    navigation.navigate("PlannerNewTrip", {
+        destination: "The Original Katong Laksa" // Pass the destination
+    });
   };
+
+  
 
   if (!fontsLoaded) {
     return (
@@ -110,7 +110,7 @@ const HomeFeatured = () => {
 
       <View style={styles.featuredContainer}>
         <Image
-          source={require("../assets/USSimage.png")}
+          source={require("../assets/Laksa.jpg")}
           style={styles.featuredImage}
         />
         <LinearGradient
@@ -118,7 +118,7 @@ const HomeFeatured = () => {
           style={styles.featuredOverlay}
         />
         <Text style={styles.featuredTitle}>
-          Universal Studios Singapore (USS)
+        The Original Katong Laksa
         </Text>
       </View>
 
@@ -126,9 +126,7 @@ const HomeFeatured = () => {
         <Text style={styles.about}>About:</Text>
 
         <Text style={styles.description}>
-          USS offers thrilling rides, live shows, and attractions based on your
-          favourite movies and TV shows. Perfect for families and
-          adventure-seekers!
+        Famed for its rich, aromatic laksa, enjoy the creamy coconut gravy & tender prawns that make this iconic dish a must-try in Singapore.
         </Text>
 
         <View style={styles.infoContainer}>
@@ -136,9 +134,11 @@ const HomeFeatured = () => {
             source={require("../assets/icons/LocationIcon.png")}
             style={styles.icon}
           />
-          <TouchableOpacity onPress={handleAddressPress}>
-            <Text style={styles.infoText}>8 Sentosa Gateway, 098269</Text>
+          <TouchableOpacity onPress={handleMapPress}>
+            <Text style={styles.infoText}>50 East Coast Road, S428769</Text>
           </TouchableOpacity>
+          
+          
         </View>
 
         <View style={styles.infoContainer}>
@@ -147,16 +147,8 @@ const HomeFeatured = () => {
             style={styles.icon}
           />
           <TouchableOpacity onPress={handlePhonePress}>
-            <Text style={styles.infoText}>6577 8888</Text>
+            <Text style={styles.infoText}>+65 9622 1045</Text>
           </TouchableOpacity>
-        </View>
-
-        <View style={styles.infoContainer}>
-          <Image
-            source={require("../assets/icons/TimeIcon.png")}
-            style={styles.icon}
-          />
-          <Text style={styles.infoText}>Mon - Sun: 10AM - 8PM</Text>
         </View>
 
         <View style={styles.infoContainer}>
@@ -165,17 +157,27 @@ const HomeFeatured = () => {
             style={styles.icon}
           />
           <TouchableOpacity onPress={handleWebsitePress}>
-            <Text style={styles.website}>USS Website</Text>
+            <Text style={styles.website}>Our Website</Text>
           </TouchableOpacity>
         </View>
+
+        <View style={styles.infoContainer}>
+          <Image
+            source={require("../assets/icons/TimeIcon.png")}
+            style={styles.icon}
+          />
+          <Text style={styles.infoText}>Mon - Sun: 8.30AM - 5.30PM</Text>
+        </View>
+
+        
       </View>
 
       <View style={styles.bookNowContainer}>
         <TouchableOpacity
           style={styles.bookNowButton}
-          onPress={handleKlookPress}
+          onPress={navigateToPlannerNewTrip}
         >
-          <Text style={styles.bookNowText}>Book Now via Klook</Text>
+          <Text style={styles.bookNowText}>Add to Planner!</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -313,15 +315,15 @@ const styles = StyleSheet.create({
   },
   infoText: {
     color: "#F47966",
-    fontSize: 12,
+    fontSize: 14,
     fontFamily: "Nunito_400Regular",
   },
   website: {
     color: "#F47966",
-    fontSize: 12,
+    fontSize: 14,
     fontFamily: "Nunito_400Regular",
     textDecorationLine: "underline",
   },
 });
 
-export default HomeFeatured; // Ensure the component is exported
+export default HomeFeatured2; // Ensure the component is exported

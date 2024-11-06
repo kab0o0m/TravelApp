@@ -58,6 +58,21 @@ const SavedLocation = () => {
   const [loading, setLoading] = useState(true);
   const [skipConfirmation, setSkipConfirmation] = useState(false);
 
+  const Images = {
+    "spectra.png": require("../assets/sublocations/spectra.png"),
+    "shoppes.png": require("../assets/sublocations/shoppes.png"),
+    "fountainofwealth.png": require("../assets/sublocations/fountainofwealth.png"),
+    "esplanademall.png": require("../assets/sublocations/esplanademall.png"),
+    "theatresonthebay.png": require("../assets/sublocations/theatresonthebay.png"),
+    "esplanadepark.png": require("../assets/sublocations/esplanadepark.png"),
+    "jurassicmile.png": require("../assets/sublocations/jurassicmile.png"),
+    "passionwave.png": require("../assets/sublocations/passionwave.png"),
+    "yogainc.png": require("../assets/sublocations/yogainc.png"),
+    "thrillingrides.png": require("../assets/sublocations/thrillingrides.png"),
+    "showsandentertainment.png": require("../assets/sublocations/showsandentertainment.png"),
+    "meetandgreet.png": require("../assets/sublocations/meetandgreet.png"),
+  };
+
   useEffect(() => {
     if (fontsLoaded) {
       SplashScreen.hideAsync(); // Hide the splash screen once fonts are loaded
@@ -222,6 +237,10 @@ const SavedLocation = () => {
     );
   }
 
+  const renderImage = (imgUrl) => {
+    return imgUrl in Images ? Images[imgUrl] : { uri: `${BASE_URL}/api/assets/${imgUrl}` };
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
@@ -248,10 +267,6 @@ const SavedLocation = () => {
             {locations.map((location) => (
               <View key={location.id} style={styles.infoContainer}>
                 <View style={styles.infoHeader}>
-                  <Image
-                    source={require("../assets/icons/LocationIcon.png")}
-                    style={styles.icon}
-                  />
                   <Text style={styles.infoTitle}>{location.location_name}</Text>
                   <TouchableOpacity
                     style={styles.saveButton}
@@ -281,14 +296,7 @@ const SavedLocation = () => {
                     </Text>
                     <View style={styles.rectangle} />
                   </View>
-                  <Image
-                    source={{
-                      uri: location.img_url.startsWith("locations/")
-                        ? `${BASE_URL}/api/assets/${location.img_url}`
-                        : location.img_url, // Use the img_url directly if it’s an absolute URL
-                    }}
-                    style={styles.topPlacesImage}
-                  />
+                  <Image source={renderImage(location.img_url)} style={styles.topPlacesImage} />
                 </View>
               </View>
             ))}

@@ -243,7 +243,7 @@ const AddExpenseModal = ({ visible, onClose, onAdd }) => {
                 />
               )}
             </View>
-            <View style={styles.inputContainer}>
+            {/* <View style={styles.inputContainer}>
               <Text style={styles.currencyText}>Payment type</Text>
               <Picker
                 selectedValue={paymentType}
@@ -255,12 +255,12 @@ const AddExpenseModal = ({ visible, onClose, onAdd }) => {
                 <Picker.Item label="Debit Card" value="Debit Card" />
                 <Picker.Item label="Other" value="Other" />
               </Picker>
-            </View>
+            </View> */}
 
             <GrayLine
               width={screenWidth * 0.9}
               height={screenHeight * 0.0025}
-              marginTop={20}
+              marginTop={10}
             />
             <Text style={styles.categoryHeader}>Category</Text>
 
@@ -297,8 +297,9 @@ const AddExpenseModal = ({ visible, onClose, onAdd }) => {
                 textColor="#FFFFFF"
                 paddingVertical={screenHeight * 0.01}
                 borderRadius={25}
-                width={screenWidth * 0.3}
-                iconName="add"
+                width={120}
+                marginTop={25}
+                // iconName="add"
               />
             </View>
           </View>
@@ -346,7 +347,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     width: "100%",
-    height: 40,
+    height: 34,
     marginBottom: screenHeight * 0.005,
   },
   currencyText: {
@@ -371,14 +372,13 @@ const styles = StyleSheet.create({
     color: "#333333",
   },
   buttonContainer: {
-    position: "absolute",
     bottom: screenHeight * 0.025,
     width: "100%",
     alignItems: "center",
   },
   categoryHeader: {
     fontSize: scaleFont(15),
-    fontWeight: "bold",
+    // fontWeight: "bold",
     marginVertical: screenHeight * 0.03,
   },
   iconGrid: {

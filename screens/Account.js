@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import ProfilePicture from "../assets/icons/ProfilePicture.png";
-import Footer from "../components/Footer";
+import NavBar from "../components/NavBar";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { logoutUser } from "../api/authAPI";
 
 const Account = () => {
   const navigation = useNavigation();
@@ -66,7 +67,10 @@ const Account = () => {
           >
             <Text style={styles.accountItemText}>Personal Information</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.accountItem} onPress={() => navigation.navigate("SavedLocation")}>
+          <TouchableOpacity
+            style={styles.accountItem}
+            onPress={() => navigation.navigate("SavedLocation")}
+          >
             <Text style={styles.accountItemText}>Saved Locations</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.accountItem}>
@@ -75,17 +79,26 @@ const Account = () => {
           <TouchableOpacity style={styles.accountItem}>
             <Text style={styles.accountItemText}>My Messages</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.accountItem}>
+          {/* <TouchableOpacity style={styles.accountItem}>
             <Text style={styles.accountItemText}>Notification Settings</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <TouchableOpacity style={styles.accountItem}>
             <Text style={styles.accountItemText}>Help Centre</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.accountItem}
+            onPress={async () => {
+              await logoutUser();
+              navigation.navigate("Startpage"); // Replace "Login" with your login screen route name
+            }}
+          >
+            <Text style={styles.accountItemText}>Logout</Text>
           </TouchableOpacity>
         </View>
       </View>
 
-      <View style={styles.footerContainer}>
-        <Footer />
+      <View style={styles.NavBarContainer}>
+        <NavBar />
       </View>
     </View>
   );
@@ -136,7 +149,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   accountSection: {
-    padding: 15,
+    paddingHorizontal: 15,
     borderRadius: 10,
     marginBottom: 20,
   },
@@ -159,7 +172,7 @@ const styles = StyleSheet.create({
     // alignItems: "center",
     marginLeft: 20,
   },
-  footerContainer: {
+  NavBarContainer: {
     position: "absolute",
     bottom: 0,
     width: "100%",
