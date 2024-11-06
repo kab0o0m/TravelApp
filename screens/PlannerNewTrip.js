@@ -64,6 +64,14 @@ const PlannerNewTrip = ({ route }) => {
     closeCalendar();
   };
 
+  function formatDateToISO(dateStr) {
+    // Split the input date string by "/"
+    const [day, month, year] = dateStr.split("/");
+  
+    // Return the formatted date as "yyyy-mm-dd"
+    return `${year}-${month}-${day}`;
+  }
+
   const handleConfirmTrip = async () => {
     if (!userId) {
       Alert.alert("User ID Missing", "Failed to retrieve user ID.");
@@ -75,11 +83,13 @@ const PlannerNewTrip = ({ route }) => {
       return;
     }
 
+    console.log("DEBUG", startDate);
+
     const tripData = {
       places_id: locationId,
       location_name: destination, // Use destination directly as location name
-      start_date: startDate,
-      end_date: endDate,
+      start_date: formatDateToISO(startDate),
+      end_date: formatDateToISO(endDate),
     };
 
     try {

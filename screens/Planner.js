@@ -250,11 +250,11 @@ const styles = StyleSheet.create({
   },
   addTripButton: {
     position: "absolute",
-    bottom: 80,
+    bottom: 100,
     alignSelf: "center",
     backgroundColor: "#F47966",
     paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingHorizontal: 25,
     borderRadius: 50,
   },
   addTripButtonText: {
