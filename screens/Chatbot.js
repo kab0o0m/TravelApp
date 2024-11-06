@@ -28,7 +28,7 @@ const Chatbot = () => {
   const [latest, setLatest] = useState("");
   const [isTyping, setIsTyping] = useState(false);
 
-  const initialMessage = "Hi, I'm Froggie, how can i help you today?";
+  const initialMessage = "Hi! I'm Ribb!t, how can i help you today?";
 
   useEffect(() => {
     getDate();
@@ -166,7 +166,7 @@ const Chatbot = () => {
       style={styles.container}>
       <View style={styles.topContainer}>
         <Image source={FrogHead} />
-        <Text style={styles.frogTitle}>Frog Assistant</Text>
+        <Text style={styles.frogTitle}>Ribb!t</Text>
         <Text style={styles.frogDescription}>Your trusted Froggie</Text>
       </View>
       <ScrollView
