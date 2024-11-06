@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import {
   View,
   Text,
@@ -17,8 +19,11 @@ import axios from "axios";
 import ArrowUp from "../assets/icons/ArrowUp.png";
 import pause from "../assets/pause.png";
 import FrogHead from "../assets/BigFrogHead.png";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { GROQ_KEY } from "@env";
+import { fetchUserData } from "../api/authAPI";
+import BASE_URL from "../config";
+import { format } from "date-fns";
 
 console.log("GROQ_KEY:", GROQ_KEY);
 
@@ -29,14 +34,65 @@ const Chatbot = () => {
   const [date, setDate] = useState(null);
   const [latest, setLatest] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [trips, setTrips] = useState([]);
+  const [userId, setUserId] = useState(null);
 
-  const initialMessage = "Hi, I'm Froggie, how can i help you today?";
+  const initialMessage = "Hi! I'm Ribb!t, how can i help you today?";
 
   useEffect(() => {
     getDate();
     getWeather();
     setMessages([...messages, { text: initialMessage, from: "ai" }]);
   }, []);
+
+  useEffect(() => {
+    const loadUserId = async () => {
+      try {
+        let storedUserData = await AsyncStorage.getItem("userData");
+        if (!storedUserData) {
+          console.log("Fetching user data...");
+          storedUserData = await fetchUserData();
+          await AsyncStorage.setItem("userData", JSON.stringify(storedUserData));
+        }
+        const userData = JSON.parse(storedUserData);
+        setUserId(userData.id);
+      } catch (error) {
+        console.error("Error loading user data:", error);
+        Alert.alert("Error", "Failed to retrieve user data.");
+      }
+    };
+    loadUserId();
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchTrips();
+    }, [userId])
+  );
+
+  const fetchTrips = async () => {
+    if (!userId) return;
+    try {
+      const response = await axios.get(`${BASE_URL}/api/users/${userId}/trips`);
+
+  // Remove unnecessary fields and format each trip as a nicely formatted string
+      const formattedTrips = response.data.map(({ id, user_id, places_id, location_name, start_date, end_date }) => {
+        const formattedStartDate = format(new Date(start_date), "d MMM yyyy");
+        const formattedEndDate = format(new Date(end_date), "d MMM yyyy");
+
+        return `${location_name} from ${formattedStartDate} to ${formattedEndDate}`;
+      });
+
+      // Join each trip string with a newline for readability
+      const tripsString = formattedTrips.join("\n");
+
+      console.log(tripsString); // Log formatted string for debugging
+
+      setTrips(tripsString); // Set trips state with the formatted string
+    } catch (error) {
+      console.log("Error loading trips:", error);
+    }
+  };
 
   const getDate = () => {
     const date = new Date();
@@ -93,9 +149,11 @@ const Chatbot = () => {
 
   const handleSend = async () => {
     if (input.trim() === "") return;
+    console.log(trips);
     setIsTyping(true);
     setMessages([...messages, { text: input, from: "user" }]);
     setInput("");
+    Keyboard.dismiss();
 
     const groqMessages = messages.map((message) => ({
       role: message.from === "user" ? "user" : "assistant",
@@ -106,9 +164,7 @@ const Chatbot = () => {
     groqMessages.push({ role: "user", content: input });
 
     const formatForecastData = (forecast) => {
-      return forecast
-        .map((f) => `${f.location}: ${f.weather_forecast}`)
-        .join(", ");
+      return forecast.map((f) => `${f.location}: ${f.weather_forecast}`).join(", ");
     };
 
     // Inside your `handleSend` function
@@ -122,7 +178,7 @@ const Chatbot = () => {
         messages: [
           {
             role: "system",
-            content: `You are a Singapore travel planner to help users plan their day. Do not answer queries unrelated to Singapore. Today's date is: ${date}.The current forecast is: ${forecastString}. Only use forecast given, do not add in additional details such as temperature. Use the weather condition to give recommendations about the place that the user asks. Always include the current weather in your response and avoid providing uncertain or false information. Do not use markdown in your response.`,
+            content: `You are a Singapore travel planner to help users plan their day and give suggestions based on their response. This is the trips planned: ${trips}. Always give suggestions to the users on top of what they want. Do not answer queries unrelated to Singapore. Today's date is: ${date}.The current forecast is: ${forecastString}. Only use forecast given, do not add in additional details such as temperature. Use the weather condition to give recommendations about the place that the user asks. Always include the current weather in your response and avoid providing uncertain or false information. Do not use markdown in your response. Give reccomendations to the user. Please format your response as readable as possible`,
           },
           { role: "user", content: input },
           ...groqMessages,
@@ -150,8 +206,7 @@ const Chatbot = () => {
         // Update the last message in the chat history (AI's message)
         setMessages((prevMessages) => {
           const updatedMessages = [...prevMessages];
-          updatedMessages[updatedMessages.length - 1].text =
-            currentMessage.trim();
+          updatedMessages[updatedMessages.length - 1].text = currentMessage.trim();
           return updatedMessages;
         });
 
@@ -168,25 +223,20 @@ const Chatbot = () => {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={styles.container}
-    >
+      style={styles.container}>
       <View style={styles.topContainer}>
         <Image source={FrogHead} />
-        <Text style={styles.frogTitle}>Frog Assistant</Text>
+        <Text style={styles.frogTitle}>Ribb!t</Text>
         <Text style={styles.frogDescription}>Your trusted Froggie</Text>
       </View>
       <ScrollView
         contentContainerStyle={styles.messagesContainer}
-        ref={(ref) => ref?.scrollToEnd({ animated: true })}
-      >
+        ref={(ref) => ref?.scrollToEnd({ animated: true })}>
         <View>
           {messages.map((message, index) => (
             <Card
               key={index}
-              style={
-                message.from === "user" ? styles.userMessage : styles.aiMessage
-              }
-            >
+              style={message.from === "user" ? styles.userMessage : styles.aiMessage}>
               <Text style={styles.messageText}>{message.text}</Text>
             </Card>
           ))}
@@ -202,11 +252,7 @@ const Chatbot = () => {
           placeholderTextColor="#888"
         />
         <TouchableOpacity style={styles.sendButton} onPress={handleSend}>
-          <Image
-            source={isTyping ? pause : ArrowUp}
-            style={styles.arrow}
-            resizeMode="contain"
-          />
+          <Image source={isTyping ? pause : ArrowUp} style={styles.arrow} resizeMode="contain" />
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
@@ -217,6 +263,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+    position: "relative",
   },
   messagesContainer: {
     padding: 20,
@@ -339,6 +386,7 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
   },
+
 });
 
 export default Chatbot;

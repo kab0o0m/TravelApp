@@ -54,6 +54,7 @@ const PlannerAddDestination = ({ route }) => {
           longitudeDelta: 0.0421,
         });
         setMarkerPosition({ latitude: location.lat, longitude: location.lng });
+        Keyboard.dismiss();
 
         const detailsResponse = await axios.get(
           `${BASE_URL}/api/place-details`,

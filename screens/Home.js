@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   TextInput,
   TouchableOpacity,
+  Modal,
 } from "react-native";
 import {
   useFonts,
@@ -30,12 +31,16 @@ import Chickenrice from "../assets/Chickenrice.jpg";
 import Mutarbak from "../assets/ZamZam.jpg";
 import BeefKwayteow from "../assets/Geylang.jpg";
 import { LinearGradient } from "expo-linear-gradient";
+import Chatbot from "./Chatbot";
+import ArrowLeft from "../assets/icons/ArrowLeft.png";
+import FrogIcon from "../assets/Frog.png";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
 SplashScreen.preventAutoHideAsync(); // Prevent the splash screen from auto-hiding
 
 const Home = () => {
+  const [modalVisible, setModalVisible] = useState(false);
   const [fontsLoaded] = useFonts({
     Nunito_600SemiBold,
     Nunito_700Bold,
@@ -47,6 +52,10 @@ const Home = () => {
 
   const handlePress = (locationId) => {
     navigation.navigate("HomePopular", { locationId: locationId });
+  };
+
+  const toggleModal = () => {
+    setModalVisible(!modalVisible);
   };
 
   useEffect(() => {
@@ -65,10 +74,7 @@ const Home = () => {
 
   return (
     <View style={styles.mainContainer}>
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.scrollViewContent}
-      >
+      <ScrollView style={styles.container} contentContainerStyle={styles.scrollViewContent}>
         <View style={styles.headerContainer}>
           <Text style={styles.header}>Mapp!t</Text>
           <Image
@@ -79,10 +85,7 @@ const Home = () => {
 
         <TouchableOpacity onPress={() => navigation.navigate("LocationSearch")}>
           <View style={styles.searchContainer}>
-            <Image
-              source={require("../assets/icons/Search.png")}
-              style={styles.searchIcon}
-            />
+            <Image source={require("../assets/icons/Search.png")} style={styles.searchIcon} />
             <TextInput
               style={styles.searchInput}
               placeholder="Discover Singapore"
@@ -93,16 +96,8 @@ const Home = () => {
 
         <View style={styles.relativeContainer}>
           <View style={styles.absoluteBox} />
-          <Image
-            source={SingaporeHome}
-            style={styles.absoluteImage}
-            resizeMode="cover"
-          />
-          <Image
-            source={SingaporeHome}
-            style={styles.absoluteImage}
-            resizeMode="cover"
-          />
+          <Image source={SingaporeHome} style={styles.absoluteImage} resizeMode="cover" />
+          <Image source={SingaporeHome} style={styles.absoluteImage} resizeMode="cover" />
         </View>
 
         {/* Popular Destinations */}
@@ -112,75 +107,59 @@ const Home = () => {
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            style={styles.popularScrollView}
-          >
-
-
+            style={styles.popularScrollView}>
             {/* Marina Bay Sands */}
 
-            <TouchableOpacity
-              style={styles.destinationContainer}
-              onPress={() => handlePress(1)}
-            >
+            <TouchableOpacity style={styles.destinationContainer} onPress={() => handlePress(1)}>
               <View style={styles.destinationBackground} />
               <Image source={MarinaBaySands} style={styles.destinationImage} />
               <LinearGradient
-                    colors={['#FFFFFF00', 'rgba(0, 0, 0, 0.4)']} 
-                    style={styles.gradientOverlay}
+                colors={["#FFFFFF00", "rgba(0, 0, 0, 0.4)"]}
+                style={styles.gradientOverlay}
               />
               <View style={styles.textContainer}>
                 <Text style={styles.destinationText}>Marina Bay Sands</Text>
               </View>
             </TouchableOpacity>
 
-
             {/* The Esplanade */}
 
-            <TouchableOpacity
-              style={styles.destinationContainer}
-              onPress={() => handlePress(2)}
-            >
+            <TouchableOpacity style={styles.destinationContainer} onPress={() => handlePress(2)}>
               <View style={styles.destinationBackground} />
               <Image source={Esplanade} style={styles.destinationImage} />
               <LinearGradient
-                    colors={['#FFFFFF00', 'rgba(0, 0, 0, 0.4)']} 
-                    style={styles.gradientOverlay}
+                colors={["#FFFFFF00", "rgba(0, 0, 0, 0.4)"]}
+                style={styles.gradientOverlay}
               />
               <View style={styles.textContainer}>
                 <Text style={styles.destinationText}>The Esplanade</Text>
               </View>
             </TouchableOpacity>
 
-
             {/* East Coast Park */}
 
-            <TouchableOpacity
-              style={styles.destinationContainer}
-              onPress={() => handlePress(3)}
-            >
+            <TouchableOpacity style={styles.destinationContainer} onPress={() => handlePress(3)}>
               <View style={styles.destinationBackground} />
               <Image source={EastCoastPark} style={styles.destinationImage} />
               <LinearGradient
-                    colors={['#FFFFFF00', 'rgba(0, 0, 0, 0.4)']} 
-                    style={styles.gradientOverlay}
+                colors={["#FFFFFF00", "rgba(0, 0, 0, 0.4)"]}
+                style={styles.gradientOverlay}
               />
               <View style={styles.textContainer}>
                 <Text style={styles.destinationText}>East Coast Park</Text>
               </View>
             </TouchableOpacity>
 
-
             {/* Universal Studios */}
 
             <TouchableOpacity
               style={styles.destinationContainerLast}
-              onPress={() => handlePress(4)}
-            >
+              onPress={() => handlePress(4)}>
               <View style={styles.destinationBackground} />
               <Image source={USS} style={styles.destinationImage} />
               <LinearGradient
-                    colors={['#FFFFFF00', 'rgba(0, 0, 0, 0.4)']} 
-                    style={styles.gradientOverlay}
+                colors={["#FFFFFF00", "rgba(0, 0, 0, 0.4)"]}
+                style={styles.gradientOverlay}
               />
               <View style={styles.textContainer}>
                 <Text style={styles.destinationText}>Universal Studios</Text>
@@ -189,8 +168,6 @@ const Home = () => {
           </ScrollView>
         </View>
 
-
-
         {/* Food choices */}
         <View style={styles.sectionContainer}>
           <Text style={styles.sectionHeader}>Food Choices</Text>
@@ -198,91 +175,88 @@ const Home = () => {
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            style={styles.featuredScrollView}
-          >
-
+            style={styles.featuredScrollView}>
             {/* Hainanese Chicken Rice */}
             <TouchableOpacity
               style={styles.featuredContainer}
-              onPress={() => navigation.navigate("HomeFeatured")}
-            >
+              onPress={() => navigation.navigate("HomeFeatured1")}>
               <View style={styles.featuredBackground} />
               <Image source={Chickenrice} style={styles.featuredImage} />
               <View style={styles.featuredTextContainer}>
                 <Text style={styles.featuredText}>Chicken Rice</Text>
                 <View style={styles.subTextContainer}>
-                  <Image
-                    source={require("../assets/icons/HomeIcon.png")}
-                    style={styles.homeIcon}
-                  />
+                  <Image source={require("../assets/icons/HomeIcon.png")} style={styles.homeIcon} />
                   <Text style={styles.featuredSubText}>Maxwell Hawker</Text>
                 </View>
               </View>
             </TouchableOpacity>
 
-
             {/* Katong Laksa */}
             <TouchableOpacity
               style={styles.featuredContainer}
-              onPress={() => navigation.navigate("HomeFeatured")}
-            >
+              onPress={() => navigation.navigate("HomeFeatured2")}>
               <View style={styles.featuredBackground} />
               <Image source={Laksa} style={styles.featuredImage} />
               <View style={styles.featuredTextContainer}>
                 <Text style={styles.featuredText}>Katong Laksa</Text>
                 <View style={styles.subTextContainer}>
-                  <Image
-                    source={require("../assets/icons/HomeIcon.png")}
-                    style={styles.homeIcon}
-                  />
+                  <Image source={require("../assets/icons/HomeIcon.png")} style={styles.homeIcon} />
                   <Text style={styles.featuredSubText}>Roxy Square</Text>
                 </View>
               </View>
             </TouchableOpacity>
 
-
             {/* Murtabak */}
             <TouchableOpacity
               style={styles.featuredContainer}
-              onPress={() => navigation.navigate("HomeFeatured")}
-            >
+              onPress={() => navigation.navigate("HomeFeatured3")}>
               <View style={styles.featuredBackground} />
               <Image source={Mutarbak} style={styles.featuredImage} />
               <View style={styles.featuredTextContainer}>
                 <Text style={styles.featuredText}>Murtabak</Text>
                 <View style={styles.subTextContainer}>
-                  <Image
-                    source={require("../assets/icons/HomeIcon.png")}
-                    style={styles.homeIcon}
-                  />
+                  <Image source={require("../assets/icons/HomeIcon.png")} style={styles.homeIcon} />
                   <Text style={styles.featuredSubText}>Zam Zam</Text>
                 </View>
               </View>
             </TouchableOpacity>
 
-
             {/* Beef Kway Teow */}
             <TouchableOpacity
               style={styles.featuredContainerLast}
-              onPress={() => navigation.navigate("HomeFeatured")}
-            >
+              onPress={() => navigation.navigate("HomeFeatured4")}>
               <View style={styles.featuredBackground} />
               <Image source={BeefKwayteow} style={styles.featuredImage} />
               <View style={styles.featuredTextContainer}>
                 <Text style={styles.featuredText}>Beef Kway Teow</Text>
                 <View style={styles.subTextContainer}>
-                  <Image
-                    source={require("../assets/icons/HomeIcon.png")}
-                    style={styles.homeIcon}
-                  />
+                  <Image source={require("../assets/icons/HomeIcon.png")} style={styles.homeIcon} />
                   <Text style={styles.featuredSubText}>Geylang</Text>
                 </View>
               </View>
             </TouchableOpacity>
-            
           </ScrollView>
         </View>
       </ScrollView>
+      <TouchableOpacity style={styles.fixedIconContainer} onPress={toggleModal}>
+        <Image source={FrogIcon} style={styles.icon} resizeMode="contain" />
+      </TouchableOpacity>
+
+      {/* Modal and other components */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={toggleModal}>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <TouchableOpacity onPress={toggleModal} style={styles.closeButton}>
+              <Image source={ArrowLeft} />
+            </TouchableOpacity>
+            <Chatbot />
+          </View>
+        </View>
+      </Modal>
 
       <View style={styles.NavBarContainer}>
         <NavBar />
@@ -297,6 +271,7 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     backgroundColor: "#FFF",
+    position: "relative",
   },
   container: {
     flex: 1,
@@ -328,9 +303,9 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
   },
   searchContainer: {
-    width: 375, 
-    height: 61, 
-    flexDirection: "row", 
+    width: 375,
+    height: 61,
+    flexDirection: "row",
     backgroundColor: "#E6F1F2",
     borderRadius: 20,
     padding: 10,
@@ -380,8 +355,8 @@ const styles = StyleSheet.create({
     marginTop: 25,
   },
   textContainer: {
-    position: 'absolute', 
-    bottom: 5, 
+    position: "absolute",
+    bottom: 5,
     width: "100%",
     alignItems: "center",
     justifyContent: "center",
@@ -390,9 +365,9 @@ const styles = StyleSheet.create({
     width: 148,
     height: 204,
     position: "absolute",
-    backgroundColor: 'rgba(230, 241, 242, 1)', // Background color for the gradient effect
+    backgroundColor: "rgba(230, 241, 242, 1)", // Background color for the gradient effect
     borderRadius: 30,
-    shadowColor: 'rgba(146, 183, 218, 0.12)',
+    shadowColor: "rgba(146, 183, 218, 0.12)",
     shadowOffset: { width: 1, height: 35 },
     shadowOpacity: 1,
     shadowRadius: 83,
@@ -411,29 +386,29 @@ const styles = StyleSheet.create({
   },
   destinationText: {
     fontSize: 20,
-    color: '#FBFCFE',
-    fontFamily: 'Nunito_800ExtraBold',
-    textAlign: 'center', 
-    zIndex: 2, 
-    lineHeight: 24, 
-    textShadowColor: 'rgba(0, 0, 0, 0.5)', 
-    textShadowOffset: { width: 0, height: 2 }, 
-    textShadowRadius: 8, 
+    color: "#FBFCFE",
+    fontFamily: "Nunito_800ExtraBold",
+    textAlign: "center",
+    zIndex: 2,
+    lineHeight: 24,
+    textShadowColor: "rgba(0, 0, 0, 0.5)",
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 8,
   },
   featuredContainer: {
-    position: 'relative',
+    position: "relative",
     marginBottom: 20,
     marginRight: 30,
     marginLeft: 16,
-    alignItems: 'center',
+    alignItems: "center",
   },
   featuredBackground: {
     width: 210,
     height: 230,
-    position: 'absolute',
-    backgroundColor: 'rgba(230, 241, 242, 1)', 
+    position: "absolute",
+    backgroundColor: "rgba(230, 241, 242, 1)",
     borderRadius: 30,
-    shadowColor: 'rgba(146, 183, 218, 0.12)',
+    shadowColor: "rgba(146, 183, 218, 0.12)",
     shadowOffset: { width: 1, height: 35 },
     shadowOpacity: 1,
     shadowRadius: 83,
@@ -446,23 +421,23 @@ const styles = StyleSheet.create({
   },
   featuredTextContainer: {
     bottom: -14, // Align text to the bottom
-    width: 170, 
+    width: 170,
     marginTop: 150,
     marginBottom: -10,
-    alignItems: 'flex-start',
+    alignItems: "flex-start",
   },
   featuredText: {
     fontSize: 20,
-    color: '#3A4646',
-    fontFamily: 'Nunito_600SemiBold',
-    textAlign: 'left',
+    color: "#3A4646",
+    fontFamily: "Nunito_600SemiBold",
+    textAlign: "left",
     marginTop: -146,
     zIndex: 2,
     lineHeight: 30, // Set line height for better spacing
   },
   subTextContainer: {
-    flexDirection: 'row', // Align icon and text horizontally
-    alignItems: 'center', // Center vertically
+    flexDirection: "row", // Align icon and text horizontally
+    alignItems: "center", // Center vertically
   },
   homeIcon: {
     width: 16, // Set the width of the icon
@@ -473,9 +448,9 @@ const styles = StyleSheet.create({
   },
   featuredSubText: {
     fontSize: 12,
-    color: '#006D77',
-    fontFamily: 'Nunito_600SemiBold',
-    textAlign: 'left',
+    color: "#006D77",
+    fontFamily: "Nunito_600SemiBold",
+    textAlign: "left",
     zIndex: 2,
     marginTop: 0,
     marginBottom: -20,
@@ -498,15 +473,63 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   featuredContainerLast: {
-    position: 'relative',
+    position: "relative",
     marginBottom: 20,
     marginLeft: 16,
     marginRight: 60,
-    alignItems: 'center',
+    alignItems: "center",
   },
   NavBarContainer: {
     position: "absolute",
     bottom: 0,
     width: "100%",
+  },
+  iconContainer: {
+    position: "absolute",
+    bottom: 80, // Adjust this to move it above the navbar if needed
+    right: 30,
+    backgroundColor: "#002C30",
+    padding: 10,
+    borderRadius: 30,
+    zIndex: 999,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContainer: {
+    width: "100%",
+    height: "100%",
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: 20,
+  },
+  closeButton: {
+    position: "absolute",
+    top: 80,
+    left: 30,
+    zIndex: 999,
+    padding: 15,
+    backgroundColor: "#D9D9D9",
+    borderRadius: 30,
+  },
+  closeButtonText: {
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  icon: {
+    height: 40,
+    width: 40,
+  },
+  fixedIconContainer: {
+    position: "absolute",
+    bottom: 100, // Distance from the bottom of the screen
+    right: 30,
+    backgroundColor: "#002C30",
+    padding: 10,
+    borderRadius: 30,
+    zIndex: 999,
   },
 });
