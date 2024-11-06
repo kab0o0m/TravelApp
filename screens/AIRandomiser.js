@@ -19,6 +19,8 @@ const AIRandomiser = () => {
 
     const [showMessage, setShowMessage] = useState(false);
     const [locationName, setLocationName] = useState("Marina Bay Sands"); // Default location name
+    const [activities, setActivities] = useState([]);
+    const [locationId, setLocationId] = useState(null); // Store location ID to fetch sublocations
 
     const navigation = useNavigation();
 
@@ -54,15 +56,27 @@ const AIRandomiser = () => {
         console.log("Fetching random location...");
         try {
             const response = await axios.get(`${BASE_URL}/api/locations/random`);
-            if (response.data && response.data.location_name) {
+            if (response.data && response.data.location_name && response.data.id) {
                 setLocationName(response.data.location_name);
-                console.log("Fetched location:", response.data.location_name);
+                setLocationId(response.data.id); // Store the location ID for sublocation fetch
+                await fetchSublocations(response.data.id); // Fetch related sublocations as activities
             } else {
                 Alert.alert("Error", "Failed to fetch random location.");
             }
         } catch (error) {
             Alert.alert("Error", "Failed to fetch random location.");
             console.error("Error fetching random location:", error);
+        }
+    };
+
+    const fetchSublocations = async (id) => {
+        try {
+            const response = await axios.get(`${BASE_URL}/api/sublocations/${id}`);
+            if (response.data) {
+                setActivities(response.data.map(sublocation => sublocation.location_name));
+            }
+        } catch (error) {
+            console.error("Error fetching sublocations:", error);
         }
     };
 
@@ -185,15 +199,11 @@ const AIRandomiser = () => {
                         <Text style={styles.activityHeader}>Activity Recommendations:</Text>
 
                         <View style={styles.activityContainer}>
-                            <View style={styles.activityItem}>
-                                <Text style={styles.activityText}>CATCH A MUSICAL</Text>
-                            </View>
-                            <View style={styles.activityItem}>
-                                <Text style={styles.activityText}>WINE & DINE</Text>
-                            </View>
-                            <View style={styles.activityItem}>
-                                <Text style={styles.activityText}>SHOP LUXURY</Text>
-                            </View>
+                            {activities.map((activity, index) => (
+                                <View key={index} style={styles.activityItem}>
+                                    <Text style={styles.activityText}>{activity}</Text>
+                                </View>
+                            ))}
                         </View>
 
                         <View style={styles.buttonRow}>
@@ -216,7 +226,7 @@ const styles = StyleSheet.create({
     headerContainer: { position: 'relative', marginBottom: 5, justifyContent: 'center', alignItems: 'center' },
     header: { position: 'absolute', top: 55, left: 21, fontSize: 28, fontFamily: 'Nunito_900Black', color: '#006D77', width: 252 },
     headerImage: { width: screenWidth, height: 181, resizeMode: 'cover' },
-    cupsContainer: { flexDirection: 'row', justifyContent: 'space-around', width: '95%', marginBottom: 140, marginTop: 150 },
+    cupsContainer: { flexDirection: 'row', justifyContent: 'space-around', width: '90%', marginVertical: 100 },
     cup: { width: 100, height: 130 },
     bottomContainer: { position: 'relative', marginTop: -90, justifyContent: 'center', alignItems: 'center' },
     bottomImage: { height: 450 },
