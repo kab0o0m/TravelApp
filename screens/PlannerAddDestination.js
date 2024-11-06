@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   Keyboard,
   Image,
-  Alert
+  Alert,
 } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import AddDestinationModal from "./AddDestinationModal";
@@ -88,25 +88,31 @@ const PlannerAddDestination = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      {/* Exit Button */}
-      <TouchableOpacity
-        style={styles.exitButton}
-        onPress={() => navigation.goBack()}
-      >
-        <Image source={require("../assets/icons/Cross.png")} />
-      </TouchableOpacity>
-
       {/* Search Bar and Search Button */}
       <View style={styles.searchContainer}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search for a location..."
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        />
-        <TouchableOpacity onPress={handleSearch} style={styles.button}>
-          <Text style={styles.buttonText}>Search</Text>
-        </TouchableOpacity>
+        <View style={styles.headerContainer}>
+          {/* Exit Button */}
+          <TouchableOpacity
+            style={styles.exitButton}
+            onPress={() => navigation.goBack()}
+          >
+            <Image source={require("../assets/icons/BackArrow.png")} />
+          </TouchableOpacity>
+          <Text style={styles.backText}>Where to?</Text>
+        </View>
+
+        <View style={styles.searchSubContainer}>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search for a location..."
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+
+          <TouchableOpacity onPress={handleSearch} style={styles.button}>
+            <Text style={styles.buttonText}>Search</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* Map View */}
@@ -135,10 +141,8 @@ const PlannerAddDestination = ({ route }) => {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   exitButton: {
-    position: "absolute",
-    top: 40,
-    left: 20,
-    zIndex: 10, // Ensure it stays on top of other components
+    flexDirection: "row",
+    alignItems: "center",
   },
   searchContainer: {
     paddingHorizontal: 16,
@@ -146,7 +150,6 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderBottomWidth: 1,
     borderColor: "#ddd",
-    marginTop: 60, // Space for the exit button at the top
   },
   searchInput: {
     height: 40,
@@ -154,7 +157,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 8,
     paddingHorizontal: 10,
-    marginBottom: 10,
+    marginBottom: 3,
   },
   map: { width: "100%", height: "100%" },
   button: {
@@ -168,6 +171,23 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
   },
+  headerContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    position: "relative",
+    marginBottom: 30,
+    marginHorizontal: 10,
+    marginTop: 20,
+  },
+  backText: {
+    color: "#3A4646",
+    fontSize: 24,
+    fontFamily: "Nunito_700Bold",
+    marginLeft: 16,
+  },
+  searchSubContainer: {
+    marginHorizontal: 15,
+  }
 });
 
 export default PlannerAddDestination;
