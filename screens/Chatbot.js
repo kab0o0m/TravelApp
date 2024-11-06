@@ -22,6 +22,8 @@ import FrogHead from "../assets/BigFrogHead.png";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { GROQ_KEY } from "@env";
 import { fetchUserData } from "../api/authAPI";
+import BASE_URL from "../config";
+import { format } from "date-fns";
 
 console.log("GROQ_KEY:", GROQ_KEY);
 
@@ -73,15 +75,20 @@ const Chatbot = () => {
     try {
       const response = await axios.get(`${BASE_URL}/api/users/${userId}/trips`);
 
-      const tripsWithPhotos = await Promise.all(
-        response.data.map(async (trip) => {
-          const photoUrl = await getPlacePhotoByPlaceId(trip.places_id);
-          return { ...trip, photoUrl };
-        })
-      );
+  // Remove unnecessary fields and format each trip as a nicely formatted string
+      const formattedTrips = response.data.map(({ id, user_id, places_id, location_name, start_date, end_date }) => {
+        const formattedStartDate = format(new Date(start_date), "d MMM yyyy");
+        const formattedEndDate = format(new Date(end_date), "d MMM yyyy");
 
-      setTrips(tripsWithPhotos);
-      console.log(tripsWithPhotos);
+        return `${location_name} from ${formattedStartDate} to ${formattedEndDate}`;
+      });
+
+      // Join each trip string with a newline for readability
+      const tripsString = formattedTrips.join("\n");
+
+      console.log(tripsString); // Log formatted string for debugging
+
+      setTrips(tripsString); // Set trips state with the formatted string
     } catch (error) {
       console.log("Error loading trips:", error);
     }
@@ -142,9 +149,11 @@ const Chatbot = () => {
 
   const handleSend = async () => {
     if (input.trim() === "") return;
+    console.log(trips);
     setIsTyping(true);
     setMessages([...messages, { text: input, from: "user" }]);
     setInput("");
+    Keyboard.dismiss();
 
     const groqMessages = messages.map((message) => ({
       role: message.from === "user" ? "user" : "assistant",
@@ -169,7 +178,7 @@ const Chatbot = () => {
         messages: [
           {
             role: "system",
-            content: `You are a Singapore travel planner to help users plan their day and give suggestions based on their response. Their trips that they plan are here ${trips}. Do not answer queries unrelated to Singapore. Today's date is: ${date}.The current forecast is: ${forecastString}. Only use forecast given, do not add in additional details such as temperature. Use the weather condition to give recommendations about the place that the user asks. Always include the current weather in your response and avoid providing uncertain or false information. Do not use markdown in your response.`,
+            content: `You are a Singapore travel planner to help users plan their day and give suggestions based on their response. This is the trips planned: ${trips}. Always give suggestions to the users on top of what they want. Do not answer queries unrelated to Singapore. Today's date is: ${date}.The current forecast is: ${forecastString}. Only use forecast given, do not add in additional details such as temperature. Use the weather condition to give recommendations about the place that the user asks. Always include the current weather in your response and avoid providing uncertain or false information. Do not use markdown in your response. Give reccomendations to the user. Please format your response as readable as possible`,
           },
           { role: "user", content: input },
           ...groqMessages,
