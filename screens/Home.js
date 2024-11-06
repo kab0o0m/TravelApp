@@ -204,7 +204,7 @@ const Home = () => {
             {/* Hainanese Chicken Rice */}
             <TouchableOpacity
               style={styles.featuredContainer}
-              onPress={() => navigation.navigate("HomeFeatured")}
+              onPress={() => navigation.navigate("HomeFeatured1")}
             >
               <View style={styles.featuredBackground} />
               <Image source={Chickenrice} style={styles.featuredImage} />
@@ -224,7 +224,7 @@ const Home = () => {
             {/* Katong Laksa */}
             <TouchableOpacity
               style={styles.featuredContainer}
-              onPress={() => navigation.navigate("HomeFeatured")}
+              onPress={() => navigation.navigate("HomeFeatured2")}
             >
               <View style={styles.featuredBackground} />
               <Image source={Laksa} style={styles.featuredImage} />
@@ -244,7 +244,7 @@ const Home = () => {
             {/* Murtabak */}
             <TouchableOpacity
               style={styles.featuredContainer}
-              onPress={() => navigation.navigate("HomeFeatured")}
+              onPress={() => navigation.navigate("HomeFeatured3")}
             >
               <View style={styles.featuredBackground} />
               <Image source={Mutarbak} style={styles.featuredImage} />
@@ -264,7 +264,7 @@ const Home = () => {
             {/* Beef Kway Teow */}
             <TouchableOpacity
               style={styles.featuredContainerLast}
-              onPress={() => navigation.navigate("HomeFeatured")}
+              onPress={() => navigation.navigate("HomeFeatured4")}
             >
               <View style={styles.featuredBackground} />
               <Image source={BeefKwayteow} style={styles.featuredImage} />
