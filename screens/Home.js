@@ -33,7 +33,7 @@ import BeefKwayteow from "../assets/Geylang.jpg";
 import { LinearGradient } from "expo-linear-gradient";
 import Chatbot from "./Chatbot";
 import ArrowLeft from "../assets/icons/ArrowLeft.png";
-import FrogIcon from "../assets/images/FrogHead.png";
+import FrogIcon from "../assets/Frog.png";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
@@ -525,7 +525,7 @@ const styles = StyleSheet.create({
   },
   fixedIconContainer: {
     position: "absolute",
-    bottom: 150, // Distance from the bottom of the screen
+    bottom: 100, // Distance from the bottom of the screen
     right: 30,
     backgroundColor: "#002C30",
     padding: 10,
