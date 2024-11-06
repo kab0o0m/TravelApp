@@ -9,6 +9,7 @@ import {
   Image,
 } from "react-native";
 import { Swipeable } from "react-native-gesture-handler";
+import Toast from 'react-native-toast-message';
 import NavBar from "../components/NavBar";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import axios from "axios";
@@ -46,7 +47,11 @@ const Planner = () => {
     try {
       await deleteTripById(tripId);
       setTrips(trips.filter((trip) => trip.id !== tripId));
-      Alert.alert("Success", "Trip deleted successfully.");
+      Toast.show({
+        type: 'error',
+        text1: 'Deleted',
+        text2: 'Trip deleted successfully.',
+      });
     } catch (error) {
       console.error("Error deleting trip:", error);
       Alert.alert("Error", "Failed to delete trip.");
