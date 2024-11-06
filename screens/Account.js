@@ -19,10 +19,7 @@ const Account = () => {
           console.log("fetching");
           storedUserData = await fetchUserData();
           // Save user data locally
-          await AsyncStorage.setItem(
-            "userData",
-            JSON.stringify(storedUserData)
-          );
+          await AsyncStorage.setItem("userData", JSON.stringify(storedUserData));
         }
 
         const userData = JSON.parse(storedUserData);
@@ -53,8 +50,7 @@ const Account = () => {
             </Text>
             <TouchableOpacity
               style={styles.userInfoSectionProfileContainer}
-              onPress={() => navigation.navigate("Profile")}
-            >
+              onPress={() => navigation.navigate("Profile")}>
               <Text style={styles.userInfoSectionProfile}>View my profile</Text>
             </TouchableOpacity>
           </View>
@@ -63,18 +59,18 @@ const Account = () => {
           <Text style={styles.settings}>Settings</Text>
           <TouchableOpacity
             style={styles.accountItem}
-            onPress={() => navigation.navigate("Profile")}
-          >
+            onPress={() => navigation.navigate("Profile")}>
             <Text style={styles.accountItemText}>Personal Information</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.accountItem}
-            onPress={() => navigation.navigate("SavedLocation")}
-          >
+            onPress={() => navigation.navigate("SavedLocation")}>
             <Text style={styles.accountItemText}>Saved Locations</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.accountItem}>
-            <Text style={styles.accountItemText}>My Bookings</Text>
+          <TouchableOpacity
+            style={styles.accountItem}
+            onPress={() => navigation.navigate("Planner")}>
+            <Text style={styles.accountItemText}>My Trips</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.accountItem}>
             <Text style={styles.accountItemText}>My Messages</Text>
@@ -90,8 +86,7 @@ const Account = () => {
             onPress={async () => {
               await logoutUser();
               navigation.navigate("Startpage"); // Replace "Login" with your login screen route name
-            }}
-          >
+            }}>
             <Text style={styles.accountItemText}>Logout</Text>
           </TouchableOpacity>
         </View>
