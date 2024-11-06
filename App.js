@@ -42,63 +42,26 @@ export default function App() {
           <Stack.Screen name="AuthCheck" component={AuthCheck} options={{ headerShown: false }} />
           <Stack.Screen name="Startpage" component={Startpage} options={{ headerShown: false }} />
           <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
-          {/* <Stack.Screen
-            name="HomeFeatured"
-            component={HomeFeatured}
-            options={{ headerShown: false }}
-          /> */}
-          <Stack.Screen
-            name="HomePopular"
-            component={HomePopular}
-            options={{ headerShown: false }}
-          />
+          <Stack.Screen name="HomeFeatured1" component={HomeFeatured1} options={{ headerShown: false }} />
+          <Stack.Screen name="HomeFeatured2" component={HomeFeatured2} options={{ headerShown: false }} />
+          <Stack.Screen name="HomeFeatured3" component={HomeFeatured3} options={{ headerShown: false }} />
+          <Stack.Screen name="HomeFeatured4" component={HomeFeatured4} options={{ headerShown: false }} />
+          <Stack.Screen name="HomePopular" component={HomePopular}options={{ headerShown: false }}/>
           <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
           <Stack.Screen name="Register" component={Register} options={{ headerShown: false }} />
           <Stack.Screen name="Chatbot" component={Chatbot} options={{ headerShown: false }} />
           <Stack.Screen name="Account" component={Account} options={{ headerShown: false }} />
           <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
-          <Stack.Screen
-            name="AIRandomiser"
-            component={AIRandomiser}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="EditProfile"
-            component={EditProfile}
-            options={{ headerShown: false }}
-          />
+          <Stack.Screen name="AIRandomiser" component={AIRandomiser} options={{ headerShown: false }} />
+          <Stack.Screen name="EditProfile" component={EditProfile} options={{ headerShown: false }} />
           <Stack.Screen name="ResetPW" component={ResetPW} options={{ headerShown: false }} />
           <Stack.Screen name="Planner" component={Planner} options={{ headerShown: false }} />
-          <Stack.Screen
-            name="PlannerNewTrip"
-            component={PlannerNewTrip}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="PlannerAddDestination"
-            component={PlannerAddDestination}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="PlannerItinerary"
-            component={PlannerItinerary}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="PlannerOverview"
-            component={PlannerOverview}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="LocationSearch"
-            component={LocationSearch}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="SavedLocation"
-            component={SavedLocation}
-            options={{ headerShown: false }}
-          />
+          <Stack.Screen name="PlannerNewTrip" component={PlannerNewTrip} options={{ headerShown: false }} />
+          <Stack.Screen name="PlannerAddDestination" component={PlannerAddDestination} options={{ headerShown: false }} />
+          <Stack.Screen name="PlannerItinerary" component={PlannerItinerary} options={{ headerShown: false }}/>
+          <Stack.Screen name="PlannerOverview" component={PlannerOverview} options={{ headerShown: false }} />
+          <Stack.Screen name="LocationSearch" component={LocationSearch} options={{ headerShown: false }} />
+          <Stack.Screen name="SavedLocation" component={SavedLocation} options={{ headerShown: false }} />
           <Stack.Screen name="Explore" component={Explore} options={{ headerShown: false }} />
           <Stack.Screen name="Test" component={Test} options={{ headerShown: false }} />
           <Stack.Screen name="Expenses" component={Expenses} options={{ headerShown: false }} />
