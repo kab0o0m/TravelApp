@@ -90,6 +90,7 @@ const Home = () => {
               style={styles.searchInput}
               placeholder="Discover Singapore"
               placeholderTextColor="#A9A9A9"
+              editable={false}
             />
           </View>
         </TouchableOpacity>
