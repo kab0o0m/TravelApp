@@ -42,41 +42,21 @@ export default function App() {
           <Stack.Screen name="AuthCheck" component={AuthCheck} options={{ headerShown: false }} />
           <Stack.Screen name="Startpage" component={Startpage} options={{ headerShown: false }} />
           <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
-          <Stack.Screen
+          {/* <Stack.Screen
             name="HomeFeatured"
             component={HomeFeatured}
             options={{ headerShown: false }}
-          />
+          /> */}
           <Stack.Screen
             name="HomePopular"
             component={HomePopular}
             options={{ headerShown: false }}
           />
-          <Stack.Screen
-            name="Login"
-            component={Login}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Register"
-            component={Register}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Chatbot"
-            component={Chatbot}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Account"
-            component={Account}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Profile"
-            component={Profile}
-            options={{ headerShown: false }}
-          />
+          <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
+          <Stack.Screen name="Register" component={Register} options={{ headerShown: false }} />
+          <Stack.Screen name="Chatbot" component={Chatbot} options={{ headerShown: false }} />
+          <Stack.Screen name="Account" component={Account} options={{ headerShown: false }} />
+          <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
           <Stack.Screen
             name="AIRandomiser"
             component={AIRandomiser}
@@ -87,16 +67,8 @@ export default function App() {
             component={EditProfile}
             options={{ headerShown: false }}
           />
-          <Stack.Screen
-            name="ResetPW"
-            component={ResetPW}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Planner"
-            component={Planner}
-            options={{ headerShown: false }}
-          />
+          <Stack.Screen name="ResetPW" component={ResetPW} options={{ headerShown: false }} />
+          <Stack.Screen name="Planner" component={Planner} options={{ headerShown: false }} />
           <Stack.Screen
             name="PlannerNewTrip"
             component={PlannerNewTrip}
@@ -127,21 +99,9 @@ export default function App() {
             component={SavedLocation}
             options={{ headerShown: false }}
           />
-          <Stack.Screen
-            name="Explore"
-            component={Explore}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Test"
-            component={Test}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Expenses"
-            component={Expenses}
-            options={{ headerShown: false }}
-          />
+          <Stack.Screen name="Explore" component={Explore} options={{ headerShown: false }} />
+          <Stack.Screen name="Test" component={Test} options={{ headerShown: false }} />
+          <Stack.Screen name="Expenses" component={Expenses} options={{ headerShown: false }} />
         </Stack.Navigator>
         <Toast />
       </NavigationContainer>

@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import {
   View,
   Text,
@@ -17,8 +19,9 @@ import axios from "axios";
 import ArrowUp from "../assets/icons/ArrowUp.png";
 import pause from "../assets/pause.png";
 import FrogHead from "../assets/BigFrogHead.png";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { GROQ_KEY } from "@env";
+import { fetchUserData } from "../api/authAPI";
 
 console.log("GROQ_KEY:", GROQ_KEY);
 
@@ -80,8 +83,7 @@ const Chatbot = () => {
       setTrips(tripsWithPhotos);
       console.log(tripsWithPhotos);
     } catch (error) {
-      console.error("Error loading trips:", error);
-      Alert.alert("Error", "Failed to load trips.");
+      console.log("Error loading trips:", error);
     }
   };
 
@@ -252,6 +254,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+    position: "relative",
   },
   messagesContainer: {
     padding: 20,
@@ -374,6 +377,7 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
   },
+
 });
 
 export default Chatbot;
