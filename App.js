@@ -11,7 +11,10 @@ import Account from "./screens/Account";
 import Profile from "./screens/Profile";
 import EditProfile from "./screens/EditProfile";
 import Home from "./screens/Home";
-import HomeFeatured from "./screens/HomeFeatured";
+import HomeFeatured1 from "./screens/HomeFeatured1";
+import HomeFeatured2 from "./screens/HomeFeatured2";
+import HomeFeatured3 from "./screens/HomeFeatured3";
+import HomeFeatured4 from "./screens/HomeFeatured4";
 import AIRandomiser from "./screens/AIRandomiser";
 import ResetPW from "./screens/ResetPW";
 import Planner from "./screens/Planner";
@@ -47,8 +50,23 @@ export default function App() {
             options={{ headerShown: false }}
           />
           <Stack.Screen
-            name="HomeFeatured"
-            component={HomeFeatured}
+            name="HomeFeatured1"
+            component={HomeFeatured1}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="HomeFeatured2"
+            component={HomeFeatured2}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="HomeFeatured3"
+            component={HomeFeatured3}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="HomeFeatured4"
+            component={HomeFeatured4}
             options={{ headerShown: false }}
           />
           <Stack.Screen

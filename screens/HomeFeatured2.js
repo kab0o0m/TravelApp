@@ -26,7 +26,7 @@ const { height: screenHeight } = Dimensions.get("window");
 
 SplashScreen.preventAutoHideAsync(); // Prevent the splash screen from auto-hiding
 
-const HomeFeatured = () => {
+const HomeFeatured2 = () => {
   const [fontsLoaded] = useFonts({
     Nunito_400Regular,
     Nunito_600SemiBold,
@@ -49,21 +49,21 @@ const HomeFeatured = () => {
 
   const handleWebsitePress = () => {
     const url =
-      "https://maxwellfoodcentre.com/tian-tian-hainanese-chicken-rice/";
+      "https://www.foodadvisor.com.sg/restaurant/the-original-katong-laksa-janggut-laksa-roxy-square/";
     Linking.openURL(url).catch((err) =>
       console.error("Failed to open URL:", err)
     );
   };
 
   const handlePhonePress = () => {
-    const phoneNumber = "tel:+65 9691 4852";
+    const phoneNumber = "tel:+65 9622 1045";
     Linking.openURL(phoneNumber).catch((err) =>
       console.error("Failed to open phone dialer:", err)
     );
   };
 
   const handleMapPress = () => {
-    const address = "1 Kadayanallur Street, #01-10/11, S069184";
+    const address = "50 East Coast Road #01-64 Roxy Square, S428769";
     const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
       address
     )}`;
@@ -74,7 +74,7 @@ const HomeFeatured = () => {
 
   const navigateToPlannerNewTrip = () => {
     navigation.navigate("PlannerNewTrip", {
-        destination: "Tian Tian Chicken Rice" // Pass the destination
+        destination: "The Original Katong Laksa" // Pass the destination
     });
   };
 
@@ -110,7 +110,7 @@ const HomeFeatured = () => {
 
       <View style={styles.featuredContainer}>
         <Image
-          source={require("../assets/Chickenrice.jpg")}
+          source={require("../assets/Laksa.jpg")}
           style={styles.featuredImage}
         />
         <LinearGradient
@@ -118,7 +118,7 @@ const HomeFeatured = () => {
           style={styles.featuredOverlay}
         />
         <Text style={styles.featuredTitle}>
-        Hainanese Chicken Rice
+        The Original Katong Laksa
         </Text>
       </View>
 
@@ -126,7 +126,7 @@ const HomeFeatured = () => {
         <Text style={styles.about}>About:</Text>
 
         <Text style={styles.description}>
-        Earning international acclaim, Tian Tian offers a delectable experience worth the wait. Enjoy the authentic taste of this beloved Singaporean dish!
+        Famed for its rich, aromatic laksa, enjoy the creamy coconut gravy & tender prawns that make this iconic dish a must-try in Singapore.
         </Text>
 
         <View style={styles.infoContainer}>
@@ -135,7 +135,7 @@ const HomeFeatured = () => {
             style={styles.icon}
           />
           <TouchableOpacity onPress={handleMapPress}>
-            <Text style={styles.infoText}>1 Kadayanallur Street, #01-10/11, S069184</Text>
+            <Text style={styles.infoText}>50 East Coast Road, S428769</Text>
           </TouchableOpacity>
           
           
@@ -147,7 +147,7 @@ const HomeFeatured = () => {
             style={styles.icon}
           />
           <TouchableOpacity onPress={handlePhonePress}>
-            <Text style={styles.infoText}>+65 9691 4852</Text>
+            <Text style={styles.infoText}>+65 9622 1045</Text>
           </TouchableOpacity>
         </View>
 
@@ -166,7 +166,7 @@ const HomeFeatured = () => {
             source={require("../assets/icons/TimeIcon.png")}
             style={styles.icon}
           />
-          <Text style={styles.infoText}>Tue - Sun: 11AM - 8PM</Text>
+          <Text style={styles.infoText}>Mon - Sun: 8.30AM - 5.30PM</Text>
         </View>
 
         
@@ -326,4 +326,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeFeatured; // Ensure the component is exported
+export default HomeFeatured2; // Ensure the component is exported
