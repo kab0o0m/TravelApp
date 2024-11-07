@@ -339,18 +339,6 @@ const Expenses = () => {
           </View>
         </View>
 
-        <View style={styles.sortContainer}>
-          <Text style={styles.sortText}>Sort:</Text>
-          <Picker
-            selectedValue={selectedSortOption}
-            style={styles.picker}
-            onValueChange={(itemValue) => setSelectedSortOption(itemValue)}
-          >
-            <Picker.Item label="Date (Oldest First)" value="date_oldest" />
-            <Picker.Item label="Date (Latest First)" value="date_latest" />
-          </Picker>
-        </View>
-
         {expenses.length === 0 ? (
           <Text style={styles.noExpenses}>
             You haven’t added any expenses yet.
