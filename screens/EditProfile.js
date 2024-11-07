@@ -24,9 +24,10 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import AsyncStorage from "@react-native-async-storage/async-storage";
 // import DateTimePicker from "@react-native-community/datetimepicker";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import Toast from 'react-native-toast-message';
+import Toast from "react-native-toast-message";
 import { Picker } from "@react-native-picker/picker";
 import { updateProfile, fetchUserData } from "../api/authAPI";
+import { ScrollView } from "react-native-gesture-handler";
 
 const EditProfile = () => {
   const navigation = useNavigation();
@@ -200,97 +201,99 @@ const EditProfile = () => {
         extraHeight={150}
         enableAutomaticScroll={true}
       >
-        <View style={styles.header}>
-          <TouchableOpacity
-            onPress={() => navigation.navigate("Profile")}
-            style={styles.closeButton}
-          >
-            <Image source={ArrowLeft} />
-          </TouchableOpacity>
-          <Text style={styles.headerText}>EDIT PROFILE</Text>
-        </View>
-        <View style={styles.userInfoSection}>
-          <View>
-            <Image source={ProfilePicture} style={styles.image} />
-            <TouchableOpacity style={styles.editContainer}>
-              <Image source={Edit} style={styles.edit} />
+        <ScrollView style={styles.scrollContainer}>
+          <View style={styles.header}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("Profile")}
+              style={styles.closeButton}
+            >
+              <Image source={ArrowLeft} />
             </TouchableOpacity>
+            <Text style={styles.headerText}>EDIT PROFILE</Text>
           </View>
-        </View>
-        <View style={styles.mainInputContainer}>
-          <View style={styles.inputContainer}>
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>First Name</Text>
-              <TextInput
-                style={styles.nameInput}
-                value={firstName}
-                editable={true}
-                onChangeText={setFirstName}
-              />
-            </View>
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Last Name</Text>
-              <TextInput
-                style={styles.nameInput}
-                value={lastName}
-                editable={true}
-                onChangeText={setLastName}
-              />
+          <View style={styles.userInfoSection}>
+            <View>
+              <Image source={ProfilePicture} style={styles.image} />
+              <TouchableOpacity style={styles.editContainer}>
+                <Image source={Edit} style={styles.edit} />
+              </TouchableOpacity>
             </View>
           </View>
-
-          <Text style={styles.label}>Email</Text>
-          <TextInput
-            style={styles.emailInput}
-            value={email}
-            editable={false}
-            onChangeText={setEmail}
-          />
-
-          <Text style={styles.label}>Phone Number</Text>
-          <TextInput
-            style={styles.input}
-            value={phone}
-            editable={true}
-            onChangeText={setPhone}
-          />
-
-          <View style={styles.inputContainer}>
-            <View style={[styles.inputGroup, styles.genderGroup]}>
-              <Text style={styles.label}>Gender</Text>
-              <View style={styles.pickerContainer}>
-                <Picker
-                  selectedValue={gender}
-                  onValueChange={(itemValue) => setGender(itemValue)}
-                  style={styles.picker}
-                >
-                  <Picker.Item label="Select" value="" />
-                  <Picker.Item label="Male" value="Male" />
-                  <Picker.Item label="Female" value="Female" />
-                  <Picker.Item label="Other" value="Other" />
-                </Picker>
+          <View style={styles.mainInputContainer}>
+            <View style={styles.inputContainer}>
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>First Name</Text>
+                <TextInput
+                  style={styles.nameInput}
+                  value={firstName}
+                  editable={true}
+                  onChangeText={setFirstName}
+                />
+              </View>
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>Last Name</Text>
+                <TextInput
+                  style={styles.nameInput}
+                  value={lastName}
+                  editable={true}
+                  onChangeText={setLastName}
+                />
               </View>
             </View>
-            <View style={[styles.inputGroup, styles.flexFill]}>
-              <Text style={styles.label}>Date of Birth</Text>
-              <TouchableOpacity onPress={showDatePicker}>
-                <Text style={styles.nameInput}>{dobStr}</Text>
+
+            <Text style={styles.label}>Email</Text>
+            <TextInput
+              style={styles.emailInput}
+              value={email}
+              editable={false}
+              onChangeText={setEmail}
+            />
+
+            <Text style={styles.label}>Phone Number</Text>
+            <TextInput
+              style={styles.input}
+              value={phone}
+              editable={true}
+              onChangeText={setPhone}
+            />
+
+            <View style={styles.inputContainer}>
+              <View style={[styles.inputGroup, styles.genderGroup]}>
+                <Text style={styles.label}>Gender</Text>
+                <View style={styles.pickerContainer}>
+                  <Picker
+                    selectedValue={gender}
+                    onValueChange={(itemValue) => setGender(itemValue)}
+                    style={styles.picker}
+                  >
+                    <Picker.Item label="Select" value="" />
+                    <Picker.Item label="Male" value="Male" />
+                    <Picker.Item label="Female" value="Female" />
+                    <Picker.Item label="Other" value="Other" />
+                  </Picker>
+                </View>
+              </View>
+              <View style={[styles.inputGroup, styles.flexFill]}>
+                <Text style={styles.label}>Date of Birth</Text>
+                <TouchableOpacity onPress={showDatePicker}>
+                  <Text style={styles.nameInput}>{dobStr}</Text>
+                </TouchableOpacity>
+                <DateTimePickerModal
+                  isVisible={isDatePickerVisible}
+                  mode="date"
+                  onConfirm={handleDateConfirm}
+                  onCancel={hideDatePicker}
+                />
+              </View>
+            </View>
+
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity style={styles.button} onPress={handleUpdate}>
+                <Text style={styles.buttonText}>Save</Text>
               </TouchableOpacity>
-              <DateTimePickerModal
-                isVisible={isDatePickerVisible}
-                mode="date"
-                onConfirm={handleDateConfirm}
-                onCancel={hideDatePicker}
-              />
             </View>
           </View>
-
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.button} onPress={handleUpdate}>
-              <Text style={styles.buttonText}>Save</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+        </ScrollView>
       </KeyboardAwareScrollView>
     </TouchableWithoutFeedback>
   );
@@ -452,4 +455,7 @@ const styles = StyleSheet.create({
     minWidth: 150, // Minimum width for the gender dropdown
     flex: 0, // Prevents it from growing, so Date of Birth can expand
   },
+  scrollContainer: {
+    paddingBottom: 30,
+  }
 });

@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  ScrollView,
+} from "react-native";
 import ProfilePicture from "../assets/icons/ProfilePicture.png";
 import NavBar from "../components/NavBar";
 import { useNavigation } from "@react-navigation/native";
@@ -19,7 +26,10 @@ const Account = () => {
           console.log("fetching");
           storedUserData = await fetchUserData();
           // Save user data locally
-          await AsyncStorage.setItem("userData", JSON.stringify(storedUserData));
+          await AsyncStorage.setItem(
+            "userData",
+            JSON.stringify(storedUserData)
+          );
         }
 
         const userData = JSON.parse(storedUserData);
@@ -36,61 +46,71 @@ const Account = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.innerContainer}>
-        <View style={styles.header}>
-          <Text style={styles.headerText}>ACCOUNT</Text>
-        </View>
-        <View style={styles.userInfoSection}>
-          <View>
-            <Image source={ProfilePicture} />
+      <ScrollView>
+        <View style={styles.innerContainer}>
+          <View style={styles.header}>
+            <Text style={styles.headerText}>ACCOUNT</Text>
           </View>
-          <View style={styles.userTextContainer}>
-            <Text style={styles.userName}>
-              {firstName} {lastName}
-            </Text>
+          <View style={styles.userInfoSection}>
+            <View>
+              <Image source={ProfilePicture} />
+            </View>
+            <View style={styles.userTextContainer}>
+              <Text style={styles.userName}>
+                {firstName}
+                {lastName}
+              </Text>
+              <TouchableOpacity
+                style={styles.userInfoSectionProfileContainer}
+                onPress={() => navigation.navigate("Profile")}
+              >
+                <Text style={styles.userInfoSectionProfile}>
+                  View my profile
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View style={styles.accountSection}>
+            <Text style={styles.settings}>Settings</Text>
             <TouchableOpacity
-              style={styles.userInfoSectionProfileContainer}
-              onPress={() => navigation.navigate("Profile")}>
-              <Text style={styles.userInfoSectionProfile}>View my profile</Text>
+              style={styles.accountItem}
+              onPress={() => navigation.navigate("Profile")}
+            >
+              <Text style={styles.accountItemText}>Personal Information</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.accountItem}
+              onPress={() => navigation.navigate("SavedLocation")}
+            >
+              <Text style={styles.accountItemText}>Saved Locations</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.accountItem}
+              onPress={() => navigation.navigate("Planner")}
+            >
+              <Text style={styles.accountItemText}>My Trips</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.accountItem}>
+              <Text style={styles.accountItemText}>My Messages</Text>
+            </TouchableOpacity>
+            {/* <TouchableOpacity style={styles.accountItem}>
+            <Text style={styles.accountItemText}>Notification Settings</Text>
+          </TouchableOpacity> */}
+            <TouchableOpacity style={styles.accountItem}>
+              <Text style={styles.accountItemText}>Help Centre</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.accountItem}
+              onPress={async () => {
+                await logoutUser();
+                navigation.navigate("Startpage"); // Replace "Login" with your login screen route name
+              }}
+            >
+              <Text style={styles.accountItemText}>Logout</Text>
             </TouchableOpacity>
           </View>
         </View>
-        <View style={styles.accountSection}>
-          <Text style={styles.settings}>Settings</Text>
-          <TouchableOpacity
-            style={styles.accountItem}
-            onPress={() => navigation.navigate("Profile")}>
-            <Text style={styles.accountItemText}>Personal Information</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.accountItem}
-            onPress={() => navigation.navigate("SavedLocation")}>
-            <Text style={styles.accountItemText}>Saved Locations</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.accountItem}
-            onPress={() => navigation.navigate("Planner")}>
-            <Text style={styles.accountItemText}>My Trips</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.accountItem}>
-            <Text style={styles.accountItemText}>My Messages</Text>
-          </TouchableOpacity>
-          {/* <TouchableOpacity style={styles.accountItem}>
-            <Text style={styles.accountItemText}>Notification Settings</Text>
-          </TouchableOpacity> */}
-          <TouchableOpacity style={styles.accountItem}>
-            <Text style={styles.accountItemText}>Help Centre</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.accountItem}
-            onPress={async () => {
-              await logoutUser();
-              navigation.navigate("Startpage"); // Replace "Login" with your login screen route name
-            }}>
-            <Text style={styles.accountItemText}>Logout</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+      </ScrollView>
 
       <View style={styles.NavBarContainer}>
         <NavBar />

@@ -7,10 +7,11 @@ import {
   TouchableOpacity,
   Image,
   TextInput,
+  ScrollView,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ProfilePicture from "../assets/icons/ProfilePicture.png";
-import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import ArrowLeft from "../assets/icons/ArrowLeft.png";
 import { fetchUserData } from "../api/authAPI";
 
@@ -35,11 +36,14 @@ const Profile = () => {
             console.log("fetching");
             const fetchedUserData = await fetchUserData();
             // Save user data locally
-            await AsyncStorage.setItem("userData", JSON.stringify(fetchedUserData));
+            await AsyncStorage.setItem(
+              "userData",
+              JSON.stringify(fetchedUserData)
+            );
           }
-  
+
           const userData = JSON.parse(storedUserData);
-  
+
           setFirstName(userData.firstName);
           setLastName(userData.lastName);
           setEmail(userData.email);
@@ -48,7 +52,7 @@ const Profile = () => {
           setDob(userData.dob); // Assuming dob is in valid format
         } catch (error) {
           console.error("Failed to load user data", error);
-  
+
           Alert.alert(
             "Session Expired",
             "Your session has expired. Redirecting to the login page...",
@@ -66,57 +70,57 @@ const Profile = () => {
           );
         }
       };
-  
+
       loadUserData();
-    }, [])  // Dependency array is empty, so this runs every time the screen is focused
+    }, []) // Dependency array is empty, so this runs every time the screen is focused
   );
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => navigation.navigate("Account")}
-          style={styles.closeButton}
-        >
-          <Image source={ArrowLeft} />
-        </TouchableOpacity>
-        <Text style={styles.headerText}>PROFILE</Text>
-      </View>
-      <View style={styles.userInfoSection}>
-        <View>
-          <Image source={ProfilePicture} />
+    <ScrollView>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("Account")}
+            style={styles.closeButton}
+          >
+            <Image source={ArrowLeft} />
+          </TouchableOpacity>
+          <Text style={styles.headerText}>PROFILE</Text>
         </View>
-        <View style={styles.userTextContainer}>
-          <Text style={styles.userName}>{firstName} {lastName}</Text>
-          <Text style={styles.userInfoSectionProfile}>Joined - Mar 2024</Text>
+        <View style={styles.userInfoSection}>
+          <View>
+            <Image source={ProfilePicture} />
+          </View>
+          <View style={styles.userTextContainer}>
+            <Text style={styles.userName}>
+              {firstName} {lastName}
+            </Text>
+            <Text style={styles.userInfoSectionProfile}>Joined - Mar 2024</Text>
+          </View>
+        </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Email</Text>
+          <TextInput style={styles.input} value={email} editable={false} />
+
+          <Text style={styles.label}>Phone Number</Text>
+          <TextInput style={styles.input} value={phone} editable={false} />
+
+          <Text style={styles.label}>Gender</Text>
+          <TextInput style={styles.input} value={gender} editable={false} />
+
+          <Text style={styles.label}>Date of Birth</Text>
+          <TextInput style={styles.input} value={dob} editable={false} />
+        </View>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => navigation.navigate("EditProfile")}
+          >
+            <Text style={styles.buttonText}>Edit</Text>
+          </TouchableOpacity>
         </View>
       </View>
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Email</Text>
-        <TextInput
-          style={styles.input}
-          value={email}
-          editable={false}
-        />
-
-        <Text style={styles.label}>Phone Number</Text>
-        <TextInput style={styles.input} value={phone} editable={false} />
-
-        <Text style={styles.label}>Gender</Text>
-        <TextInput style={styles.input} value={gender} editable={false} />
-
-        <Text style={styles.label}>Date of Birth</Text>
-        <TextInput style={styles.input} value={dob} editable={false} />
-      </View>
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate("EditProfile")}
-        >
-          <Text style={styles.buttonText}>Edit</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+    </ScrollView>
   );
 };
 
@@ -127,7 +131,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#FCF7F7",
     paddingHorizontal: 25,
-    paddingVertical: 30,
+    paddingTop: 30,
   },
   header: {
     flexDirection: "row",
@@ -193,7 +197,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 30,
-    marginTop: 20,
+    marginVertical: 20,
   },
   buttonText: {
     color: "#FFFFFF",
