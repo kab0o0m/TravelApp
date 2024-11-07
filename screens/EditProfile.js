@@ -170,7 +170,6 @@ const EditProfile = () => {
         type: "success",
         text1: "Profile Updated",
         text2: "Your profile has been updated successfully.",
-        position: "bottom", // Show toast from the bottom
       });
       navigation.navigate("Profile");
     } catch (error) {
@@ -439,7 +438,7 @@ const styles = StyleSheet.create({
     flex: 2, // Makes Date of Birth input larger
   },
   picker: {
-    height: 58,
+    // height: 58,
   },
   dobInput: {
     borderWidth: 1,
