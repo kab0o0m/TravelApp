@@ -9,6 +9,7 @@ import {
   Animated,
   Easing,
   TouchableOpacity,
+  Image,
 } from "react-native";
 import {
   useFonts,
@@ -99,7 +100,7 @@ const Expenses = () => {
 
   const [selectedSortOption, setSelectedSortOption] = useState("date_latest");
   const [expenses, setExpenses] = useState([]);
-  const [budget, setBudget] = useState(500);
+  const [budget, setBudget] = useState(0);
   const [totalSpent, setTotalSpent] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
   const [userId, setUserId] = useState(null);
@@ -121,8 +122,16 @@ const Expenses = () => {
   ];
 
   const getIconForCategory = (category) => {
-    const icon = iconData.find((item) => item.label.toLowerCase() === category.toLowerCase());
-    return icon || { iconName: "cash-outline", backgroundColor: "#e6fae7", iconColor: "#418743" };
+    const icon = iconData.find(
+      (item) => item.label.toLowerCase() === category.toLowerCase()
+    );
+    return (
+      icon || {
+        iconName: "cash-outline",
+        backgroundColor: "#e6fae7",
+        iconColor: "#418743",
+      }
+    );
   };
 
   const updatePieChartData = (fetchedExpenses) => {
@@ -134,17 +143,19 @@ const Expenses = () => {
       return acc;
     }, {});
 
-    const pieChartData = Object.entries(categoryTotals).map(([category, amount], index) => {
-      return {
-        name: category,
-        population: amount,
-        color: colorPalette[index % colorPalette.length], // Use colors in consistent order
-        legendFontColor: "#FFF",
-        legendFontSize: 15,
-      };
-    });
+    const pieChartData = Object.entries(categoryTotals).map(
+      ([category, amount], index) => {
+        return {
+          name: category,
+          population: amount,
+          color: colorPalette[index % colorPalette.length], // Use colors in consistent order
+          legendFontColor: "#FFF",
+          legendFontSize: 15,
+        };
+      }
+    );
     setPieChartData(pieChartData);
-  }
+  };
 
   useEffect(() => {
     // // Dummy data for testing
@@ -183,7 +194,6 @@ const Expenses = () => {
         setTotalSpent(total);
 
         updatePieChartData(fetchedExpenses);
-        
       } catch (error) {
         console.error("Error loading expenses:", error);
         Alert.alert(
@@ -214,7 +224,7 @@ const Expenses = () => {
     </TouchableOpacity>
   );
 
-  const handleDeleteExpense = async(id) => {
+  const handleDeleteExpense = async (id) => {
     const updatedExpenses = expenses.filter((expense) => expense.id !== id);
     setExpenses(updatedExpenses);
 
@@ -231,13 +241,9 @@ const Expenses = () => {
       // Delete the expense
       await deleteExpense(userId, id);
       console.log("Expense deleted successfully.");
-      
     } catch (error) {
       console.error("Error deleting expense:", error);
-      Alert.alert(
-        "Error",
-        "Failed to delete expense. Please try again later."
-      );
+      Alert.alert("Error", "Failed to delete expense. Please try again later.");
     }
   };
 
@@ -268,8 +274,15 @@ const Expenses = () => {
           <Text style={styles.amount}>SGD {totalSpent}</Text>
 
           {budget === 0 ? (
-            <TouchableOpacity onPress={() => setBudgetModalVisible(true)}>
+            <TouchableOpacity
+              style={styles.budgetContainer}
+              nPress={() => setBudgetModalVisible(true)}
+            >
               <Text style={styles.budgetText}>Set a budget</Text>
+              <Image
+                source={require("../assets/icons/addRound.png")}
+                style={styles.iconAdd}
+              />
             </TouchableOpacity>
           ) : (
             <View style={styles.progressContainer}>
@@ -285,19 +298,21 @@ const Expenses = () => {
             </View>
           )}
 
-          <Button
-            title={summaryVisible ? "Close" : "View Summary"}
-            onPress={toggleSummary}
-            backgroundColor="#006D77"
-            textColor="#FFFFFF"
-            paddingVertical={screenHeight * 0.001}
-            borderRadius={25}
-            width={screenWidth * 0.45}
-            borderColor="#FFFFFF"
-            borderWidth={2}
-            height={screenHeight * 0.055}
-            fontSize={screenHeight * 0.02}
-          />
+          {budget > 0 && (
+            <Button
+              title={summaryVisible ? "Close" : "View Summary"}
+              onPress={toggleSummary}
+              backgroundColor="#006D77"
+              textColor="#FFFFFF"
+              paddingVertical={screenHeight * 0.001}
+              borderRadius={25}
+              width={screenWidth * 0.45}
+              borderColor="#FFFFFF"
+              borderWidth={2}
+              height={screenHeight * 0.055}
+              fontSize={screenHeight * 0.02}
+            />
+          )}
         </View>
       </View>
 
@@ -358,44 +373,47 @@ const Expenses = () => {
         ) : (
           <ScrollView>
             {expenses.map((expense) => {
-            // Get the icon data for the current expense category
-            const { iconName, backgroundColor, iconColor } = getIconForCategory(expense.category);
+              // Get the icon data for the current expense category
+              const { iconName, backgroundColor, iconColor } =
+                getIconForCategory(expense.category);
 
-            return (
-              <Swipeable
-                key={expense.id}
-                renderRightActions={() => renderRightActions(expense.id)}
-              >
-                <View style={styles.expenseCard}>
-                  <View style={styles.expenseDetailsContainer}>
-                    <RoundedSquareIcon
-                      iconName={iconName}
-                      iconSize={screenHeight * 0.03}
-                      iconColor={iconColor}
-                      backgroundColor={backgroundColor}
-                      size={screenHeight * 0.07}
-                    />
-                    <View style={styles.expenseTextContainer}>
-                      <View style={styles.expenseRow}>
-                        <Text style={styles.expenseCategory}>
-                          {expense.category}
-                        </Text>
-                        <Text style={styles.expensePrice}>
-                          SGD {expense.amount}
-                        </Text>
-                      </View>
-                      <View style={styles.expenseRow}>
-                        <Text style={styles.expenseTitle}>{expense.name}</Text>
-                        <Text style={styles.expenseDate}>
-                          {new Date(expense.date).toLocaleDateString()}
-                        </Text>
+              return (
+                <Swipeable
+                  key={expense.id}
+                  renderRightActions={() => renderRightActions(expense.id)}
+                >
+                  <View style={styles.expenseCard}>
+                    <View style={styles.expenseDetailsContainer}>
+                      <RoundedSquareIcon
+                        iconName={iconName}
+                        iconSize={screenHeight * 0.03}
+                        iconColor={iconColor}
+                        backgroundColor={backgroundColor}
+                        size={screenHeight * 0.07}
+                      />
+                      <View style={styles.expenseTextContainer}>
+                        <View style={styles.expenseRow}>
+                          <Text style={styles.expenseCategory}>
+                            {expense.category}
+                          </Text>
+                          <Text style={styles.expensePrice}>
+                            SGD {expense.amount}
+                          </Text>
+                        </View>
+                        <View style={styles.expenseRow}>
+                          <Text style={styles.expenseTitle}>
+                            {expense.name}
+                          </Text>
+                          <Text style={styles.expenseDate}>
+                            {new Date(expense.date).toLocaleDateString()}
+                          </Text>
+                        </View>
                       </View>
                     </View>
                   </View>
-                </View>
-              </Swipeable>
-            );
-          })}
+                </Swipeable>
+              );
+            })}
           </ScrollView>
         )}
       </Animated.View>
@@ -475,9 +493,8 @@ const styles = StyleSheet.create({
   budgetText: {
     fontSize: screenHeight * 0.025,
     fontFamily: "Nunito_400Regular",
-    color: "#FFF",
-    marginTop: screenHeight * 0.01,
-    marginBottom: screenHeight * 0.005,
+    color: "#f47866",
+    textDecorationLine: 'underline',
   },
   progressContainer: {
     alignItems: "center",
@@ -640,5 +657,16 @@ const styles = StyleSheet.create({
   },
   pieChart: {
     alignItems: "center",
+  },
+  budgetContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: screenHeight * 0.02,
+    marginBottom: screenHeight * 0.01,
+  },
+  iconAdd: {
+    marginLeft: 10,
+    width: 27,
+    height: 27,
   },
 });
