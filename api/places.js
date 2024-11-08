@@ -16,7 +16,6 @@ export const searchPlacesByText = async (query) => {
 
 export const getPlacePhotoByPlaceId = async (placeId) => {
   try {
-
     const detailsUrl = `${BASE_URL}/api/place-details?place_id=${placeId}`;
 
     const response = await fetch(detailsUrl, {
@@ -42,55 +41,8 @@ export const getPlacePhotoByPlaceId = async (placeId) => {
     return photoUrl;
   } catch (error) {
     console.error("Error fetching place photo:", error);
-    throw new Error("An error occurred while fetching the place photo. Please try again.");
+    throw new Error(
+      "An error occurred while fetching the place photo. Please try again."
+    );
   }
 };
-
-export const deleteTripById = async (tripId) => {
-  try {
-    console.log("tripid: ", tripId)
-    const deleteUrl = `${BASE_URL}/api/trips/${tripId}`;
-
-    const response = await fetch(deleteUrl, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to delete the trip");
-    }
-
-    console.log("Trip deleted successfully:", tripId);
-    return true; // Indicate success
-  } catch (error) {
-    console.error("Error deleting trip:", error);
-    throw new Error("An error occurred while deleting the trip. Please try again.");
-  }
-};
-
-export const getTripsByUserId = async (userId) => {
-  try {
-    const url = `${BASE_URL}/api/users/${userId}/trips`; // Adjust based on your API structure
-
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch trips");
-    }
-    console.log("success")
-
-    const trips = await response.json();
-    return trips; // Return the trips data
-  } catch (error) {
-    console.error("Error fetching trips:", error);
-    throw new Error("An error occurred while fetching trips. Please try again.");
-  }
-};
-
