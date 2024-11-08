@@ -1,15 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  Alert,
-  Image,
-} from "react-native";
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert, Image } from "react-native";
 import { Swipeable } from "react-native-gesture-handler";
-import Toast from 'react-native-toast-message';
+import Toast from "react-native-toast-message";
 import NavBar from "../components/NavBar";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import axios from "axios";
@@ -28,7 +20,7 @@ const Planner = () => {
     if (!userId) return;
     try {
       const response = await axios.get(`${BASE_URL}/api/users/${userId}/trips`);
-      
+
       const tripsWithPhotos = await Promise.all(
         response.data.map(async (trip) => {
           const photoUrl = await getPlacePhotoByPlaceId(trip.places_id);
@@ -48,9 +40,9 @@ const Planner = () => {
       await deleteTripById(tripId);
       setTrips(trips.filter((trip) => trip.id !== tripId));
       Toast.show({
-        type: 'error',
-        text1: 'Deleted',
-        text2: 'Trip deleted successfully.',
+        type: "error",
+        text1: "Deleted",
+        text2: "Trip deleted successfully.",
       });
     } catch (error) {
       console.error("Error deleting trip:", error);
@@ -63,12 +55,12 @@ const Planner = () => {
     const start = new Date(startDate);
     const differenceInTime = start - today;
     const daysLeft = Math.ceil(differenceInTime / (1000 * 3600 * 24));
-  
+
     if (daysLeft <= 0) return "Today"; // Starts today
     if (daysLeft === 1) return "1 day left"; // Only 1 day left
     return `${daysLeft} days left`; // More than 1 day
   };
-  
+
   useFocusEffect(
     useCallback(() => {
       fetchTrips();
@@ -108,10 +100,7 @@ const Planner = () => {
   };
 
   const renderRightActions = (tripId) => (
-    <TouchableOpacity
-      style={styles.deleteContainer}
-      onPress={() => handleDeleteTrip(tripId)}
-    >
+    <TouchableOpacity style={styles.deleteContainer} onPress={() => handleDeleteTrip(tripId)}>
       <Text style={styles.deleteButtonText}>Delete</Text>
     </TouchableOpacity>
   );
@@ -126,10 +115,7 @@ const Planner = () => {
         <Text style={styles.tripHeaderText}>Your Trips</Text>
       </View>
 
-      <ScrollView
-        style={styles.tripListContainer}
-        contentContainerStyle={styles.scrollViewContent}
-      >
+      <ScrollView style={styles.tripListContainer} contentContainerStyle={styles.scrollViewContent}>
         {trips.length === 0 ? (
           <Text style={styles.noTripsText}>No trips added yet!</Text>
         ) : (
@@ -150,11 +136,7 @@ const Planner = () => {
                             {calculateDaysLeft(trip.start_date)}
                           </Text>
                         </View>
-                        <Text
-                          style={styles.tripDestination}
-                          numberOfLines={2}
-                          ellipsizeMode="tail"
-                        >
+                        <Text style={styles.tripDestination} numberOfLines={2} ellipsizeMode="tail">
                           {trip.location_name}
                         </Text>
                         <Text style={styles.tripDates}>
@@ -173,24 +155,19 @@ const Planner = () => {
 
       <View style={styles.bottomButtonsContainer}>
         <TouchableOpacity
-          onPress={() =>
-            navigation.navigate("PlannerNewTrip", { onAddTrip: handleAddTrip })
-          }
-          style={styles.addTripButton}
-        >
+          onPress={() => navigation.navigate("PlannerNewTrip", { onAddTrip: handleAddTrip })}
+          style={styles.addTripButton}>
           <Text style={styles.addTripButtonText}>+ Add Trip</Text>
         </TouchableOpacity>
-        
+
         <TouchableOpacity
           onPress={() => {
-            navigation.navigate("AIRandomiser")
+            navigation.navigate("AIRandomiser");
           }}
-          style={styles.randomButton}
-        >
+          style={styles.randomButton}>
           <Text style={styles.randomButtonText}>🎲 Random</Text>
         </TouchableOpacity>
       </View>
-
 
       <NavBar />
     </View>
@@ -256,6 +233,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginRight: 10,
     alignItems: "center",
+    marginBottom: 40,
   },
   addTripButtonText: {
     fontSize: 18,
@@ -271,13 +249,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderWidth: 1,
     borderColor: "#F47966",
+    marginBottom: 40,
   },
   randomButtonText: {
     fontSize: 18,
     color: "#F47966",
     fontWeight: "bold",
   },
-  
+
   tripItem: {
     flexDirection: "row",
     alignItems: "center",
