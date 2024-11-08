@@ -25,8 +25,9 @@ import AddExpenseModal from "./AddExpenseModal";
 import * as Progress from "react-native-progress";
 import RoundedSquareIcon from "../components/RoundedSquareIcon";
 import { fetchExpenses, deleteExpense } from "../api/expensesAPI";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { fetchUserData } from "../api/authAPI";
+import { getTripsByUserId } from "../api/places";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { PieChart } from "react-native-chart-kit"; // Import the PieChart
 import SetBudgetModal from "./SetBudgetModal"; // Import the SetBudgetModal
 import { Swipeable } from "react-native-gesture-handler";
@@ -93,13 +94,6 @@ const iconData = [
   },
 ];
 
-const placeholderTrips = [
-  { id: "1", name: "Sentosa" },
-  { id: "2", name: "Marina Bay" },
-  { id: "3", name: "Orchard Road" },
-  { id: "4", name: "Little India" },
-];
-
 const Expenses = () => {
   const [fontsLoaded] = useFonts({
     Nunito_400Regular,
@@ -117,8 +111,9 @@ const Expenses = () => {
   const slideAnim = useState(new Animated.Value(0))[0];
   const [budgetModalVisible, setBudgetModalVisible] = useState(false);
   const [pieChartData, setPieChartData] = useState([]);
-  const [dropdownVisible, setDropdownVisible] = useState(true);
+  const [dropdownVisible, setDropdownVisible] = useState(false);
   const [selectedTrip, setSelectedTrip] = useState("Sentosa");
+  const [trips, setTrips] = useState([]); // State to store trips data
 
   // Define a color palette to be used in a consistent order
   const colorPalette = [
@@ -167,6 +162,50 @@ const Expenses = () => {
     );
     setPieChartData(pieChartData);
   };
+
+  // Function to shorten long location names
+  const shortenLocationName = (name) => {
+    const words = name.split(" ");
+    if (words.length > 1 && name.length > 18) {
+      const firstWord = words[0];
+      const initials = words
+        .slice(1)
+        .map((word) => word[0])
+        .join(" ");
+      return `${firstWord} ${initials}`;
+    }
+    return name;
+  };
+
+  useEffect(() => {
+    const fetchTrips = async () => {
+      try {
+        let storedUserData = await AsyncStorage.getItem("userData");
+        if (!storedUserData) {
+          console.log("Fetching user data...");
+          storedUserData = await fetchUserData();
+          await AsyncStorage.setItem(
+            "userData",
+            JSON.stringify(storedUserData)
+          );
+        }
+        const userData = JSON.parse(storedUserData);
+        setUserId(userData.id);
+
+        const tripsData = await getTripsByUserId(userData.id); // Use userData.id directly
+        const filteredTrips = tripsData.map((trip) => ({
+          id: trip.id,
+          location_name: shortenLocationName(trip.location_name),
+        }));
+
+        setTrips(filteredTrips); // Store filtered trips in state
+      } catch (err) {
+        console.error("Error fetching trips:", err);
+      }
+    };
+
+    fetchTrips();
+  }, []);
 
   useEffect(() => {
     // // Dummy data for testing
@@ -268,7 +307,7 @@ const Expenses = () => {
   };
 
   const selectTrip = (trip) => {
-    setSelectedTrip(trip.name);
+    setSelectedTrip(trip.location_name);
     setDropdownVisible(false);
   };
 
@@ -302,14 +341,20 @@ const Expenses = () => {
               />
               <View style={styles.dropdownMenu}>
                 <FlatList
-                  data={placeholderTrips}
+                  data={trips}
                   keyExtractor={(item) => item.id}
                   renderItem={({ item }) => (
                     <TouchableOpacity
                       onPress={() => selectTrip(item)}
                       style={styles.dropdownItem}
                     >
-                      <Text style={styles.dropdownItemText}>{item.name}</Text>
+                      <Text
+                        style={styles.dropdownItemText}
+                        numberOfLines={1}
+                        ellipsizeMode="tail"
+                      >
+                        {item.location_name}
+                      </Text>
                     </TouchableOpacity>
                   )}
                   style={{ maxHeight: screenHeight * 0.3 }} // Set a max height to limit space within modal
@@ -737,7 +782,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: screenHeight * 0.1, // Adjust the position based on your layout
     right: screenWidth * 0.05,
-    width: screenWidth * 0.4,
+    width: screenWidth * 0.45,
     backgroundColor: "#FFF",
     borderRadius: 8,
     elevation: 5,

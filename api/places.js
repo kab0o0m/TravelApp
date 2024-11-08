@@ -70,3 +70,27 @@ export const deleteTripById = async (tripId) => {
   }
 };
 
+export const getTripsByUserId = async (userId) => {
+  try {
+    const url = `${BASE_URL}/api/users/${userId}/trips`; // Adjust based on your API structure
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch trips");
+    }
+    console.log("success")
+
+    const trips = await response.json();
+    return trips; // Return the trips data
+  } catch (error) {
+    console.error("Error fetching trips:", error);
+    throw new Error("An error occurred while fetching trips. Please try again.");
+  }
+};
+
