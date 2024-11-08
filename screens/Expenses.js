@@ -10,6 +10,8 @@ import {
   Easing,
   TouchableOpacity,
   Image,
+  Modal,
+  FlatList,
 } from "react-native";
 import {
   useFonts,
@@ -91,6 +93,13 @@ const iconData = [
   },
 ];
 
+const placeholderTrips = [
+  { id: "1", name: "Sentosa" },
+  { id: "2", name: "Marina Bay" },
+  { id: "3", name: "Orchard Road" },
+  { id: "4", name: "Little India" },
+];
+
 const Expenses = () => {
   const [fontsLoaded] = useFonts({
     Nunito_400Regular,
@@ -108,6 +117,8 @@ const Expenses = () => {
   const slideAnim = useState(new Animated.Value(0))[0];
   const [budgetModalVisible, setBudgetModalVisible] = useState(false);
   const [pieChartData, setPieChartData] = useState([]);
+  const [dropdownVisible, setDropdownVisible] = useState(true);
+  const [selectedTrip, setSelectedTrip] = useState("Sentosa");
 
   // Define a color palette to be used in a consistent order
   const colorPalette = [
@@ -165,45 +176,40 @@ const Expenses = () => {
     //   { id: 3, category: "Entertainment", title: "Movie Ticket", price: 12.50, date: "2024-11-01" },
     //   { id: 4, category: "Utilities", title: "Electricity Bill", price: 50.00, date: "2024-11-01" },
     // ];
-
     // // Setting dummy expenses and calculating total
     // setExpenses(dummyExpenses);
     // const total = dummyExpenses.reduce((sum, expense) => sum + expense.price, 0);
     // setTotalSpent(total);
-
-    const loadExpenses = async () => {
-      try {
-        let storedUserData = await AsyncStorage.getItem("userData");
-        if (!storedUserData) {
-          console.log("Fetching user data...");
-          storedUserData = await fetchUserData();
-          await AsyncStorage.setItem(
-            "userData",
-            JSON.stringify(storedUserData)
-          );
-        }
-        const userData = JSON.parse(storedUserData);
-        setUserId(userData.id);
-        const fetchedExpenses = await fetchExpenses(userData.id);
-        setExpenses(fetchedExpenses);
-
-        const total = fetchedExpenses.reduce(
-          (sum, expense) => sum + expense.amount,
-          0
-        );
-        setTotalSpent(total);
-
-        updatePieChartData(fetchedExpenses);
-      } catch (error) {
-        console.error("Error loading expenses:", error);
-        Alert.alert(
-          "Error",
-          "Failed to load expenses. Please try again later."
-        );
-      }
-    };
-
-    loadExpenses();
+    // const loadExpenses = async () => {
+    //   try {
+    //     let storedUserData = await AsyncStorage.getItem("userData");
+    //     if (!storedUserData) {
+    //       console.log("Fetching user data...");
+    //       storedUserData = await fetchUserData();
+    //       await AsyncStorage.setItem(
+    //         "userData",
+    //         JSON.stringify(storedUserData)
+    //       );
+    //     }
+    //     const userData = JSON.parse(storedUserData);
+    //     setUserId(userData.id);
+    //     const fetchedExpenses = await fetchExpenses(userData.id);
+    //     setExpenses(fetchedExpenses);
+    //     const total = fetchedExpenses.reduce(
+    //       (sum, expense) => sum + expense.amount,
+    //       0
+    //     );
+    //     setTotalSpent(total);
+    //     updatePieChartData(fetchedExpenses);
+    //   } catch (error) {
+    //     console.error("Error loading expenses:", error);
+    //     Alert.alert(
+    //       "Error",
+    //       "Failed to load expenses. Please try again later."
+    //     );
+    //   }
+    // };
+    // loadExpenses();
   }, []);
 
   if (!fontsLoaded) {
@@ -257,16 +263,66 @@ const Expenses = () => {
     }).start();
   };
 
+  const toggleDropdown = () => {
+    setDropdownVisible(!dropdownVisible);
+  };
+
+  const selectTrip = (trip) => {
+    setSelectedTrip(trip.name);
+    setDropdownVisible(false);
+  };
+
   const progress = budget ? totalSpent / budget : 0;
 
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
         <Text style={styles.header}>EXPENSES</Text>
-        <View style={styles.tripContainer}>
+        {/* Custom Dropdown */}
+        <View style={styles.dropdownContainer}>
+          <TouchableOpacity
+            onPress={toggleDropdown}
+            style={styles.tripContainer}
+          >
+            <Text style={styles.tripText}>{selectedTrip}</Text>
+            <View style={styles.line} />
+          </TouchableOpacity>
+
+          {/* Dropdown Menu */}
+          {dropdownVisible && (
+            <Modal
+              transparent={true}
+              animationType="fade"
+              visible={dropdownVisible}
+              onRequestClose={toggleDropdown}
+            >
+              <TouchableOpacity
+                style={styles.modalOverlay}
+                onPress={toggleDropdown}
+              />
+              <View style={styles.dropdownMenu}>
+                <FlatList
+                  data={placeholderTrips}
+                  keyExtractor={(item) => item.id}
+                  renderItem={({ item }) => (
+                    <TouchableOpacity
+                      onPress={() => selectTrip(item)}
+                      style={styles.dropdownItem}
+                    >
+                      <Text style={styles.dropdownItemText}>{item.name}</Text>
+                    </TouchableOpacity>
+                  )}
+                  style={{ maxHeight: screenHeight * 0.3 }} // Set a max height to limit space within modal
+                  scrollEnabled={true} // Enable scrolling within FlatList
+                />
+              </View>
+            </Modal>
+          )}
+        </View>
+        {/* <View style={styles.tripContainer}>
           <Text style={styles.tripText}>Sentosa</Text>
           <View style={styles.line} />
-        </View>
+        </View> */}
       </View>
 
       <View style={styles.box}>
@@ -463,6 +519,7 @@ const styles = StyleSheet.create({
     fontSize: screenHeight * 0.025, // Adjusted size for better balance with header
     fontWeight: "bold",
     marginBottom: 2, // Adjust bottom margin if needed
+    color: "#333",
   },
   tripContainer: {
     alignItems: "center", // Center align Sentosa text and line
@@ -494,7 +551,7 @@ const styles = StyleSheet.create({
     fontSize: screenHeight * 0.025,
     fontFamily: "Nunito_400Regular",
     color: "#f47866",
-    textDecorationLine: 'underline',
+    textDecorationLine: "underline",
   },
   progressContainer: {
     alignItems: "center",
@@ -668,5 +725,42 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     width: 27,
     height: 27,
+  },
+  tripContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  dropdownContainer: {
+    position: "relative",
+  },
+  dropdownMenu: {
+    position: "absolute",
+    top: screenHeight * 0.1, // Adjust the position based on your layout
+    right: screenWidth * 0.05,
+    width: screenWidth * 0.4,
+    backgroundColor: "#FFF",
+    borderRadius: 8,
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    paddingVertical: 8,
+  },
+  dropdownItem: {
+    padding: 10,
+    alignItems: "center",
+  },
+  dropdownItemText: {
+    fontSize: screenHeight * 0.02,
+    color: "#333",
+  },
+  modalOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
 });
