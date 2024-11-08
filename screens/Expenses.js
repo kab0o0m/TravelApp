@@ -24,9 +24,9 @@ import Button from "../components/Button";
 import AddExpenseModal from "./AddExpenseModal";
 import * as Progress from "react-native-progress";
 import RoundedSquareIcon from "../components/RoundedSquareIcon";
-import { fetchExpenses, deleteExpense } from "../api/expensesAPI";
+import { fetchExpenses, deleteExpense, getExpensesByTripId } from "../api/expensesAPI";
 import { fetchUserData } from "../api/authAPI";
-import { getTripsByUserId } from "../api/places";
+import { getTripsByUserId, setBudgetByTripId, getBudgetByTripId } from "../api/tripsAPI";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { PieChart } from "react-native-chart-kit"; // Import the PieChart
 import SetBudgetModal from "./SetBudgetModal"; // Import the SetBudgetModal
@@ -112,7 +112,8 @@ const Expenses = () => {
   const [budgetModalVisible, setBudgetModalVisible] = useState(false);
   const [pieChartData, setPieChartData] = useState([]);
   const [dropdownVisible, setDropdownVisible] = useState(false);
-  const [selectedTrip, setSelectedTrip] = useState("Sentosa");
+  const [selectedTrip, setSelectedTrip] = useState("Select Trip 🔻");
+  const [selectedTripId, setSelectedTripId] = useState(-1);
   const [trips, setTrips] = useState([]); // State to store trips data
 
   // Define a color palette to be used in a consistent order
@@ -177,6 +178,22 @@ const Expenses = () => {
     return name;
   };
 
+  // Function to handle setting the budget
+  const handleSetBudget = async (budget) => {
+    try {
+      if (selectedTripId !== -1) {
+        // Call the API to set the budget for the selected trip
+        await setBudgetByTripId(selectedTripId, budget);
+        setBudget(budget); // Update local state with the new budget
+        Alert.alert("Success", "Budget set successfully!");
+      }
+    } catch (error) {
+      Alert.alert("Error", error.message || "Failed to set budget. Please try again.");
+    } finally {
+      setBudgetModalVisible(false); // Close the modal
+    }
+  };
+
   useEffect(() => {
     const fetchTrips = async () => {
       try {
@@ -207,52 +224,25 @@ const Expenses = () => {
     fetchTrips();
   }, []);
 
-  useEffect(() => {
-    // // Dummy data for testing
-    // const dummyExpenses = [
-    //   { id: 1, category: "Food", title: "Lunch", price: 15.00, date: "2024-11-01" },
-    //   { id: 2, category: "Transport", title: "Taxi", price: 25.00, date: "2024-11-01" },
-    //   { id: 3, category: "Entertainment", title: "Movie Ticket", price: 12.50, date: "2024-11-01" },
-    //   { id: 4, category: "Utilities", title: "Electricity Bill", price: 50.00, date: "2024-11-01" },
-    // ];
-    // // Setting dummy expenses and calculating total
-    // setExpenses(dummyExpenses);
-    // const total = dummyExpenses.reduce((sum, expense) => sum + expense.price, 0);
-    // setTotalSpent(total);
-    // const loadExpenses = async () => {
-    //   try {
-    //     let storedUserData = await AsyncStorage.getItem("userData");
-    //     if (!storedUserData) {
-    //       console.log("Fetching user data...");
-    //       storedUserData = await fetchUserData();
-    //       await AsyncStorage.setItem(
-    //         "userData",
-    //         JSON.stringify(storedUserData)
-    //       );
-    //     }
-    //     const userData = JSON.parse(storedUserData);
-    //     setUserId(userData.id);
-    //     const fetchedExpenses = await fetchExpenses(userData.id);
-    //     setExpenses(fetchedExpenses);
-    //     const total = fetchedExpenses.reduce(
-    //       (sum, expense) => sum + expense.amount,
-    //       0
-    //     );
-    //     setTotalSpent(total);
-    //     updatePieChartData(fetchedExpenses);
-    //   } catch (error) {
-    //     console.error("Error loading expenses:", error);
-    //     Alert.alert(
-    //       "Error",
-    //       "Failed to load expenses. Please try again later."
-    //     );
-    //   }
-    // };
-    // loadExpenses();
-  }, []);
 
   if (!fontsLoaded) {
     return null;
+  }
+
+  const populateExpenses = async (tripId) => {
+    try {
+      // Fetch budget for the selected trip
+      const tripBudget = await getBudgetByTripId(tripId);
+      setBudget(tripBudget); // Set the fetched budget in state
+
+      const tripExpenses = await getExpensesByTripId(tripId);
+      setExpenses(tripExpenses);
+      const totalSpentAmount = tripExpenses.reduce((sum, expense) => sum + expense.amount, 0);
+      setTotalSpent(totalSpentAmount);
+    } catch (error) {
+      console.error("Error fetching budget:", error);
+      Alert.alert("Error", "Failed to fetch budget. Please try again.");
+    }
   }
 
   const handleAddExpense = (expense) => {
@@ -308,6 +298,10 @@ const Expenses = () => {
 
   const selectTrip = (trip) => {
     setSelectedTrip(trip.location_name);
+    setSelectedTripId(trip.id);
+    console.log("Trip Selected:", trip.id);
+
+    populateExpenses(trip.id);
     setDropdownVisible(false);
   };
 
@@ -323,7 +317,14 @@ const Expenses = () => {
             onPress={toggleDropdown}
             style={styles.tripContainer}
           >
-            <Text style={styles.tripText}>{selectedTrip}</Text>
+            <Text
+              style={[
+                styles.tripText,
+                selectedTripId === -1 && styles.unselectedTripText, // Apply different color if no trip is selected
+              ]}
+            >
+              {selectedTrip}
+            </Text>
             <View style={styles.line} />
           </TouchableOpacity>
 
@@ -364,10 +365,6 @@ const Expenses = () => {
             </Modal>
           )}
         </View>
-        {/* <View style={styles.tripContainer}>
-          <Text style={styles.tripText}>Sentosa</Text>
-          <View style={styles.line} />
-        </View> */}
       </View>
 
       <View style={styles.box}>
@@ -376,13 +373,29 @@ const Expenses = () => {
 
           {budget === 0 ? (
             <TouchableOpacity
-              style={styles.budgetContainer}
-              nPress={() => setBudgetModalVisible(true)}
+              style={[
+                styles.budgetContainer,
+                selectedTripId === -1 && styles.disabledButton, // Apply disabled style if no trip is selected
+              ]}
+              onPress={() =>
+                selectedTripId !== -1 && setBudgetModalVisible(true)
+              } // Only open modal if a trip is selected
+              disabled={selectedTripId === -1} // Disable if no trip is selected
             >
-              <Text style={styles.budgetText}>Set a budget</Text>
+              <Text
+                style={[
+                  styles.budgetText,
+                  selectedTripId === -1 && styles.disabledText,
+                ]}
+              >
+                Set a budget
+              </Text>
               <Image
                 source={require("../assets/icons/addRound.png")}
-                style={styles.iconAdd}
+                style={[
+                  styles.iconAdd,
+                  selectedTripId === -1 && { opacity: 0.5 },
+                ]} // Dim icon if disabled
               />
             </TouchableOpacity>
           ) : (
@@ -447,9 +460,13 @@ const Expenses = () => {
           <Text style={styles.topLeftText}>Your Expenses</Text>
           <View style={styles.buttonContainer}>
             <Button
-              style={styles.buttonAddExpense}
+              style={[
+                styles.buttonAddExpense,
+                selectedTripId === -1 && styles.disabledAddButton, // Apply disabled style if no trip is selected
+              ]}
               title="Add"
-              onPress={() => setModalVisible(true)}
+              onPress={() => selectedTripId !== -1 && setModalVisible(true)} // Only open modal if a trip is selected
+              disabled={selectedTripId === -1} // Disable if no trip is selected
               iconName="add"
             />
           </View>
@@ -529,7 +546,7 @@ const Expenses = () => {
       <SetBudgetModal
         visible={budgetModalVisible}
         onClose={() => setBudgetModalVisible(false)}
-        onSetBudget={setBudget}
+        onSetBudget={handleSetBudget}
       />
 
       <View style={styles.NavBarContainer}>
@@ -807,5 +824,20 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  disabledButton: {
+    opacity: 0.5, // Reduce opacity to indicate disabled state
+  },
+  disabledText: {
+    color: "#888", // Dim the text color when disabled
+  },
+  disabledAddButton: {
+    backgroundColor: "#ccc", // Change background color to indicate disabled state
+    opacity: 0.6, // Reduce opacity for a grayed-out effect
+    borderColor: "transparent",
+    borderWidth: 0,
+  },
+  unselectedTripText: {
+    color: "#f47966", // Dimmed color when no trip is selected
   },
 });

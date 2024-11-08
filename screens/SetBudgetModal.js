@@ -1,20 +1,30 @@
-import React, { useState, useEffect } from 'react';
-import { View, Dimensions, Text, Modal, TouchableOpacity, StyleSheet, TextInput, Animated } from 'react-native';
-import Button from '../components/Button';
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Dimensions,
+  Text,
+  Modal,
+  TouchableOpacity,
+  StyleSheet,
+  TextInput,
+  Animated,
+  Image,
+} from "react-native";
+import Button from "../components/Button";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
 const SetBudgetModal = ({ visible, onClose, onSetBudget }) => {
-  const [budget, setBudget] = useState('');
+  const [budget, setBudget] = useState("");
   const [scaleValue] = useState(new Animated.Value(0)); // Initialize scaling value
 
   const handleSetBudget = () => {
     if (budget) {
       onSetBudget(budget);
-      setBudget(''); // Clear input after setting budget
+      setBudget(""); // Clear input after setting budget
       onClose(); // Close the modal
     } else {
-      alert('Please enter a budget.'); // Alert if budget is empty
+      alert("Please enter a budget."); // Alert if budget is empty
     }
   };
 
@@ -37,12 +47,22 @@ const SetBudgetModal = ({ visible, onClose, onSetBudget }) => {
   return (
     <Modal visible={visible} transparent={true} animationType="none">
       <View style={styles.modalContainer}>
-        <Animated.View style={[styles.modalContent, { transform: [{ scale: scaleValue }] }]}>
-          <TouchableOpacity onPress={onClose} style={styles.closeButtonContainer}>
-            <Text style={styles.closeButton}>x</Text>
+        <Animated.View
+          style={[styles.modalContent, { transform: [{ scale: scaleValue }] }]}
+        >
+          <TouchableOpacity
+            onPress={onClose}
+            style={styles.closeButtonContainer}
+          >
+            <Image
+              source={require("../assets/icons/Cross.png")}
+              style={styles.closeIcon}
+            />
           </TouchableOpacity>
           <Text style={styles.title}>Set Your Budget</Text>
-          <Text style={styles.instruction}>Please enter your budget below:</Text>
+          <Text style={styles.instruction}>
+            Please enter your budget below:
+          </Text>
           <TextInput
             style={styles.input}
             value={budget}
@@ -72,44 +92,49 @@ const SetBudgetModal = ({ visible, onClose, onSetBudget }) => {
 const styles = StyleSheet.create({
   modalContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContent: {
-    width: '80%',
-    backgroundColor: 'white',
+    width: "80%",
+    backgroundColor: "white",
     borderRadius: 10,
     padding: screenWidth * 0.07,
-    position: 'relative',
+    position: "relative",
   },
   closeButtonContainer: {
-    position: 'absolute',
-    top: screenHeight * 0.005,
-    right: screenWidth * 0.04,
+    position: "absolute",
+    top: 22,
+    right: 18,
+    zIndex: 1,
   },
   closeButton: {
-    color: 'grey',
+    color: "grey",
     fontSize: screenHeight * 0.04,
   },
   title: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   instruction: {
     marginVertical: screenHeight * 0.02,
   },
   input: {
     height: 40,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     borderWidth: 1,
     borderRadius: 5,
     paddingHorizontal: screenWidth * 0.04,
     marginBottom: screenHeight * 0.03,
   },
   buttonContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: screenHeight * 0.02,
+  },
+  closeIcon: {
+    height: 32,
+    width: 32,
   },
 });
 
