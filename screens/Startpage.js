@@ -41,7 +41,10 @@ const Startpage = () => {
 
   return (
     <View style={styles.container}>
-      <ImageBackground source={Startpagebackground} style={styles.backgroundImage}>
+      <ImageBackground
+        source={Startpagebackground}
+        style={styles.backgroundImage}
+      >
         <TouchableOpacity style={styles.iconContainer} onPress={toggleModal}>
           <Image source={FrogIcon} style={styles.icon} resizeMode="contain" />
         </TouchableOpacity>
@@ -50,10 +53,14 @@ const Startpage = () => {
           animationType="slide"
           transparent={true}
           visible={modalVisible}
-          onRequestClose={toggleModal}>
+          onRequestClose={toggleModal}
+        >
           <View style={styles.modalOverlay}>
             <View style={styles.modalContainer}>
-              <TouchableOpacity onPress={toggleModal} style={styles.closeButton}>
+              <TouchableOpacity
+                onPress={toggleModal}
+                style={styles.closeButton}
+              >
                 <Image source={ArrowLeft} />
               </TouchableOpacity>
 
@@ -67,7 +74,10 @@ const Startpage = () => {
           <Text style={styles.subHeader}>Mapp!t</Text>
         </View>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Login")}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => navigation.navigate("Planner")}
+          >
             <Text style={styles.buttonText}>Start My Journey</Text>
           </TouchableOpacity>
         </View>

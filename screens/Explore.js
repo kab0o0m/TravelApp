@@ -10,12 +10,13 @@ import {
   ActivityIndicator,
 } from "react-native";
 import MapView, { Marker } from "react-native-maps";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import LocationDetailsModal from "./LocationDetailsModal";
 import axios from "axios";
-import BASE_URL from "../config"; // Ensure this points to your backend URL
-import NavBar from "../components/NavBar";
+import BASE_URL from "../config";
 import { fetchWeatherData } from "../api/weather";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import PlannerTabs from "../components/PlannerTabs";
+import NavBar from "../components/NavBar";
 
 const Button = ({
   title,
@@ -31,6 +32,9 @@ const Button = ({
 );
 
 const Explore = () => {
+  const route = useRoute();
+  const navigation = useNavigation();
+  const { onPlaceSelect } = route.params || {}; // Destructure the callback from route params
   const [searchQuery, setSearchQuery] = useState("");
   const [mapRegion, setMapRegion] = useState({
     latitude: 1.3521,
@@ -43,6 +47,7 @@ const Explore = () => {
   const [locationDetails, setLocationDetails] = useState({});
   const [weatherData, setWeatherData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const { destination } = route.params || {};
 
   const dismissKeyboard = () => Keyboard.dismiss();
 
@@ -88,6 +93,17 @@ const Explore = () => {
     }
   };
 
+  const handlePlaceSelection = () => {
+    if (onPlaceSelect) {
+      onPlaceSelect({
+        title: locationDetails.title,
+        description: locationDetails.description,
+        photoReference: locationDetails.photoReference,
+      });
+    }
+    navigation.goBack(); // Return to PlannerOverview
+  };
+
   const fetchWeatherDataForLocation = async (latitude, longitude) => {
     try {
       const result = await fetchWeatherData(latitude, longitude);
@@ -106,49 +122,53 @@ const Explore = () => {
     setModalVisible(true);
   };
 
-  const closeDetailsModal = () => {
-    setModalVisible(false);
-  };
-
   return (
     <TouchableWithoutFeedback onPress={dismissKeyboard}>
-      {isLoading ? (
-        <ActivityIndicator size="large" />
-      ) : (
-        <View style={styles.container}>
-          <View style={styles.searchContainer}>
-            <TextInput
-              style={styles.searchInput}
-              placeholder="Search for a location..."
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-            />
-            <Button title="Search" onPress={handleSearch} />
-          </View>
+      <View style={styles.container}>
+        {/* Use PlannerTabs with the destination and activeTab="Explore" */}
+        <PlannerTabs destination={destination} activeTab="Explore" />
 
-          <MapView style={styles.map} region={mapRegion}>
-            {markerPosition && (
-              <Marker
-                coordinate={markerPosition}
-                title={locationDetails.title}
-                description={locationDetails.description}
-                onPress={openDetailsModal}
+        {isLoading ? (
+          <ActivityIndicator size="large" />
+        ) : (
+          <>
+            <View style={styles.searchContainer}>
+              <TextInput
+                style={styles.searchInput}
+                placeholder="Search for a location..."
+                value={searchQuery}
+                onChangeText={setSearchQuery}
               />
-            )}
-          </MapView>
+              <Button title="Search" onPress={handleSearch} />
+            </View>
 
-          <LocationDetailsModal
-            visible={modalVisible}
-            locationDetails={locationDetails}
-            weatherData={weatherData}
-            onClose={closeDetailsModal}
-          />
-        </View>
-      )}
+            {/* Wrap MapView in a flex container with specific height */}
+            <View style={styles.mapContainer}>
+              <MapView style={styles.map} region={mapRegion}>
+                {markerPosition && (
+                  <Marker
+                    coordinate={markerPosition}
+                    title={locationDetails.title}
+                    description={locationDetails.description}
+                    onPress={openDetailsModal}
+                  />
+                )}
+              </MapView>
+            </View>
 
-      {/* <View style={styles.NavBarContainer}>
+            <LocationDetailsModal
+              visible={modalVisible}
+              locationDetails={locationDetails}
+              weatherData={weatherData}
+              onClose={() => setModalVisible(false)}
+              onAddToPlanner={handlePlaceSelection} // Use handlePlaceSelection to add to PlannerOverview
+            />
+          </>
+        )}
+
+        {/* NavBar at the bottom */}
         <NavBar />
-      </View> */}
+      </View>
     </TouchableWithoutFeedback>
   );
 };
@@ -157,7 +177,7 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   searchContainer: {
     paddingHorizontal: 16,
-    paddingVertical: 32,
+    paddingVertical: 16,
     backgroundColor: "white",
     borderBottomWidth: 1,
     borderColor: "#ddd",
@@ -170,18 +190,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginBottom: 10,
   },
-  map: { width: "100%", height: 720 },
+  mapContainer: {
+    flex: 1,
+    height: "80%", // Adjust the height to leave space for the NavBar
+  },
+  map: { width: "100%", height: "100%" },
   button: {
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: 15,
     borderRadius: 25,
   },
-  /*NavBarContainer: {
-    position: "absolute",
-    bottom: 0,
-    width: "100%",
-  },*/
 });
 
 export default Explore;
