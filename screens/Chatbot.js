@@ -25,8 +25,6 @@ import { fetchUserData } from "../api/authAPI";
 import BASE_URL from "../config";
 import { format } from "date-fns";
 
-console.log("GROQ_KEY:", GROQ_KEY);
-
 const Chatbot = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
@@ -75,13 +73,15 @@ const Chatbot = () => {
     try {
       const response = await axios.get(`${BASE_URL}/api/users/${userId}/trips`);
 
-  // Remove unnecessary fields and format each trip as a nicely formatted string
-      const formattedTrips = response.data.map(({ id, user_id, places_id, location_name, start_date, end_date }) => {
-        const formattedStartDate = format(new Date(start_date), "d MMM yyyy");
-        const formattedEndDate = format(new Date(end_date), "d MMM yyyy");
+      // Remove unnecessary fields and format each trip as a nicely formatted string
+      const formattedTrips = response.data.map(
+        ({ id, user_id, places_id, location_name, start_date, end_date }) => {
+          const formattedStartDate = format(new Date(start_date), "d MMM yyyy");
+          const formattedEndDate = format(new Date(end_date), "d MMM yyyy");
 
-        return `${location_name} from ${formattedStartDate} to ${formattedEndDate}`;
-      });
+          return `${location_name} from ${formattedStartDate} to ${formattedEndDate}`;
+        }
+      );
 
       // Join each trip string with a newline for readability
       const tripsString = formattedTrips.join("\n");
@@ -99,7 +99,7 @@ const Chatbot = () => {
     const options = {
       timeZone: "Asia/Singapore",
       year: "numeric",
-      month: "2-digit",
+      month: "short",
       day: "2-digit",
       hour: "2-digit",
       minute: "2-digit",
@@ -149,6 +149,7 @@ const Chatbot = () => {
 
   const handleSend = async () => {
     if (input.trim() === "") return;
+    console.log(date);
     console.log(trips);
     setIsTyping(true);
     setMessages([...messages, { text: input, from: "user" }]);
@@ -386,7 +387,6 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
   },
-
 });
 
 export default Chatbot;
