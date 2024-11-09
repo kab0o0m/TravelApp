@@ -111,3 +111,27 @@ export const deleteExpense = async (userId, expenseId) => {
     );
   }
 };
+
+// expensesAPI.js
+export const getExpensesByTripId = async (tripId) => {
+  try {
+    const url = `${BASE_URL}/api/get-expenses/trip/${tripId}`; // Adjust BASE_URL to your API base URL
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch expenses");
+    }
+
+    const expenses = await response.json();
+    return expenses.data; // Return the expenses data
+  } catch (error) {
+    console.error("Error fetching expenses:", error);
+    throw new Error("An error occurred while fetching expenses. Please try again.");
+  }
+};

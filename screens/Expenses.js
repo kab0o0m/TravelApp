@@ -9,6 +9,9 @@ import {
   Animated,
   Easing,
   TouchableOpacity,
+  Image,
+  Modal,
+  FlatList,
 } from "react-native";
 import {
   useFonts,
@@ -21,9 +24,19 @@ import Button from "../components/Button";
 import AddExpenseModal from "./AddExpenseModal";
 import * as Progress from "react-native-progress";
 import RoundedSquareIcon from "../components/RoundedSquareIcon";
-import { fetchExpenses, deleteExpense } from "../api/expensesAPI";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  addExpense,
+  fetchExpenses,
+  deleteExpense,
+  getExpensesByTripId,
+} from "../api/expensesAPI";
 import { fetchUserData } from "../api/authAPI";
+import {
+  getTripsByUserId,
+  setBudgetByTripId,
+  getBudgetByTripId,
+} from "../api/tripsAPI";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { PieChart } from "react-native-chart-kit"; // Import the PieChart
 import SetBudgetModal from "./SetBudgetModal"; // Import the SetBudgetModal
 import { Swipeable } from "react-native-gesture-handler";
@@ -99,7 +112,7 @@ const Expenses = () => {
 
   const [selectedSortOption, setSelectedSortOption] = useState("date_latest");
   const [expenses, setExpenses] = useState([]);
-  const [budget, setBudget] = useState(500);
+  const [budget, setBudget] = useState(0);
   const [totalSpent, setTotalSpent] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
   const [userId, setUserId] = useState(null);
@@ -107,6 +120,10 @@ const Expenses = () => {
   const slideAnim = useState(new Animated.Value(0))[0];
   const [budgetModalVisible, setBudgetModalVisible] = useState(false);
   const [pieChartData, setPieChartData] = useState([]);
+  const [dropdownVisible, setDropdownVisible] = useState(false);
+  const [selectedTrip, setSelectedTrip] = useState("Select Trip 🔻");
+  const [selectedTripId, setSelectedTripId] = useState(-1);
+  const [trips, setTrips] = useState([]); // State to store trips data
 
   // Define a color palette to be used in a consistent order
   const colorPalette = [
@@ -121,8 +138,16 @@ const Expenses = () => {
   ];
 
   const getIconForCategory = (category) => {
-    const icon = iconData.find((item) => item.label.toLowerCase() === category.toLowerCase());
-    return icon || { iconName: "cash-outline", backgroundColor: "#e6fae7", iconColor: "#418743" };
+    const icon = iconData.find(
+      (item) => item.label.toLowerCase() === category.toLowerCase()
+    );
+    return (
+      icon || {
+        iconName: "cash-outline",
+        backgroundColor: "#e6fae7",
+        iconColor: "#418743",
+      }
+    );
   };
 
   const updatePieChartData = (fetchedExpenses) => {
@@ -134,33 +159,55 @@ const Expenses = () => {
       return acc;
     }, {});
 
-    const pieChartData = Object.entries(categoryTotals).map(([category, amount], index) => {
-      return {
-        name: category,
-        population: amount,
-        color: colorPalette[index % colorPalette.length], // Use colors in consistent order
-        legendFontColor: "#FFF",
-        legendFontSize: 15,
-      };
-    });
+    const pieChartData = Object.entries(categoryTotals).map(
+      ([category, amount], index) => {
+        return {
+          name: category,
+          population: amount,
+          color: colorPalette[index % colorPalette.length], // Use colors in consistent order
+          legendFontColor: "#FFF",
+          legendFontSize: 15,
+        };
+      }
+    );
     setPieChartData(pieChartData);
-  }
+  };
+
+  // Function to shorten long location names
+  const shortenLocationName = (name) => {
+    const words = name.split(" ");
+    if (words.length > 1 && name.length > 18) {
+      const firstWord = words[0];
+      const initials = words
+        .slice(1)
+        .map((word) => word[0])
+        .join(" ");
+      return `${firstWord} ${initials}`;
+    }
+    return name;
+  };
+
+  // Function to handle setting the budget
+  const handleSetBudget = async (budget) => {
+    try {
+      if (selectedTripId !== -1) {
+        // Call the API to set the budget for the selected trip
+        await setBudgetByTripId(selectedTripId, budget);
+        setBudget(budget); // Update local state with the new budget
+        Alert.alert("Success", "Budget set successfully!");
+      }
+    } catch (error) {
+      Alert.alert(
+        "Error",
+        error.message || "Failed to set budget. Please try again."
+      );
+    } finally {
+      setBudgetModalVisible(false); // Close the modal
+    }
+  };
 
   useEffect(() => {
-    // // Dummy data for testing
-    // const dummyExpenses = [
-    //   { id: 1, category: "Food", title: "Lunch", price: 15.00, date: "2024-11-01" },
-    //   { id: 2, category: "Transport", title: "Taxi", price: 25.00, date: "2024-11-01" },
-    //   { id: 3, category: "Entertainment", title: "Movie Ticket", price: 12.50, date: "2024-11-01" },
-    //   { id: 4, category: "Utilities", title: "Electricity Bill", price: 50.00, date: "2024-11-01" },
-    // ];
-
-    // // Setting dummy expenses and calculating total
-    // setExpenses(dummyExpenses);
-    // const total = dummyExpenses.reduce((sum, expense) => sum + expense.price, 0);
-    // setTotalSpent(total);
-
-    const loadExpenses = async () => {
+    const fetchTrips = async () => {
       try {
         let storedUserData = await AsyncStorage.getItem("userData");
         if (!storedUserData) {
@@ -173,36 +220,61 @@ const Expenses = () => {
         }
         const userData = JSON.parse(storedUserData);
         setUserId(userData.id);
-        const fetchedExpenses = await fetchExpenses(userData.id);
-        setExpenses(fetchedExpenses);
 
-        const total = fetchedExpenses.reduce(
-          (sum, expense) => sum + expense.amount,
-          0
-        );
-        setTotalSpent(total);
+        const tripsData = await getTripsByUserId(userData.id); // Use userData.id directly
+        const filteredTrips = tripsData.map((trip) => ({
+          id: trip.id,
+          location_name: shortenLocationName(trip.location_name),
+        }));
 
-        updatePieChartData(fetchedExpenses);
-        
-      } catch (error) {
-        console.error("Error loading expenses:", error);
-        Alert.alert(
-          "Error",
-          "Failed to load expenses. Please try again later."
-        );
+        setTrips(filteredTrips); // Store filtered trips in state
+      } catch (err) {
+        console.error("Error fetching trips:", err);
       }
     };
 
-    loadExpenses();
+    fetchTrips();
   }, []);
 
   if (!fontsLoaded) {
     return null;
   }
 
-  const handleAddExpense = (expense) => {
+  const populateExpenses = async (tripId) => {
+    try {
+      // Fetch budget for the selected trip
+      const tripBudget = await getBudgetByTripId(tripId);
+      setBudget(tripBudget); // Set the fetched budget in state
+
+      const tripExpenses = await getExpensesByTripId(tripId);
+      setExpenses(tripExpenses);
+      const totalSpentAmount = tripExpenses.reduce(
+        (sum, expense) => sum + expense.amount,
+        0
+      );
+      setTotalSpent(totalSpentAmount);
+    } catch (error) {
+      console.error("Error fetching budget:", error);
+      Alert.alert("Error", "Failed to fetch budget. Please try again.");
+    }
+  };
+
+  const handleAddExpense = async (expense) => {
     setExpenses([...expenses, expense]);
     setTotalSpent((prevTotal) => prevTotal + expense.amount);
+
+    expense.trips_id = selectedTripId;
+
+    try {
+      const result = await addExpense(expense);
+      return result;
+    } catch (error) {
+      console.error("Error adding expense:", error);
+      Alert.alert(
+        "Error",
+        "An error occurred while adding the expense. Please try again."
+      );
+    }
   };
 
   const renderRightActions = (id) => (
@@ -214,7 +286,7 @@ const Expenses = () => {
     </TouchableOpacity>
   );
 
-  const handleDeleteExpense = async(id) => {
+  const handleDeleteExpense = async (id) => {
     const updatedExpenses = expenses.filter((expense) => expense.id !== id);
     setExpenses(updatedExpenses);
 
@@ -231,13 +303,9 @@ const Expenses = () => {
       // Delete the expense
       await deleteExpense(userId, id);
       console.log("Expense deleted successfully.");
-      
     } catch (error) {
       console.error("Error deleting expense:", error);
-      Alert.alert(
-        "Error",
-        "Failed to delete expense. Please try again later."
-      );
+      Alert.alert("Error", "Failed to delete expense. Please try again later.");
     }
   };
 
@@ -251,15 +319,78 @@ const Expenses = () => {
     }).start();
   };
 
+  const toggleDropdown = () => {
+    setDropdownVisible(!dropdownVisible);
+  };
+
+  const selectTrip = (trip) => {
+    setSelectedTrip(trip.location_name);
+    setSelectedTripId(trip.id);
+    console.log("Trip Selected:", trip.id);
+
+    populateExpenses(trip.id);
+    setDropdownVisible(false);
+  };
+
   const progress = budget ? totalSpent / budget : 0;
 
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
         <Text style={styles.header}>EXPENSES</Text>
-        <View style={styles.tripContainer}>
-          <Text style={styles.tripText}>Sentosa</Text>
-          <View style={styles.line} />
+        {/* Custom Dropdown */}
+        <View style={styles.dropdownContainer}>
+          <TouchableOpacity
+            onPress={toggleDropdown}
+            style={styles.tripContainer}
+          >
+            <Text
+              style={[
+                styles.tripText,
+                selectedTripId === -1 && styles.unselectedTripText, // Apply different color if no trip is selected
+              ]}
+            >
+              {selectedTrip}
+            </Text>
+            <View style={styles.line} />
+          </TouchableOpacity>
+
+          {/* Dropdown Menu */}
+          {dropdownVisible && (
+            <Modal
+              transparent={true}
+              animationType="fade"
+              visible={dropdownVisible}
+              onRequestClose={toggleDropdown}
+            >
+              <TouchableOpacity
+                style={styles.modalOverlay}
+                onPress={toggleDropdown}
+              />
+              <View style={styles.dropdownMenu}>
+                <FlatList
+                  data={trips}
+                  keyExtractor={(item) => item.id}
+                  renderItem={({ item }) => (
+                    <TouchableOpacity
+                      onPress={() => selectTrip(item)}
+                      style={styles.dropdownItem}
+                    >
+                      <Text
+                        style={styles.dropdownItemText}
+                        numberOfLines={1}
+                        ellipsizeMode="tail"
+                      >
+                        {item.location_name}
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                  style={{ maxHeight: screenHeight * 0.3 }} // Set a max height to limit space within modal
+                  scrollEnabled={true} // Enable scrolling within FlatList
+                />
+              </View>
+            </Modal>
+          )}
         </View>
       </View>
 
@@ -268,8 +399,31 @@ const Expenses = () => {
           <Text style={styles.amount}>SGD {totalSpent}</Text>
 
           {budget === 0 ? (
-            <TouchableOpacity onPress={() => setBudgetModalVisible(true)}>
-              <Text style={styles.budgetText}>Set a budget</Text>
+            <TouchableOpacity
+              style={[
+                styles.budgetContainer,
+                selectedTripId === -1 && styles.disabledButton, // Apply disabled style if no trip is selected
+              ]}
+              onPress={() =>
+                selectedTripId !== -1 && setBudgetModalVisible(true)
+              } // Only open modal if a trip is selected
+              disabled={selectedTripId === -1} // Disable if no trip is selected
+            >
+              <Text
+                style={[
+                  styles.budgetText,
+                  selectedTripId === -1 && styles.disabledText,
+                ]}
+              >
+                Set a budget
+              </Text>
+              <Image
+                source={require("../assets/icons/addRound.png")}
+                style={[
+                  styles.iconAdd,
+                  selectedTripId === -1 && { opacity: 0.5 },
+                ]} // Dim icon if disabled
+              />
             </TouchableOpacity>
           ) : (
             <View style={styles.progressContainer}>
@@ -285,19 +439,21 @@ const Expenses = () => {
             </View>
           )}
 
-          <Button
-            title={summaryVisible ? "Close" : "View Summary"}
-            onPress={toggleSummary}
-            backgroundColor="#006D77"
-            textColor="#FFFFFF"
-            paddingVertical={screenHeight * 0.001}
-            borderRadius={25}
-            width={screenWidth * 0.45}
-            borderColor="#FFFFFF"
-            borderWidth={2}
-            height={screenHeight * 0.055}
-            fontSize={screenHeight * 0.02}
-          />
+          {budget > 0 && (
+            <Button
+              title={summaryVisible ? "Close" : "View Summary"}
+              onPress={toggleSummary}
+              backgroundColor="#006D77"
+              textColor="#FFFFFF"
+              paddingVertical={screenHeight * 0.001}
+              borderRadius={25}
+              width={screenWidth * 0.45}
+              borderColor="#FFFFFF"
+              borderWidth={2}
+              height={screenHeight * 0.055}
+              fontSize={screenHeight * 0.02}
+            />
+          )}
         </View>
       </View>
 
@@ -331,9 +487,13 @@ const Expenses = () => {
           <Text style={styles.topLeftText}>Your Expenses</Text>
           <View style={styles.buttonContainer}>
             <Button
-              style={styles.buttonAddExpense}
+              style={[
+                styles.buttonAddExpense,
+                selectedTripId === -1 && styles.disabledAddButton, // Apply disabled style if no trip is selected
+              ]}
               title="Add"
-              onPress={() => setModalVisible(true)}
+              onPress={() => selectedTripId !== -1 && setModalVisible(true)} // Only open modal if a trip is selected
+              disabled={selectedTripId === -1} // Disable if no trip is selected
               iconName="add"
             />
           </View>
@@ -346,44 +506,47 @@ const Expenses = () => {
         ) : (
           <ScrollView>
             {expenses.map((expense) => {
-            // Get the icon data for the current expense category
-            const { iconName, backgroundColor, iconColor } = getIconForCategory(expense.category);
+              // Get the icon data for the current expense category
+              const { iconName, backgroundColor, iconColor } =
+                getIconForCategory(expense.category);
 
-            return (
-              <Swipeable
-                key={expense.id}
-                renderRightActions={() => renderRightActions(expense.id)}
-              >
-                <View style={styles.expenseCard}>
-                  <View style={styles.expenseDetailsContainer}>
-                    <RoundedSquareIcon
-                      iconName={iconName}
-                      iconSize={screenHeight * 0.03}
-                      iconColor={iconColor}
-                      backgroundColor={backgroundColor}
-                      size={screenHeight * 0.07}
-                    />
-                    <View style={styles.expenseTextContainer}>
-                      <View style={styles.expenseRow}>
-                        <Text style={styles.expenseCategory}>
-                          {expense.category}
-                        </Text>
-                        <Text style={styles.expensePrice}>
-                          SGD {expense.amount}
-                        </Text>
-                      </View>
-                      <View style={styles.expenseRow}>
-                        <Text style={styles.expenseTitle}>{expense.name}</Text>
-                        <Text style={styles.expenseDate}>
-                          {new Date(expense.date).toLocaleDateString()}
-                        </Text>
+              return (
+                <Swipeable
+                  key={expense.id}
+                  renderRightActions={() => renderRightActions(expense.id)}
+                >
+                  <View style={styles.expenseCard}>
+                    <View style={styles.expenseDetailsContainer}>
+                      <RoundedSquareIcon
+                        iconName={iconName}
+                        iconSize={screenHeight * 0.03}
+                        iconColor={iconColor}
+                        backgroundColor={backgroundColor}
+                        size={screenHeight * 0.07}
+                      />
+                      <View style={styles.expenseTextContainer}>
+                        <View style={styles.expenseRow}>
+                          <Text style={styles.expenseCategory}>
+                            {expense.category}
+                          </Text>
+                          <Text style={styles.expensePrice}>
+                            SGD {expense.amount}
+                          </Text>
+                        </View>
+                        <View style={styles.expenseRow}>
+                          <Text style={styles.expenseTitle}>
+                            {expense.name}
+                          </Text>
+                          <Text style={styles.expenseDate}>
+                            {new Date(expense.date).toLocaleDateString()}
+                          </Text>
+                        </View>
                       </View>
                     </View>
                   </View>
-                </View>
-              </Swipeable>
-            );
-          })}
+                </Swipeable>
+              );
+            })}
           </ScrollView>
         )}
       </Animated.View>
@@ -398,7 +561,7 @@ const Expenses = () => {
       <SetBudgetModal
         visible={budgetModalVisible}
         onClose={() => setBudgetModalVisible(false)}
-        onSetBudget={setBudget}
+        onSetBudget={handleSetBudget}
       />
 
       <View style={styles.NavBarContainer}>
@@ -433,6 +596,7 @@ const styles = StyleSheet.create({
     fontSize: screenHeight * 0.025, // Adjusted size for better balance with header
     fontWeight: "bold",
     marginBottom: 2, // Adjust bottom margin if needed
+    color: "#333",
   },
   tripContainer: {
     alignItems: "center", // Center align Sentosa text and line
@@ -463,9 +627,8 @@ const styles = StyleSheet.create({
   budgetText: {
     fontSize: screenHeight * 0.025,
     fontFamily: "Nunito_400Regular",
-    color: "#FFF",
-    marginTop: screenHeight * 0.01,
-    marginBottom: screenHeight * 0.005,
+    color: "#f47866",
+    textDecorationLine: "underline",
   },
   progressContainer: {
     alignItems: "center",
@@ -628,5 +791,68 @@ const styles = StyleSheet.create({
   },
   pieChart: {
     alignItems: "center",
+  },
+  budgetContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: screenHeight * 0.02,
+    marginBottom: screenHeight * 0.01,
+  },
+  iconAdd: {
+    marginLeft: 10,
+    width: 27,
+    height: 27,
+  },
+  tripContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  dropdownContainer: {
+    position: "relative",
+  },
+  dropdownMenu: {
+    position: "absolute",
+    top: screenHeight * 0.1, // Adjust the position based on your layout
+    right: screenWidth * 0.05,
+    width: screenWidth * 0.45,
+    backgroundColor: "#FFF",
+    borderRadius: 8,
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    paddingVertical: 8,
+  },
+  dropdownItem: {
+    padding: 10,
+    alignItems: "center",
+  },
+  dropdownItemText: {
+    fontSize: screenHeight * 0.02,
+    color: "#333",
+  },
+  modalOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  disabledButton: {
+    opacity: 0.5, // Reduce opacity to indicate disabled state
+  },
+  disabledText: {
+    color: "#888", // Dim the text color when disabled
+  },
+  disabledAddButton: {
+    backgroundColor: "#ccc", // Change background color to indicate disabled state
+    opacity: 0.6, // Reduce opacity for a grayed-out effect
+    borderColor: "transparent",
+    borderWidth: 0,
+  },
+  unselectedTripText: {
+    color: "#f47966", // Dimmed color when no trip is selected
   },
 });

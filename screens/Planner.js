@@ -9,7 +9,8 @@ import BASE_URL from "../config";
 import { format } from "date-fns";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { fetchUserData } from "../api/authAPI";
-import { getPlacePhotoByPlaceId, deleteTripById } from "../api/places";
+import { getPlacePhotoByPlaceId} from "../api/places";
+import { deleteTripById } from "../api/tripsAPI";
 
 const Planner = () => {
   const navigation = useNavigation();

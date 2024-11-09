@@ -15,7 +15,6 @@ import Button from "../components/Button";
 import GrayLine from "../components/GrayLine";
 import RoundedSquareIcon from "../components/RoundedSquareIcon";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { addExpense } from "../api/expensesAPI";
 import { fetchUserData } from "../api/authAPI";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
@@ -142,11 +141,13 @@ const AddExpenseModal = ({ visible, onClose, onAdd }) => {
       category: selectedCategory,
       date: date.toISOString().split("T")[0], // Format as YYYY-MM-DD
       user_id: userId, // Include user_id in the payload
+      trips_id: -1, // to be changed in main Expenses
       payment_type: paymentType,
     };
 
     try {
-      const result = await addExpense(expenseData);
+      const result = onAdd(expenseData); // API
+
       console.log("Expense added successfully:", result);
 
       // Show success toast
@@ -158,7 +159,6 @@ const AddExpenseModal = ({ visible, onClose, onAdd }) => {
         visibilityTime: 3000, // Duration in ms
       });
 
-      onAdd(expenseData);
       setNewExpense("");
       setNewDescription("");
       setSelectedCategory(null);
