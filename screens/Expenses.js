@@ -24,9 +24,18 @@ import Button from "../components/Button";
 import AddExpenseModal from "./AddExpenseModal";
 import * as Progress from "react-native-progress";
 import RoundedSquareIcon from "../components/RoundedSquareIcon";
-import { fetchExpenses, deleteExpense, getExpensesByTripId } from "../api/expensesAPI";
+import {
+  addExpense,
+  fetchExpenses,
+  deleteExpense,
+  getExpensesByTripId,
+} from "../api/expensesAPI";
 import { fetchUserData } from "../api/authAPI";
-import { getTripsByUserId, setBudgetByTripId, getBudgetByTripId } from "../api/tripsAPI";
+import {
+  getTripsByUserId,
+  setBudgetByTripId,
+  getBudgetByTripId,
+} from "../api/tripsAPI";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { PieChart } from "react-native-chart-kit"; // Import the PieChart
 import SetBudgetModal from "./SetBudgetModal"; // Import the SetBudgetModal
@@ -188,7 +197,10 @@ const Expenses = () => {
         Alert.alert("Success", "Budget set successfully!");
       }
     } catch (error) {
-      Alert.alert("Error", error.message || "Failed to set budget. Please try again.");
+      Alert.alert(
+        "Error",
+        error.message || "Failed to set budget. Please try again."
+      );
     } finally {
       setBudgetModalVisible(false); // Close the modal
     }
@@ -224,7 +236,6 @@ const Expenses = () => {
     fetchTrips();
   }, []);
 
-
   if (!fontsLoaded) {
     return null;
   }
@@ -237,17 +248,33 @@ const Expenses = () => {
 
       const tripExpenses = await getExpensesByTripId(tripId);
       setExpenses(tripExpenses);
-      const totalSpentAmount = tripExpenses.reduce((sum, expense) => sum + expense.amount, 0);
+      const totalSpentAmount = tripExpenses.reduce(
+        (sum, expense) => sum + expense.amount,
+        0
+      );
       setTotalSpent(totalSpentAmount);
     } catch (error) {
       console.error("Error fetching budget:", error);
       Alert.alert("Error", "Failed to fetch budget. Please try again.");
     }
-  }
+  };
 
-  const handleAddExpense = (expense) => {
+  const handleAddExpense = async (expense) => {
     setExpenses([...expenses, expense]);
     setTotalSpent((prevTotal) => prevTotal + expense.amount);
+
+    expense.trips_id = selectedTripId;
+
+    try {
+      const result = await addExpense(expense);
+      return result;
+    } catch (error) {
+      console.error("Error adding expense:", error);
+      Alert.alert(
+        "Error",
+        "An error occurred while adding the expense. Please try again."
+      );
+    }
   };
 
   const renderRightActions = (id) => (
