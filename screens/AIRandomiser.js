@@ -22,7 +22,6 @@ import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import BASE_URL from "../config";
 
-const GOOGLE_API_KEY = "AIzaSyBj7h82OdIaV0xyXilL3b707_d3FLGn8Zk"; // Replace with your actual Google API key
 const { width: screenWidth } = Dimensions.get("window");
 
 SplashScreen.preventAutoHideAsync();
@@ -70,24 +69,6 @@ const AIRandomiser = () => {
     frogAnimationRef.current.start();
   };
 
-  // Function to fetch placeId from Google Places API
-  const fetchPlaceId = async (locationName) => {
-    const url = `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${encodeURIComponent(locationName)}&inputtype=textquery&fields=place_id&key=${GOOGLE_API_KEY}`;
-
-    try {
-      const response = await axios.get(url);
-      if (response.data.candidates && response.data.candidates.length > 0) {
-        return response.data.candidates[0].place_id;
-      } else {
-        console.error("No place found for the location name.");
-        return null;
-      }
-    } catch (error) {
-      console.error("Error fetching placeId:", error);
-      return null;
-    }
-  };
-
   const fetchRandomLocation = async () => {
     console.log("Fetching random location...");
     try {
@@ -97,7 +78,7 @@ const AIRandomiser = () => {
         setLocationName(locationName);
         setLocationId(response.data.id); // Store the location ID for sublocation fetch
 
-        const fetchedPlaceId = await fetchPlaceId(locationName); // Fetch the place ID based on location name
+        const fetchedPlaceId = await fetchPlaceIdFromBackend(locationName); // Fetch the place ID from backend
         setPlaceId(fetchedPlaceId);
 
         await fetchSublocations(response.data.id); // Fetch related sublocations as activities
@@ -107,6 +88,23 @@ const AIRandomiser = () => {
     } catch (error) {
       Alert.alert("Error", "Failed to fetch random location.");
       console.error("Error fetching random location:", error);
+    }
+  };
+
+  const fetchPlaceIdFromBackend = async (locationName) => {
+    try {
+      const response = await axios.get(`${BASE_URL}/api/places`, {
+        params: { query: locationName },
+      });
+      if (response.data && response.data.length > 0) {
+        return response.data[0].place_id;
+      } else {
+        console.error("No place found for the location name.");
+        return null;
+      }
+    } catch (error) {
+      console.error("Error fetching placeId from backend:", error);
+      return null;
     }
   };
 
@@ -161,9 +159,6 @@ const AIRandomiser = () => {
     startFrogAnimation();
   };
 
-
-
-
   const navigateToPlannerNewTrip = () => {
     // Navigate to PlannerNewTrip with destination location name, location ID, and place ID
     navigation.navigate("PlannerNewTrip", {
@@ -180,7 +175,7 @@ const AIRandomiser = () => {
       </View>
     );
   }
-
+  
   const cup1Style = {
     transform: [
       {
