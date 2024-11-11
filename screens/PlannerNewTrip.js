@@ -19,11 +19,11 @@ import { fetchUserData } from "../api/authAPI";
 
 const PlannerNewTrip = ({ route }) => {
   const navigation = useNavigation();
-  const { onAddTrip, selectedLocation } = route.params || {};
+  const { onAddTrip, destination, placeId } = route.params || {};
   const [isCalendarVisible, setCalendarVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState("");
-  const [destination, setDestination] = useState("");
-  const [locationId, setLocationId] = useState(""); // Location ID state
+  const [tripDestination, setTripDestination] = useState(destination || ""); // Use destination from params
+  const [locationId, setLocationId] = useState(placeId || ""); // Use placeId from params
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [userId, setUserId] = useState(null); // State to store dynamic user ID
@@ -48,13 +48,6 @@ const PlannerNewTrip = ({ route }) => {
     loadUserId();
   }, []);
 
-  useEffect(() => {
-    if (selectedLocation) {
-      setDestination(selectedLocation.title);
-      setLocationId(selectedLocation.placeId); // Assuming placeId represents the location ID
-    }
-  }, [selectedLocation]);
-
   const openCalendar = () => setCalendarVisible(true);
   const closeCalendar = () => setCalendarVisible(false);
 
@@ -68,7 +61,7 @@ const PlannerNewTrip = ({ route }) => {
   function formatDateToISO(dateStr) {
     // Split the input date string by "/"
     const [day, month, year] = dateStr.split("/");
-  
+
     // Return the formatted date as "yyyy-mm-dd"
     return `${year}-${month}-${day}`;
   }
@@ -79,14 +72,14 @@ const PlannerNewTrip = ({ route }) => {
       return;
     }
 
-    if (!destination || !startDate || !endDate || !locationId) {
+    if (!tripDestination || !startDate || !endDate || !locationId) {
       Alert.alert("Incomplete Details", "Please fill in all details.");
       return;
     }
 
     const tripData = {
       places_id: locationId,
-      location_name: destination, // Use destination directly as location name
+      location_name: tripDestination, // Use tripDestination directly as location name
       start_date: formatDateToISO(startDate),
       end_date: formatDateToISO(endDate),
     };
@@ -100,7 +93,7 @@ const PlannerNewTrip = ({ route }) => {
           text1: 'Success',
           text2: 'Trip created successfully.',
         });
-        setDestination("");
+        setTripDestination("");
         setLocationId("");
         setSelectedDate("");
         setStartDate("");
@@ -137,7 +130,7 @@ const PlannerNewTrip = ({ route }) => {
           onPress={() =>
             navigation.navigate("PlannerAddDestination", {
               onLocationSelect: (location) => {
-                setDestination(location.title);
+                setTripDestination(location.title);
                 setLocationId(location.placeId); // Use placeId as locationId
               },
             })
@@ -147,10 +140,10 @@ const PlannerNewTrip = ({ route }) => {
           <Text
             style={[
               styles.inputText,
-              { color: destination ? "#323232" : "#A9A9A9" },
+              { color: tripDestination ? "#323232" : "#A9A9A9" },
             ]}
           >
-            {destination || "Where to?"}
+            {tripDestination || "Where to?"}
           </Text>
         </TouchableOpacity>
 
