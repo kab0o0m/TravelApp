@@ -19,11 +19,11 @@ import { fetchUserData } from "../api/authAPI";
 
 const PlannerNewTrip = ({ route }) => {
   const navigation = useNavigation();
-  const { selectedLocation, mode } = route.params || {};
+  const { onAddTrip, destination, placeId } = route.params || {};
   const [isCalendarVisible, setCalendarVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState("");
-  const [destination, setDestination] = useState("");
-  const [locationId, setLocationId] = useState(""); // Location ID state
+  const [tripDestination, setTripDestination] = useState(destination || ""); // Use destination from params
+  const [locationId, setLocationId] = useState(placeId || ""); // Use placeId from params
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [userId, setUserId] = useState(null); // State to store dynamic user ID
@@ -48,26 +48,10 @@ const PlannerNewTrip = ({ route }) => {
     loadUserId();
   }, []);
 
-  useEffect(() => {
-    if (selectedLocation) {
-      setDestination(selectedLocation.title);
-      setDestination(selectedLocation.location_name);
-      setLocationId(selectedLocation.placeId); // Assuming placeId represents the location ID
-      const formattedStartDate = formatDate(selectedLocation.start_date);
-      const formattedEndDate = formatDate(selectedLocation.end_date);
-      
-      setSelectedDate(`${formattedStartDate} to ${formattedEndDate}`);
-      setStartDate(formattedStartDate);
-      setEndDate(formattedEndDate);
-    }
-  }, [selectedLocation]);
-
   const openCalendar = () => setCalendarVisible(true);
   const closeCalendar = () => setCalendarVisible(false);
 
   const handleDateSelection = (start, end) => {
-    console.log("start", start)
-    console.log("end", end)
     setSelectedDate(`${start} to ${end}`);
     setStartDate(start);
     setEndDate(end);
@@ -77,19 +61,10 @@ const PlannerNewTrip = ({ route }) => {
   function formatDateToISO(dateStr) {
     // Split the input date string by "/"
     const [day, month, year] = dateStr.split("/");
-  
+
     // Return the formatted date as "yyyy-mm-dd"
     return `${year}-${month}-${day}`;
   }
-
-  const formatDate = (isoDate) => {
-    const date = new Date(isoDate);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
-  };
-  
 
   const handleConfirmTrip = async () => {
     if (!userId) {
@@ -97,14 +72,14 @@ const PlannerNewTrip = ({ route }) => {
       return;
     }
 
-    if (!destination || !startDate || !endDate || !locationId) {
+    if (!tripDestination || !startDate || !endDate || !locationId) {
       Alert.alert("Incomplete Details", "Please fill in all details.");
       return;
     }
 
     const tripData = {
       places_id: locationId,
-      location_name: destination, // Use destination directly as location name
+      location_name: tripDestination, // Use tripDestination directly as location name
       start_date: formatDateToISO(startDate),
       end_date: formatDateToISO(endDate),
     };
@@ -118,7 +93,11 @@ const PlannerNewTrip = ({ route }) => {
           text1: 'Success',
           text2: 'Trip created successfully.',
         });
-        resetForm();
+        setTripDestination("");
+        setLocationId("");
+        setSelectedDate("");
+        setStartDate("");
+        setEndDate("");
         navigation.navigate("Planner");
       } else {
         console.log("Server response:", response.data);
@@ -127,46 +106,6 @@ const PlannerNewTrip = ({ route }) => {
       console.error("Error adding trip:", error);
       Alert.alert("Error", "Failed to add trip.");
     }
-  };
-
-  const handleUpdateTrip = async () => {
-    if (!userId || !selectedLocation?.id) {
-      Alert.alert("Error", "Missing trip or user information.");
-      return;
-    }
-
-    const updatedTripData = {
-      start_date: formatDateToISO(startDate),
-      end_date: formatDateToISO(endDate),
-    };
-
-    try {
-      const response = await axios.put(
-        `${BASE_URL}/api/trips/${selectedLocation.id}`,
-        updatedTripData
-      );
-
-      if (response.status === 200) {
-        Toast.show({
-          type: 'success',
-          text1: 'Success',
-          text2: 'Trip updated successfully.',
-        });
-        resetForm();
-        navigation.navigate("Planner");
-      }
-    } catch (error) {
-      console.error("Error updating trip:", error);
-      Alert.alert("Error", "Failed to update trip.");
-    }
-  };
-
-  const resetForm = () => {
-    setDestination("");
-    setLocationId("");
-    setSelectedDate("");
-    setStartDate("");
-    setEndDate("");
   };
 
   return (
@@ -181,36 +120,30 @@ const PlannerNewTrip = ({ route }) => {
 
       {/* Header */}
       <View style={styles.headerContainer}>
-        <Text style={styles.headerText}>
-        {mode === "edit" ? "Edit Trip" : "Plan a New Trip"}
-        </Text>
+        <Text style={styles.headerText}>Plan a new trip</Text>
         <Text style={styles.subheaderText}>Fill in the details below</Text>
       </View>
 
       {/* Input Fields */}
-      <View style={styles.container}>
-      {/* Destination Field */}
-      <TouchableOpacity
-        onPress={() => {
-          if (mode !== "edit") {
+      <View style={styles.inputContainer}>
+        <TouchableOpacity
+          onPress={() =>
             navigation.navigate("PlannerAddDestination", {
               onLocationSelect: (location) => {
-                setDestination(location.title);
-                setLocationId(location.placeId);
+                setTripDestination(location.title);
+                setLocationId(location.placeId); // Use placeId as locationId
               },
-            });
+            })
           }
-        }}
-        style={[styles.input, mode === "edit" && styles.disabledInput]}
-        disabled={mode === "edit"} // Disable when in edit mode
-      >
+          style={styles.input}
+        >
           <Text
             style={[
               styles.inputText,
-              { color: destination ? "#323232" : "#A9A9A9" },
+              { color: tripDestination ? "#323232" : "#A9A9A9" },
             ]}
           >
-            {destination || "Where to?"}
+            {tripDestination || "Where to?"}
           </Text>
         </TouchableOpacity>
 
@@ -229,12 +162,10 @@ const PlannerNewTrip = ({ route }) => {
 
       {/* Confirm Button */}
       <TouchableOpacity
-        onPress={mode === "edit" ? handleUpdateTrip : handleConfirmTrip}
+        onPress={handleConfirmTrip}
         style={styles.confirmButton}
       >
-        <Text style={styles.confirmButtonText}>
-        {mode === "edit" ? "Update Trip" : "Confirm Trip"}
-        </Text>
+        <Text style={styles.confirmButtonText}>Confirm Trip</Text>
       </TouchableOpacity>
 
       {/* Calendar Modal */}
@@ -287,9 +218,6 @@ const styles = StyleSheet.create({
   },
   inputText: {
     fontSize: 20,
-  },
-  disabledInput: {
-    backgroundColor: "#f0f0f0",
   },
   confirmButton: {
     backgroundColor: "#F47966",
