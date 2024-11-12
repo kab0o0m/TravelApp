@@ -327,7 +327,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-evenly",
     alignItems: "center",
     top: -325,
-    left: screenWidth / 2 - 176,
+    // left: screenWidth / 2 - 176,
     zIndex: 2,
   },
   messageText: {

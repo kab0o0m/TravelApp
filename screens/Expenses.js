@@ -24,6 +24,7 @@ import Button from "../components/Button";
 import AddExpenseModal from "./AddExpenseModal";
 import * as Progress from "react-native-progress";
 import RoundedSquareIcon from "../components/RoundedSquareIcon";
+import Toast from 'react-native-toast-message';
 import {
   addExpense,
   fetchExpenses,
@@ -194,7 +195,11 @@ const Expenses = () => {
         // Call the API to set the budget for the selected trip
         await setBudgetByTripId(selectedTripId, budget);
         setBudget(budget); // Update local state with the new budget
-        Alert.alert("Success", "Budget set successfully!");
+        Toast.show({
+          type: 'success',
+          text1: 'Success',
+          text2: 'Budget Set successfully.',
+        });
       }
     } catch (error) {
       Alert.alert(
@@ -853,6 +858,9 @@ const styles = StyleSheet.create({
     borderWidth: 0,
   },
   unselectedTripText: {
-    color: "#f47966", // Dimmed color when no trip is selected
+    fontSize: 20,
+    fontWeight: '500', // Regular weight for unselected text
+    color: '#f47966', // Light gray for unselected text
+    fontStyle: 'italic', // Differentiates unselected visually
   },
 });
