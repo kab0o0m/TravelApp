@@ -329,9 +329,9 @@ const styles = StyleSheet.create({
     justifyContent: "space-evenly",
     alignItems: "center",
     top: -325,
-    left: screenWidth / 2 - 176,
+    alignSelf: "center", // This will center the container horizontally
     zIndex: 2,
-  },
+  },  
   messageText: {
     top: -15,
     width: 300,
