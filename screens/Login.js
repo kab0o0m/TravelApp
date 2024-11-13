@@ -25,6 +25,8 @@ import {
 } from "@expo-google-fonts/nunito";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+import Mappit from "../components/Mappit.js";
+
 import { validateEmail } from "../utils/authUtil.js";
 import { loginUser } from "../api/authAPI.js";
 
@@ -63,7 +65,7 @@ const Login = () => {
       const userData = await loginUser(email, password);
 
       // Save user data locally
-      await AsyncStorage.setItem('userData', JSON.stringify(userData.user));
+      await AsyncStorage.setItem("userData", JSON.stringify(userData.user));
 
       navigation.navigate("Home");
     } catch (error) {
@@ -84,9 +86,6 @@ const Login = () => {
         extraHeight={150} // This extra height helps prevent blocking
         enableAutomaticScroll={true}
       >
-        <View style={styles.cornerContainer}>
-          <Text style={styles.subHeader}>Mapp!t</Text>
-        </View>
         <Image
           source={VectorBackground}
           style={styles.cornerImage}
@@ -95,6 +94,7 @@ const Login = () => {
         <View style={styles.headerContainer}>
           <Text style={styles.header}>WELCOME BACK</Text>
         </View>
+        <Mappit colour="#006D77" />
 
         <View style={styles.imageContainer}>
           <Image source={LoginImage} style={styles.image} />
@@ -168,7 +168,6 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     alignItems: "center",
-    marginTop: screenHeight * 0.1,
     height: screenHeight * 0.15,
     width: screenWidth * 0.7,
   },
@@ -180,15 +179,7 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 5,
   },
-  subHeader: {
-    color: "#006D77",
-    fontSize: 25, // Increase font size for better visibility
-    fontFamily: "Nunito_700Bold",
-    textShadowColor: "#006D77",
-    textShadowOffset: { width: 0.5, height: 0.5 },
-    textShadowRadius: 1,
-    zIndex: 2, // Ensure the text is above other elements
-  },
+
   forgotPasswordContainer: {
     alignItems: "flex-end",
     marginBottom: 10,

@@ -24,6 +24,7 @@ import {
 } from "@expo-google-fonts/nunito";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Mappit from "../components/Mappit.js";
 
 import { validateEmail } from "../utils/authUtil.js";
 import { signup } from "../api/authAPI.js";
@@ -71,9 +72,9 @@ const Register = () => {
       const userData = await signup(firstname, lastname, email, password);
 
       // Save user data locally
-      await AsyncStorage.setItem('userData', JSON.stringify(userData.user));
+      await AsyncStorage.setItem("userData", JSON.stringify(userData.user));
 
-      navigation.navigate("Home");
+      navigation.navigate("Login");
     } catch (error) {
       Alert.alert(
         "Registration Failed",
@@ -100,9 +101,7 @@ const Register = () => {
           style={styles.cornerImage}
           resizeMode="cover"
         />
-        <View style={styles.cornerContainer}>
-          <Text style={styles.subHeader}>Mapp!t</Text>
-        </View>
+        <Mappit colour="#006D77" />
         <View style={styles.headerContainer}>
           <Text style={styles.header}>REGISTER</Text>
           <Text style={styles.caption}>Create your new account</Text>

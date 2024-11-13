@@ -13,7 +13,6 @@ import MapView, { Marker } from "react-native-maps";
 import AddDestinationModal from "./AddDestinationModal";
 import axios from "axios";
 import BASE_URL from "../config";
-import NavBar from "../components/NavBar";
 import { useNavigation } from "@react-navigation/native";
 
 const PlannerAddDestination = ({ route }) => {

@@ -61,8 +61,16 @@ const AIRandomiser = () => {
   const startFrogAnimation = () => {
     frogAnimationRef.current = Animated.loop(
       Animated.sequence([
-        Animated.timing(frogAnim, { toValue: -20, duration: 300, useNativeDriver: true }),
-        Animated.timing(frogAnim, { toValue: 0, duration: 300, useNativeDriver: true }),
+        Animated.timing(frogAnim, {
+          toValue: -20,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+        Animated.timing(frogAnim, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true,
+        }),
       ])
     );
     frogAnimationRef.current.start();
@@ -89,7 +97,9 @@ const AIRandomiser = () => {
     try {
       const response = await axios.get(`${BASE_URL}/api/sublocations/${id}`);
       if (response.data) {
-        setActivities(response.data.map((sublocation) => sublocation.location_name));
+        setActivities(
+          response.data.map((sublocation) => sublocation.location_name)
+        );
       }
     } catch (error) {
       console.error("Error fetching sublocations:", error);
@@ -99,21 +109,57 @@ const AIRandomiser = () => {
   const animateCups = () => {
     Animated.sequence([
       Animated.parallel([
-        Animated.timing(cup1Anim, { toValue: 1, duration: 300, useNativeDriver: true }),
-        Animated.timing(cup2Anim, { toValue: -1, duration: 300, useNativeDriver: true }),
+        Animated.timing(cup1Anim, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+        Animated.timing(cup2Anim, {
+          toValue: -1,
+          duration: 300,
+          useNativeDriver: true,
+        }),
       ]),
       Animated.parallel([
-        Animated.timing(cup2Anim, { toValue: 1, duration: 300, useNativeDriver: true }),
-        Animated.timing(cup3Anim, { toValue: -1, duration: 300, useNativeDriver: true }),
+        Animated.timing(cup2Anim, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+        Animated.timing(cup3Anim, {
+          toValue: -1,
+          duration: 300,
+          useNativeDriver: true,
+        }),
       ]),
       Animated.parallel([
-        Animated.timing(cup1Anim, { toValue: -1, duration: 300, useNativeDriver: true }),
-        Animated.timing(cup3Anim, { toValue: 1, duration: 300, useNativeDriver: true }),
+        Animated.timing(cup1Anim, {
+          toValue: -1,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+        Animated.timing(cup3Anim, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }),
       ]),
       Animated.parallel([
-        Animated.timing(cup1Anim, { toValue: 0, duration: 300, useNativeDriver: true }),
-        Animated.timing(cup2Anim, { toValue: 0, duration: 300, useNativeDriver: true }),
-        Animated.timing(cup3Anim, { toValue: 0, duration: 300, useNativeDriver: true }),
+        Animated.timing(cup1Anim, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+        Animated.timing(cup2Anim, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+        Animated.timing(cup3Anim, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true,
+        }),
       ]),
     ]).start(async () => {
       await fetchRandomLocation(); // Fetch random location after animation
@@ -188,25 +234,43 @@ const AIRandomiser = () => {
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
-        <Image source={require("../assets/AITopBG.png")} style={styles.headerImage} />
+        <Image
+          source={require("../assets/AITopBG.png")}
+          style={styles.headerImage}
+        />
         <Text style={styles.header}>Discover Your Next Adventure!</Text>
       </View>
 
       <View style={styles.cupsContainer}>
-        <Animated.Image source={require("../assets/Cup.png")} style={[styles.cup, cup1Style]} />
-        <Animated.Image source={require("../assets/Cup.png")} style={[styles.cup, cup2Style]} />
-        <Animated.Image source={require("../assets/Cup.png")} style={[styles.cup, cup3Style]} />
+        <Animated.Image
+          source={require("../assets/Cup.png")}
+          style={[styles.cup, cup1Style]}
+        />
+        <Animated.Image
+          source={require("../assets/Cup.png")}
+          style={[styles.cup, cup2Style]}
+        />
+        <Animated.Image
+          source={require("../assets/Cup.png")}
+          style={[styles.cup, cup3Style]}
+        />
       </View>
 
       <View style={styles.bottomContainer}>
-        <Image source={require("../assets/AIBottomBG.png")} style={styles.bottomImage} />
+        <Image
+          source={require("../assets/AIBottomBG.png")}
+          style={styles.bottomImage}
+        />
         <Animated.Image
           source={require("../assets/Frog.png")}
           style={[styles.frogImage, frogStyle]}
         />
 
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.shuffleButton} onPress={handleShuffle}>
+          <TouchableOpacity
+            style={styles.shuffleButton}
+            onPress={handleShuffle}
+          >
             <Text style={styles.shuffleText}>Shuffle Me!</Text>
           </TouchableOpacity>
         </View>
@@ -214,7 +278,8 @@ const AIRandomiser = () => {
         {showMessage && (
           <ImageBackground
             source={require("../assets/MessageBox.png")}
-            style={styles.messageContainer}>
+            style={styles.messageContainer}
+          >
             <Text style={styles.messageText}>FROLIC TO</Text>
             <Text style={styles.destinationText}>{locationName}</Text>
             <Text style={styles.activityHeader}>Activity Recommendations:</Text>
@@ -228,12 +293,16 @@ const AIRandomiser = () => {
             </View>
 
             <View style={styles.buttonRow}>
-              <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={handleCancel}
+              >
                 <Text style={styles.cancelText}>Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.addToPlannerButton}
-                onPress={navigateToPlannerNewTrip}>
+                onPress={navigateToPlannerNewTrip}
+              >
                 <Text style={styles.addToPlannerText}>Add to Planner</Text>
               </TouchableOpacity>
             </View>
@@ -361,7 +430,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  addToPlannerText: { color: "white", fontSize: 16, fontFamily: "Nunito_700Bold" },
+  addToPlannerText: {
+    color: "white",
+    fontSize: 16,
+    fontFamily: "Nunito_700Bold",
+  },
 });
 
 export default AIRandomiser;

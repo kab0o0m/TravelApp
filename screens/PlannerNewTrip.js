@@ -10,7 +10,7 @@ import {
   Alert,
 } from "react-native";
 import axios from "axios";
-import Toast from 'react-native-toast-message';
+import Toast from "react-native-toast-message";
 import { useNavigation } from "@react-navigation/native";
 import CustomCalendar from "../components/CustomCalendar"; // Import your CustomCalendar
 import BASE_URL from "../config"; // Assuming BASE_URL is defined in a config file
@@ -36,7 +36,10 @@ const PlannerNewTrip = ({ route }) => {
         if (!storedUserData) {
           console.log("Fetching user data...");
           storedUserData = await fetchUserData();
-          await AsyncStorage.setItem("userData", JSON.stringify(storedUserData));
+          await AsyncStorage.setItem(
+            "userData",
+            JSON.stringify(storedUserData)
+          );
         }
         const userData = JSON.parse(storedUserData);
         setUserId(userData.id);
@@ -77,7 +80,7 @@ const PlannerNewTrip = ({ route }) => {
   function formatDateToISO(dateStr) {
     // Split the input date string by "/"
     const [day, month, year] = dateStr.split("/");
-  
+
     // Return the formatted date as "yyyy-mm-dd"
     return `${year}-${month}-${day}`;
   }
@@ -110,13 +113,16 @@ const PlannerNewTrip = ({ route }) => {
     };
 
     try {
-      const response = await axios.post(`${BASE_URL}/api/users/${userId}/trips`, tripData);
+      const response = await axios.post(
+        `${BASE_URL}/api/users/${userId}/trips`,
+        tripData
+      );
 
       if (response.status === 201) {
         Toast.show({
-          type: 'success',
-          text1: 'Success',
-          text2: 'Trip created successfully.',
+          type: "success",
+          text1: "Success",
+          text2: "Trip created successfully.",
         });
         resetForm();
         navigation.navigate("Planner");

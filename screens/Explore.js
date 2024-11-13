@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -10,12 +10,13 @@ import {
   ActivityIndicator,
 } from "react-native";
 import MapView, { Marker } from "react-native-maps";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import LocationDetailsModal from "./LocationDetailsModal";
 import axios from "axios";
-import BASE_URL from "../config"; // Ensure this points to your backend URL
-import NavBar from "../components/NavBar";
+import BASE_URL from "../config";
 import { fetchWeatherData } from "../api/weather";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import PlannerTabs from "../components/PlannerTabs";
+import NavBar from "../components/NavBar";
 
 const Button = ({
   title,
@@ -31,6 +32,11 @@ const Button = ({
 );
 
 const Explore = () => {
+  const route = useRoute();
+  const { trip, onPlaceSelect } = route.params || {};
+  const destination = trip?.location_name || "Unknown Destination";
+  const navigation = useNavigation();
+
   const [searchQuery, setSearchQuery] = useState("");
   const [mapRegion, setMapRegion] = useState({
     latitude: 1.3521,
@@ -74,7 +80,6 @@ const Explore = () => {
         setMarkerPosition({ latitude: location.lat, longitude: location.lng });
         setLocationDetails(placeDetails);
 
-        // Fetch the weather data for the selected location
         await fetchWeatherDataForLocation(location.lat, location.lng);
         setIsLoading(false);
       } else {
@@ -85,6 +90,26 @@ const Explore = () => {
       Alert.alert("Error", "Failed to search for the location");
       console.error("Error fetching location:", error);
       setIsLoading(false);
+    }
+  };
+
+  const handlePlaceSelection = () => {
+    if (onPlaceSelect) {
+      // Creating the selectedPlace object with consistent property names
+      const selectedPlace = {
+        placeId: locationDetails.placeId || locationDetails.place_id, // Ensure this matches what's used elsewhere in your app
+        location_name: locationDetails.title,
+        description: locationDetails.description,
+        photoUrl: locationDetails.photoReference
+          ? `${BASE_URL}/api/place-photo?photo_reference=${locationDetails.photoReference}&maxwidth=400`
+          : "https://via.placeholder.com/150", // fallback URL if photoReference is missing
+      };
+
+      console.log("Selected place data being sent:", selectedPlace); // Debugging log to verify all data
+
+      // Send selectedPlace back to PlannerOverview
+      onPlaceSelect(selectedPlace);
+      navigation.goBack();
     }
   };
 
@@ -106,49 +131,50 @@ const Explore = () => {
     setModalVisible(true);
   };
 
-  const closeDetailsModal = () => {
-    setModalVisible(false);
-  };
-
   return (
     <TouchableWithoutFeedback onPress={dismissKeyboard}>
-      {isLoading ? (
-        <ActivityIndicator size="large" />
-      ) : (
-        <View style={styles.container}>
-          <View style={styles.searchContainer}>
-            <TextInput
-              style={styles.searchInput}
-              placeholder="Search for a location..."
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-            />
-            <Button title="Search" onPress={handleSearch} />
-          </View>
+      <View style={styles.container}>
+        <PlannerTabs destination={destination} activeTab="Explore" />
 
-          <MapView style={styles.map} region={mapRegion}>
-            {markerPosition && (
-              <Marker
-                coordinate={markerPosition}
-                title={locationDetails.title}
-                description={locationDetails.description}
-                onPress={openDetailsModal}
+        {isLoading ? (
+          <ActivityIndicator size="large" />
+        ) : (
+          <>
+            <View style={styles.searchContainer}>
+              <TextInput
+                style={styles.searchInput}
+                placeholder="Search for a location..."
+                value={searchQuery}
+                onChangeText={setSearchQuery}
               />
-            )}
-          </MapView>
+              <Button title="Search" onPress={handleSearch} />
+            </View>
 
-          <LocationDetailsModal
-            visible={modalVisible}
-            locationDetails={locationDetails}
-            weatherData={weatherData}
-            onClose={closeDetailsModal}
-          />
-        </View>
-      )}
+            <View style={styles.mapContainer}>
+              <MapView style={styles.map} region={mapRegion}>
+                {markerPosition && (
+                  <Marker
+                    coordinate={markerPosition}
+                    title={locationDetails.title}
+                    description={locationDetails.description}
+                    onPress={openDetailsModal}
+                  />
+                )}
+              </MapView>
+            </View>
 
-      {/* <View style={styles.NavBarContainer}>
+            <LocationDetailsModal
+              visible={modalVisible}
+              locationDetails={locationDetails}
+              weatherData={weatherData}
+              onClose={() => setModalVisible(false)}
+              onAddToPlanner={handlePlaceSelection}
+            />
+          </>
+        )}
+
         <NavBar />
-      </View> */}
+      </View>
     </TouchableWithoutFeedback>
   );
 };
@@ -157,7 +183,7 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   searchContainer: {
     paddingHorizontal: 16,
-    paddingVertical: 32,
+    paddingVertical: 16,
     backgroundColor: "white",
     borderBottomWidth: 1,
     borderColor: "#ddd",
@@ -170,18 +196,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginBottom: 10,
   },
-  map: { width: "100%", height: 720 },
+  mapContainer: {
+    flex: 1,
+    height: "80%",
+  },
+  map: { width: "100%", height: "100%" },
   button: {
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: 15,
     borderRadius: 25,
   },
-  /*NavBarContainer: {
-    position: "absolute",
-    bottom: 0,
-    width: "100%",
-  },*/
 });
 
 export default Explore;

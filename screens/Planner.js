@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { 
-  View, 
-  Text, 
-  ScrollView, 
-  StyleSheet, 
-  TouchableOpacity, 
-  Alert, 
-  Image, 
-  TouchableWithoutFeedback, 
-  Keyboard 
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+  Image,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 import Toast from "react-native-toast-message";
 import NavBar from "../components/NavBar";
@@ -19,7 +19,7 @@ import BASE_URL from "../config";
 import { format } from "date-fns";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { fetchUserData } from "../api/authAPI";
-import { getPlacePhotoByPlaceId} from "../api/places";
+import { getPlacePhotoByPlaceId } from "../api/places";
 import { deleteTripById } from "../api/tripsAPI";
 
 const Planner = () => {
@@ -35,7 +35,10 @@ const Planner = () => {
         let storedUserData = await AsyncStorage.getItem("userData");
         if (!storedUserData) {
           storedUserData = await fetchUserData();
-          await AsyncStorage.setItem("userData", JSON.stringify(storedUserData));
+          await AsyncStorage.setItem(
+            "userData",
+            JSON.stringify(storedUserData)
+          );
         }
         const userData = JSON.parse(storedUserData);
         setUserId(userData.id);
@@ -59,8 +62,9 @@ const Planner = () => {
       const response = await axios.get(`${BASE_URL}/api/users/${userId}/trips`);
       const tripsWithPhotos = await Promise.all(
         response.data.map(async (trip) => {
-          const photoUrl = await getPlacePhotoByPlaceId(trip.places_id);
-          return { ...trip, photoUrl };
+          const placeDetails = await getPlacePhotoByPlaceId(trip.places_id);
+          return { ...trip, photoUrl: placeDetails.photoUrl };
+
         })
       );
       setTrips(sortTrips(tripsWithPhotos));
@@ -92,7 +96,11 @@ const Planner = () => {
       "Are you sure you want to delete this trip?",
       [
         { text: "Cancel", style: "cancel" },
-        { text: "Delete", style: "destructive", onPress: () => handleDeleteTrip(tripId) },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: () => handleDeleteTrip(tripId),
+        },
       ]
     );
   };
@@ -101,7 +109,11 @@ const Planner = () => {
     try {
       await deleteTripById(tripId);
       setTrips(trips.filter((trip) => trip.id !== tripId));
-      Toast.show({ type: "error", text1: "Deleted", text2: "Trip deleted successfully." });
+      Toast.show({
+        type: "error",
+        text1: "Deleted",
+        text2: "Trip deleted successfully.",
+      });
     } catch (error) {
       console.error("Error deleting trip:", error);
       Alert.alert("Error", "Failed to delete trip.");
@@ -111,9 +123,12 @@ const Planner = () => {
   const handleEditTrip = (tripId) => {
     setDropdownVisible(false);
     const tripToEdit = trips.find((trip) => trip.id === tripId);
-    console.log("tripToEdit in handleEditTrip: ", tripToEdit)
-    navigation.navigate("PlannerNewTrip", { selectedLocation: tripToEdit, mode: "edit" });
-    };
+    console.log("tripToEdit in handleEditTrip: ", tripToEdit);
+    navigation.navigate("PlannerNewTrip", {
+      selectedLocation: tripToEdit,
+      mode: "edit",
+    });
+  };
 
   const handleMenuPress = (trip) => {
     setDropdownVisible((prev) => !prev || selectedTrip?.id !== trip.id);
@@ -122,7 +137,9 @@ const Planner = () => {
 
   const calculateDaysLeft = (startDate) => {
     const today = new Date();
-    const daysLeft = Math.ceil((new Date(startDate) - today) / (1000 * 3600 * 24));
+    const daysLeft = Math.ceil(
+      (new Date(startDate) - today) / (1000 * 3600 * 24)
+    );
 
     if (daysLeft <= 0) return "Today";
     return daysLeft === 1 ? "1 day left" : `${daysLeft} days left`;
@@ -134,7 +151,10 @@ const Planner = () => {
   };
 
   const renderRightActions = (tripId) => (
-    <TouchableOpacity style={styles.deleteContainer} onPress={() => confirmDeleteTrip(tripId)}>
+    <TouchableOpacity
+      style={styles.deleteContainer}
+      onPress={() => confirmDeleteTrip(tripId)}
+    >
       <Text style={styles.deleteButtonText}>Delete</Text>
     </TouchableOpacity>
   );
@@ -144,11 +164,21 @@ const Planner = () => {
   };
 
   const handleTripPress = (trip) => {
-    navigation.navigate("PlannerOverview", { trip });
+    console.log("Navigating with trip:", trip);
+    if (userId) {
+      navigation.navigate("PlannerOverview", { trip: { ...trip, userId } });
+    } else {
+      console.warn("User ID is not available");
+    }
   };
 
   return (
-    <TouchableWithoutFeedback onPress={() => { setDropdownVisible(false); Keyboard.dismiss(); }}>
+    <TouchableWithoutFeedback
+      onPress={() => {
+        setDropdownVisible(false);
+        Keyboard.dismiss();
+      }}
+    >
       <View style={styles.container}>
         <View style={styles.headerContainer}>
           <Text style={styles.headerText}>Plan A Trip!</Text>
@@ -158,7 +188,10 @@ const Planner = () => {
           <Text style={styles.tripHeaderText}>Your Trips</Text>
         </View>
 
-        <ScrollView style={styles.tripListContainer} contentContainerStyle={styles.scrollViewContent}>
+        <ScrollView
+          style={styles.tripListContainer}
+          contentContainerStyle={styles.scrollViewContent}
+        >
           {trips.length === 0 ? (
             <Text style={styles.noTripsText}>No trips added yet!</Text>
           ) : (
@@ -168,7 +201,10 @@ const Planner = () => {
                   <View style={styles.tripItem}>
                     <View style={styles.tripDetails}>
                       {trip.photoUrl ? (
-                        <Image source={{ uri: trip.photoUrl }} style={styles.tripImage} />
+                        <Image
+                          source={{ uri: trip.photoUrl }}
+                          style={styles.tripImage}
+                        />
                       ) : (
                         <View style={styles.tripImagePlaceholder} />
                       )}
@@ -180,30 +216,47 @@ const Planner = () => {
                               : calculateDaysLeft(trip.start_date)}
                           </Text>
                         </View>
-                        <Text style={styles.tripDestination} numberOfLines={2} ellipsizeMode="tail">
+                        <Text
+                          style={styles.tripDestination}
+                          numberOfLines={2}
+                          ellipsizeMode="tail"
+                        >
                           {trip.location_name}
                         </Text>
                         <Text style={styles.tripDates}>
-                          {`${formatDate(trip.start_date)} - ${formatDate(trip.end_date)}`}
+                          {`${formatDate(trip.start_date)} - ${formatDate(
+                            trip.end_date
+                          )}`}
                         </Text>
                       </View>
-                      <TouchableOpacity onPress={() => handleMenuPress(trip)} style={styles.menuIcon}>
+                      <TouchableOpacity
+                        onPress={() => handleMenuPress(trip)}
+                        style={styles.menuIcon}
+                      >
                         <Icon name="more-horiz" size={20} color="#333" />
                       </TouchableOpacity>
                     </View>
                     {dropdownVisible && selectedTrip?.id === trip.id && (
                       <View style={styles.dropdownMenu}>
-                        <TouchableOpacity onPress={() => handleEditTrip(trip.id)} style={styles.dropdownItem}>
+                        <TouchableOpacity
+                          onPress={() => handleEditTrip(trip.id)}
+                          style={styles.dropdownItem}
+                        >
                           <Text style={styles.dropdownItemText}>Edit</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => confirmDeleteTrip(trip.id)} style={styles.dropdownItem}>
+                        <TouchableOpacity
+                          onPress={() => confirmDeleteTrip(trip.id)}
+                          style={styles.dropdownItem}
+                        >
                           <Text style={styles.dropdownItemText}>Delete</Text>
                         </TouchableOpacity>
                       </View>
                     )}
                   </View>
                 </TouchableOpacity>
-                {index < trips.length - 1 && <View style={styles.tripSeparator} />}
+                {index < trips.length - 1 && (
+                  <View style={styles.tripSeparator} />
+                )}
               </View>
             ))
           )}
@@ -211,13 +264,20 @@ const Planner = () => {
 
         <View style={styles.bottomButtonsContainer}>
           <TouchableOpacity
-            onPress={() => navigation.navigate("PlannerNewTrip", { onAddTrip: handleAddTrip })}
+            onPress={() =>
+              navigation.navigate("PlannerNewTrip", {
+                onAddTrip: handleAddTrip,
+              })
+            }
             style={styles.addTripButton}
           >
             <Text style={styles.addTripButtonText}>+ Add Trip</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => navigation.navigate("AIRandomiser")} style={styles.randomButton}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("AIRandomiser")}
+            style={styles.randomButton}
+          >
             <Text style={styles.randomButtonText}>🎲 Random</Text>
           </TouchableOpacity>
         </View>
