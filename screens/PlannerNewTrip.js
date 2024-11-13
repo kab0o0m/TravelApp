@@ -28,6 +28,22 @@ const PlannerNewTrip = ({ route }) => {
   const [endDate, setEndDate] = useState("");
   const [userId, setUserId] = useState(null); // State to store dynamic user ID
 
+  const { selectedLocation, mode } = route.params || {};
+
+  useEffect(() => {
+    if (selectedLocation) {
+      // setDestination(selectedLocation.title);
+      setTripDestination(selectedLocation.location_name);
+      setLocationId(selectedLocation.placeId); // Assuming placeId represents the location ID
+      const formattedStartDate = formatDate(selectedLocation.start_date);
+      const formattedEndDate = formatDate(selectedLocation.end_date);
+
+      setSelectedDate(`${formattedStartDate} to ${formattedEndDate}`);
+      setStartDate(formattedStartDate);
+      setEndDate(formattedEndDate);
+    }
+  }, [selectedLocation]);
+
   // Fetch user ID from AsyncStorage or API
   useEffect(() => {
     const loadUserId = async () => {
@@ -47,6 +63,14 @@ const PlannerNewTrip = ({ route }) => {
 
     loadUserId();
   }, []);
+
+  const formatDate = (isoDate) => {
+    const date = new Date(isoDate);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
 
   const openCalendar = () => setCalendarVisible(true);
   const closeCalendar = () => setCalendarVisible(false);
