@@ -38,7 +38,7 @@ const PlannerOverview = () => {
   const [userId, setUserId] = useState(trip?.userId || trip?.user_id || null);
   const [places, setPlaces] = useState([]);
 
-  console.log("Received trip data:", trip);
+  // console.log("Received trip data:", trip);
   console.log("Extracted userId:", userId);
 
   const [notes, setNotes] = useState("");
@@ -92,21 +92,18 @@ const PlannerOverview = () => {
     }
     try {
       const response = await axios.get(
-        `${BASE_URL}/api/users/${userId}/places`
+        `${BASE_URL}/api/users/${userId}/${trip.id}/places`
       );
-      console.log("Raw places data from API:", response.data); // Ensure data has `location_name` and `description`
 
       const placesWithPhotos = await Promise.all(
         response.data.map(async (place) => {
-          const photoUrl = place.places_id
-            ? await getPlacePhotoByPlaceId(place.places_id)
-            : null;
+          const placeDetails = await getPlacePhotoByPlaceId(place.places_id);
 
           return {
             id: place.id,
-            location_name: place.location_name || "Unknown Location",
-            description: place.description || "No description available",
-            photoUrl: photoUrl,
+            location_name: placeDetails.placeDetails.name || "Unknown Location",
+            description: placeDetails.placeDetails.formatted_address || "No description available",
+            photoUrl: placeDetails.photoUrl,
           };
         })
       );
@@ -118,7 +115,6 @@ const PlannerOverview = () => {
   };
 
   useEffect(() => {
-    console.log("Current places state:", places);
   }, [places]);
 
   useFocusEffect(
@@ -283,40 +279,6 @@ const PlannerOverview = () => {
           </View>
         )}
 
-        <TouchableOpacity
-          onPress={() => setIsAddTitleOpen(!isAddTitleOpen)}
-          style={styles.sectionHeaderContainer}
-        >
-          <AntDesign
-            name={isAddTitleOpen ? "up" : "down"}
-            size={16}
-            color="black"
-          />
-          <Text style={styles.sectionHeader}>Add a title</Text>
-        </TouchableOpacity>
-        {isAddTitleOpen && (
-          <View>
-            {titles.map((title, index) => (
-              <TextInput
-                key={index}
-                style={styles.sectionContentInput}
-                placeholder="Enter a title..."
-                value={title}
-                onChangeText={(newTitle) => {
-                  const updatedTitles = [...titles];
-                  updatedTitles[index] = newTitle;
-                  setTitles(updatedTitles);
-                }}
-              />
-            ))}
-            <TouchableOpacity
-              style={styles.newListButton}
-              onPress={addNewTitleSection}
-            >
-              <Text style={styles.newListButtonText}>+ New list</Text>
-            </TouchableOpacity>
-          </View>
-        )}
       </ScrollView>
       <NavBar />
     </View>

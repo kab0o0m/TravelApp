@@ -62,8 +62,9 @@ const Planner = () => {
       const response = await axios.get(`${BASE_URL}/api/users/${userId}/trips`);
       const tripsWithPhotos = await Promise.all(
         response.data.map(async (trip) => {
-          const photoUrl = await getPlacePhotoByPlaceId(trip.places_id);
-          return { ...trip, photoUrl };
+          const placeDetails = await getPlacePhotoByPlaceId(trip.places_id);
+          return { ...trip, photoUrl: placeDetails.photoUrl };
+
         })
       );
       setTrips(sortTrips(tripsWithPhotos));

@@ -38,7 +38,7 @@ export const getPlacePhotoByPlaceId = async (placeId) => {
     }
 
     const photoUrl = `${BASE_URL}/api/place-photo?photo_reference=${photoReference}&maxwidth=400`;
-    return photoUrl;
+    return { photoUrl, placeDetails} ;
   } catch (error) {
     console.error("Error fetching place photo:", error);
     throw new Error(
