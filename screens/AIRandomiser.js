@@ -21,31 +21,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import BASE_URL from "../config";
-import React, { useEffect, useState, useRef } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  Dimensions,
-  ActivityIndicator,
-  TouchableOpacity,
-  ImageBackground,
-  Animated,
-  Alert,
-} from "react-native";
-import {
-  useFonts,
-  Nunito_700Bold,
-  Nunito_800ExtraBold,
-  Nunito_900Black,
-} from "@expo-google-fonts/nunito";
-import * as SplashScreen from "expo-splash-screen";
-import { useNavigation } from "@react-navigation/native";
-import axios from "axios";
-import BASE_URL from "../config";
 
-const { width: screenWidth } = Dimensions.get("window");
 const { width: screenWidth } = Dimensions.get("window");
 
 SplashScreen.preventAutoHideAsync();
@@ -56,34 +32,19 @@ const AIRandomiser = () => {
     Nunito_700Bold,
     Nunito_800ExtraBold,
   });
-  const [fontsLoaded] = useFonts({
-    Nunito_900Black,
-    Nunito_700Bold,
-    Nunito_800ExtraBold,
-  });
 
-  const [showMessage, setShowMessage] = useState(false);
-  const [locationName, setLocationName] = useState("Marina Bay Sands"); // Default location name
-  const [activities, setActivities] = useState([]);
-  const [locationId, setLocationId] = useState(null); // Store location ID to fetch sublocations
   const [showMessage, setShowMessage] = useState(false);
   const [locationName, setLocationName] = useState("Marina Bay Sands"); // Default location name
   const [activities, setActivities] = useState([]);
   const [locationId, setLocationId] = useState(null); // Store location ID to fetch sublocations
 
   const navigation = useNavigation();
-  const navigation = useNavigation();
 
   const cup1Anim = useRef(new Animated.Value(0)).current;
   const cup2Anim = useRef(new Animated.Value(0)).current;
   const cup3Anim = useRef(new Animated.Value(0)).current;
   const frogAnim = useRef(new Animated.Value(0)).current;
-  const cup1Anim = useRef(new Animated.Value(0)).current;
-  const cup2Anim = useRef(new Animated.Value(0)).current;
-  const cup3Anim = useRef(new Animated.Value(0)).current;
-  const frogAnim = useRef(new Animated.Value(0)).current;
 
-  const frogAnimationRef = useRef(null);
   const frogAnimationRef = useRef(null);
 
   useEffect(() => {
@@ -91,16 +52,7 @@ const AIRandomiser = () => {
       SplashScreen.hideAsync();
     }
   }, [fontsLoaded]);
-  useEffect(() => {
-    if (fontsLoaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [fontsLoaded]);
 
-  useEffect(() => {
-    startFrogAnimation();
-    return () => frogAnimationRef.current.stop();
-  }, []);
   useEffect(() => {
     startFrogAnimation();
     return () => frogAnimationRef.current.stop();
@@ -124,22 +76,6 @@ const AIRandomiser = () => {
     frogAnimationRef.current.start();
   };
 
-  const fetchRandomLocation = async () => {
-    console.log("Fetching random location...");
-    try {
-      const response = await axios.get(`${BASE_URL}/api/locations/random`);
-      if (response.data && response.data.location_name && response.data.id) {
-        setLocationName(response.data.location_name);
-        setLocationId(response.data.id); // Store the location ID for sublocation fetch
-        await fetchSublocations(response.data.id); // Fetch related sublocations as activities
-      } else {
-        Alert.alert("Error", "Failed to fetch random location.");
-      }
-    } catch (error) {
-      Alert.alert("Error", "Failed to fetch random location.");
-      console.error("Error fetching random location:", error);
-    }
-  };
   const fetchRandomLocation = async () => {
     console.log("Fetching random location...");
     try {
@@ -240,27 +176,12 @@ const AIRandomiser = () => {
     }
     animateCups();
   };
-  const handleShuffle = () => {
-    setShowMessage(false);
-    if (frogAnimationRef.current) {
-      frogAnimationRef.current.stop();
-      frogAnim.setValue(0);
-    }
-    animateCups();
-  };
 
   const handleCancel = () => {
     setShowMessage(false);
     startFrogAnimation();
   };
-  const handleCancel = () => {
-    setShowMessage(false);
-    startFrogAnimation();
-  };
 
-  const navigateToPlannerNewTrip = () => {
-    navigation.navigate("PlannerNewTrip", { destination: locationName });
-  };
   const navigateToPlannerNewTrip = () => {
     navigation.navigate("PlannerNewTrip", { destination: locationName });
   };
@@ -272,24 +193,7 @@ const AIRandomiser = () => {
       </View>
     );
   }
-  if (!fontsLoaded) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#006D77" />
-      </View>
-    );
-  }
 
-  const cup1Style = {
-    transform: [
-      {
-        translateX: cup1Anim.interpolate({
-          inputRange: [-1, 0, 1],
-          outputRange: [100, 0, -100],
-        }),
-      },
-    ],
-  };
   const cup1Style = {
     transform: [
       {
@@ -311,16 +215,6 @@ const AIRandomiser = () => {
       },
     ],
   };
-  const cup2Style = {
-    transform: [
-      {
-        translateX: cup2Anim.interpolate({
-          inputRange: [-1, 0, 1],
-          outputRange: [100, 0, -100],
-        }),
-      },
-    ],
-  };
 
   const cup3Style = {
     transform: [
@@ -332,20 +226,7 @@ const AIRandomiser = () => {
       },
     ],
   };
-  const cup3Style = {
-    transform: [
-      {
-        translateX: cup3Anim.interpolate({
-          inputRange: [-1, 0, 1],
-          outputRange: [100, 0, -100],
-        }),
-      },
-    ],
-  };
 
-  const frogStyle = {
-    transform: [{ translateY: frogAnim }],
-  };
   const frogStyle = {
     transform: [{ translateY: frogAnim }],
   };
@@ -410,13 +291,6 @@ const AIRandomiser = () => {
                 </View>
               ))}
             </View>
-            <View style={styles.activityContainer}>
-              {activities.map((activity, index) => (
-                <View key={index} style={styles.activityItem}>
-                  <Text style={styles.activityText}>{activity}</Text>
-                </View>
-              ))}
-            </View>
 
             <View style={styles.buttonRow}>
               <TouchableOpacity
@@ -466,11 +340,10 @@ const styles = StyleSheet.create({
   cup: { width: 100, height: 130 },
   bottomContainer: {
     position: "relative",
-    marginTop: -90,
     justifyContent: "center",
     alignItems: "center",
   },
-  bottomImage: { height: 450 },
+  bottomImage: { height: 450, width: 500 },
   frogImage: { position: "absolute", bottom: 270, zIndex: 1 },
   buttonContainer: {
     position: "absolute",
@@ -483,6 +356,7 @@ const styles = StyleSheet.create({
     borderRadius: 28,
     justifyContent: "center",
     alignItems: "center",
+    marginTop: 35,
   },
   shuffleButton: { justifyContent: "center", alignItems: "center" },
   shuffleText: { color: "white", fontSize: 20, fontFamily: "Nunito_700Bold" },
@@ -494,7 +368,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-evenly",
     alignItems: "center",
     top: -325,
-    left: screenWidth / 2 - 176,
+    // left: screenWidth / 2 - 176,
     zIndex: 2,
   },
   messageText: {

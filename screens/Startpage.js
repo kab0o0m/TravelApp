@@ -17,6 +17,7 @@ import ArrowLeft from "../assets/icons/ArrowLeft.png";
 import plane from "../assets/images/Plane.png";
 import background from "../assets/images/background.png";
 import * as SplashScreen from "expo-splash-screen";
+import Mappit from "../components/Mappit";
 
 SplashScreen.preventAutoHideAsync(); // Prevent the splash screen from auto-hiding
 
@@ -45,11 +46,11 @@ const Startpage = () => {
         source={Startpagebackground}
         style={styles.backgroundImage}
       >
-        <TouchableOpacity style={styles.iconContainer} onPress={toggleModal}>
+        {/* <TouchableOpacity style={styles.iconContainer} onPress={toggleModal}>
           <Image source={FrogIcon} style={styles.icon} resizeMode="contain" />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
-        <Modal
+        {/* <Modal
           animationType="slide"
           transparent={true}
           visible={modalVisible}
@@ -67,16 +68,17 @@ const Startpage = () => {
               <Chatbot />
             </View>
           </View>
-        </Modal>
+        </Modal> */}
+
+        <Mappit colour="#fff" />
 
         <View style={styles.headerContainer}>
           <Text style={styles.header}>EXPLORE THE WORLD</Text>
-          <Text style={styles.subHeader}>Mapp!t</Text>
         </View>
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={styles.button}
-            onPress={() => navigation.navigate("Home")}
+            onPress={() => navigation.navigate("Login")}
           >
             <Text style={styles.buttonText}>Start My Journey</Text>
           </TouchableOpacity>
@@ -107,22 +109,23 @@ const styles = StyleSheet.create({
     fontSize: 50,
     paddingBottom: 500,
     width: 250,
-    marginRight: 120,
+    marginRight: 90,
     fontWeight: "bold",
+    marginTop: 50,
   },
   subHeader: {
     position: "absolute",
     right: -80,
-    top: -20,
+    top: 20,
     color: "#FFFFFF",
-    fontSize: 30,
+    fontSize: 25,
     textAlign: "center",
     paddingHorizontal: 80,
     fontWeight: "bold",
   },
   buttonContainer: {
     position: "absolute",
-    bottom: 50,
+    bottom: 30,
   },
   button: {
     backgroundColor: "#F47966",
@@ -130,6 +133,11 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     width: 250,
     textAlign: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4.65,
+    elevation: 8,
   },
   buttonText: {
     color: "#FFFFFF",
@@ -140,41 +148,6 @@ const styles = StyleSheet.create({
   icon: {
     height: 40,
     width: 40,
-  },
-  iconContainer: {
-    position: "absolute",
-    backgroundColor: "#002C30",
-    padding: 10,
-    borderRadius: 30,
-    zIndex: 999,
-    right: 30,
-    bottom: 200,
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent background
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalContainer: {
-    width: "100%",
-    height: "100%",
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    padding: 20,
-  },
-  closeButton: {
-    position: "absolute",
-    top: 80,
-    left: 30,
-    zIndex: 999,
-    padding: 15,
-    backgroundColor: "#D9D9D9",
-    borderRadius: 30,
-  },
-  closeButtonText: {
-    fontSize: 20,
-    fontWeight: "bold",
   },
   plane: {
     flex: 1,

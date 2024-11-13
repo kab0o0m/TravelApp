@@ -34,6 +34,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import Chatbot from "./Chatbot";
 import ArrowLeft from "../assets/icons/ArrowLeft.png";
 import FrogIcon from "../assets/Frog.png";
+import Mappit from "../components/Mappit";
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
@@ -74,9 +75,12 @@ const Home = () => {
 
   return (
     <View style={styles.mainContainer}>
-      <ScrollView style={styles.container} contentContainerStyle={styles.scrollViewContent}>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.scrollViewContent}
+      >
+        <Mappit colour="#fff" />
         <View style={styles.headerContainer}>
-          <Text style={styles.header}>Mapp!t</Text>
           <Image
             source={require("../assets/images/HomePageBGWaves.png")}
             style={styles.headerImage}
@@ -85,7 +89,10 @@ const Home = () => {
 
         <TouchableOpacity onPress={() => navigation.navigate("LocationSearch")}>
           <View style={styles.searchContainer}>
-            <Image source={require("../assets/icons/Search.png")} style={styles.searchIcon} />
+            <Image
+              source={require("../assets/icons/Search.png")}
+              style={styles.searchIcon}
+            />
             <TextInput
               style={styles.searchInput}
               placeholder="Discover Singapore"
@@ -97,8 +104,16 @@ const Home = () => {
 
         <View style={styles.relativeContainer}>
           <View style={styles.absoluteBox} />
-          <Image source={SingaporeHome} style={styles.absoluteImage} resizeMode="cover" />
-          <Image source={SingaporeHome} style={styles.absoluteImage} resizeMode="cover" />
+          <Image
+            source={SingaporeHome}
+            style={styles.absoluteImage}
+            resizeMode="cover"
+          />
+          <Image
+            source={SingaporeHome}
+            style={styles.absoluteImage}
+            resizeMode="cover"
+          />
         </View>
 
         {/* Popular Destinations */}
@@ -108,10 +123,14 @@ const Home = () => {
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            style={styles.popularScrollView}>
+            style={styles.popularScrollView}
+          >
             {/* Marina Bay Sands */}
 
-            <TouchableOpacity style={styles.destinationContainer} onPress={() => handlePress(1)}>
+            <TouchableOpacity
+              style={styles.destinationContainer}
+              onPress={() => handlePress(1)}
+            >
               <View style={styles.destinationBackground} />
               <Image source={MarinaBaySands} style={styles.destinationImage} />
               <LinearGradient
@@ -125,7 +144,10 @@ const Home = () => {
 
             {/* The Esplanade */}
 
-            <TouchableOpacity style={styles.destinationContainer} onPress={() => handlePress(2)}>
+            <TouchableOpacity
+              style={styles.destinationContainer}
+              onPress={() => handlePress(2)}
+            >
               <View style={styles.destinationBackground} />
               <Image source={Esplanade} style={styles.destinationImage} />
               <LinearGradient
@@ -139,7 +161,10 @@ const Home = () => {
 
             {/* East Coast Park */}
 
-            <TouchableOpacity style={styles.destinationContainer} onPress={() => handlePress(3)}>
+            <TouchableOpacity
+              style={styles.destinationContainer}
+              onPress={() => handlePress(3)}
+            >
               <View style={styles.destinationBackground} />
               <Image source={EastCoastPark} style={styles.destinationImage} />
               <LinearGradient
@@ -155,7 +180,8 @@ const Home = () => {
 
             <TouchableOpacity
               style={styles.destinationContainerLast}
-              onPress={() => handlePress(4)}>
+              onPress={() => handlePress(4)}
+            >
               <View style={styles.destinationBackground} />
               <Image source={USS} style={styles.destinationImage} />
               <LinearGradient
@@ -176,17 +202,22 @@ const Home = () => {
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            style={styles.featuredScrollView}>
+            style={styles.featuredScrollView}
+          >
             {/* Hainanese Chicken Rice */}
             <TouchableOpacity
               style={styles.featuredContainer}
-              onPress={() => navigation.navigate("HomeFeatured1")}>
+              onPress={() => navigation.navigate("HomeFeatured1")}
+            >
               <View style={styles.featuredBackground} />
               <Image source={Chickenrice} style={styles.featuredImage} />
               <View style={styles.featuredTextContainer}>
                 <Text style={styles.featuredText}>Chicken Rice</Text>
                 <View style={styles.subTextContainer}>
-                  <Image source={require("../assets/icons/HomeIcon.png")} style={styles.homeIcon} />
+                  <Image
+                    source={require("../assets/icons/HomeIcon.png")}
+                    style={styles.homeIcon}
+                  />
                   <Text style={styles.featuredSubText}>Maxwell Hawker</Text>
                 </View>
               </View>
@@ -195,13 +226,17 @@ const Home = () => {
             {/* Katong Laksa */}
             <TouchableOpacity
               style={styles.featuredContainer}
-              onPress={() => navigation.navigate("HomeFeatured2")}>
+              onPress={() => navigation.navigate("HomeFeatured2")}
+            >
               <View style={styles.featuredBackground} />
               <Image source={Laksa} style={styles.featuredImage} />
               <View style={styles.featuredTextContainer}>
                 <Text style={styles.featuredText}>Katong Laksa</Text>
                 <View style={styles.subTextContainer}>
-                  <Image source={require("../assets/icons/HomeIcon.png")} style={styles.homeIcon} />
+                  <Image
+                    source={require("../assets/icons/HomeIcon.png")}
+                    style={styles.homeIcon}
+                  />
                   <Text style={styles.featuredSubText}>Roxy Square</Text>
                 </View>
               </View>
@@ -210,13 +245,17 @@ const Home = () => {
             {/* Murtabak */}
             <TouchableOpacity
               style={styles.featuredContainer}
-              onPress={() => navigation.navigate("HomeFeatured3")}>
+              onPress={() => navigation.navigate("HomeFeatured3")}
+            >
               <View style={styles.featuredBackground} />
               <Image source={Mutarbak} style={styles.featuredImage} />
               <View style={styles.featuredTextContainer}>
                 <Text style={styles.featuredText}>Murtabak</Text>
                 <View style={styles.subTextContainer}>
-                  <Image source={require("../assets/icons/HomeIcon.png")} style={styles.homeIcon} />
+                  <Image
+                    source={require("../assets/icons/HomeIcon.png")}
+                    style={styles.homeIcon}
+                  />
                   <Text style={styles.featuredSubText}>Zam Zam</Text>
                 </View>
               </View>
@@ -225,13 +264,17 @@ const Home = () => {
             {/* Beef Kway Teow */}
             <TouchableOpacity
               style={styles.featuredContainerLast}
-              onPress={() => navigation.navigate("HomeFeatured4")}>
+              onPress={() => navigation.navigate("HomeFeatured4")}
+            >
               <View style={styles.featuredBackground} />
               <Image source={BeefKwayteow} style={styles.featuredImage} />
               <View style={styles.featuredTextContainer}>
                 <Text style={styles.featuredText}>Beef Kway Teow</Text>
                 <View style={styles.subTextContainer}>
-                  <Image source={require("../assets/icons/HomeIcon.png")} style={styles.homeIcon} />
+                  <Image
+                    source={require("../assets/icons/HomeIcon.png")}
+                    style={styles.homeIcon}
+                  />
                   <Text style={styles.featuredSubText}>Geylang</Text>
                 </View>
               </View>
@@ -248,7 +291,8 @@ const Home = () => {
         animationType="slide"
         transparent={true}
         visible={modalVisible}
-        onRequestClose={toggleModal}>
+        onRequestClose={toggleModal}
+      >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
             <TouchableOpacity onPress={toggleModal} style={styles.closeButton}>
