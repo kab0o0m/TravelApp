@@ -37,6 +37,7 @@ const AIRandomiser = () => {
   const [locationName, setLocationName] = useState("Marina Bay Sands"); // Default location name
   const [activities, setActivities] = useState([]);
   const [locationId, setLocationId] = useState(null); // Store location ID to fetch sublocations
+  const [placeId, setPlaceId] = useState(null); // Store place ID
 
   const navigation = useNavigation();
 
@@ -68,13 +69,19 @@ const AIRandomiser = () => {
     frogAnimationRef.current.start();
   };
 
+  // Fetch random location details from backend
   const fetchRandomLocation = async () => {
     console.log("Fetching random location...");
     try {
       const response = await axios.get(`${BASE_URL}/api/locations/random`);
       if (response.data && response.data.location_name && response.data.id) {
-        setLocationName(response.data.location_name);
+        const locationName = response.data.location_name;
+        setLocationName(locationName);
         setLocationId(response.data.id); // Store the location ID for sublocation fetch
+
+        const fetchedPlaceId = await fetchPlaceIdFromBackend(locationName); // Fetch the place ID from backend
+        setPlaceId(fetchedPlaceId);
+
         await fetchSublocations(response.data.id); // Fetch related sublocations as activities
       } else {
         Alert.alert("Error", "Failed to fetch random location.");
@@ -82,6 +89,24 @@ const AIRandomiser = () => {
     } catch (error) {
       Alert.alert("Error", "Failed to fetch random location.");
       console.error("Error fetching random location:", error);
+    }
+  };
+
+  // Function to fetch placeId from your backend API
+  const fetchPlaceIdFromBackend = async (locationName) => {
+    try {
+      const response = await axios.get(`${BASE_URL}/api/places`, {
+        params: { query: locationName },
+      });
+      if (response.data && response.data.length > 0) {
+        return response.data[0].place_id;
+      } else {
+        console.error("No place found for the location name.");
+        return null;
+      }
+    } catch (error) {
+      console.error("Error fetching placeId from backend:", error);
+      return null;
     }
   };
 
@@ -137,7 +162,12 @@ const AIRandomiser = () => {
   };
 
   const navigateToPlannerNewTrip = () => {
-    navigation.navigate("PlannerNewTrip", { destination: locationName });
+    // Navigate to PlannerNewTrip with destination location name, location ID, and place ID
+    navigation.navigate("PlannerNewTrip", {
+      destination: locationName,
+      locationId,
+      placeId,
+    });
   };
 
   if (!fontsLoaded) {
@@ -299,7 +329,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-evenly",
     alignItems: "center",
     top: -325,
-    // left: screenWidth / 2 - 176,
+    left: screenWidth / 2 - 176,
     zIndex: 2,
   },
   messageText: {
