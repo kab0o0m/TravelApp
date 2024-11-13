@@ -245,24 +245,31 @@ const Expenses = () => {
     return null;
   }
 
+
   const populateExpenses = async (tripId) => {
     try {
-      // Fetch budget for the selected trip
+      // Fetch budget for the selected
       const tripBudget = await getBudgetByTripId(tripId);
       setBudget(tripBudget); // Set the fetched budget in state
-
+  
       const tripExpenses = await getExpensesByTripId(tripId);
       setExpenses(tripExpenses);
+      console.log("populate Expenses", tripExpenses);
       const totalSpentAmount = tripExpenses.reduce(
         (sum, expense) => sum + expense.amount,
         0
       );
       setTotalSpent(totalSpentAmount);
+  
+      // Update pie chart data with newly fetched expenses
+      updatePieChartData(tripExpenses);
+  
     } catch (error) {
       console.error("Error fetching budget:", error);
       Alert.alert("Error", "Failed to fetch budget. Please try again.");
     }
   };
+  
 
   const handleAddExpense = async (expense) => {
     setExpenses([...expenses, expense]);
@@ -292,27 +299,36 @@ const Expenses = () => {
   );
 
   const handleDeleteExpense = async (id) => {
-    const updatedExpenses = expenses.filter((expense) => expense.id !== id);
-    setExpenses(updatedExpenses);
-
-    updatePieChartData(updatedExpenses);
-
-    // Update totalSpent
-    const deletedExpense = expenses.find((expense) => expense.id === id);
-    if (deletedExpense) {
-      setTotalSpent((prevTotal) => prevTotal - deletedExpense.amount);
-    }
-
-    // ====== API ======
     try {
-      // Delete the expense
-      await deleteExpense(userId, id);
-      console.log("Expense deleted successfully.");
+      // Step 1: Attempt to delete the expense from the backend
+      await deleteExpense(id);
+  
+      // Step 2: If API call is successful, update the local state
+      const updatedExpenses = expenses.filter((expense) => expense.id !== id);
+      setExpenses(updatedExpenses);
+  
+      // Step 3: Update the total spent
+      const deletedExpense = expenses.find((expense) => expense.id === id);
+      if (deletedExpense) {
+        setTotalSpent((prevTotal) => prevTotal - deletedExpense.amount);
+      }
+  
+      // Step 4: Update the Pie Chart data to reflect the deleted expense
+      updatePieChartData(updatedExpenses);
+  
+      // Step 5: Optionally, show a success toast message
+      Toast.show({
+        type: 'success',
+        text1: 'Deleted',
+        text2: 'Expense deleted successfully.',
+      });
+  
     } catch (error) {
-      console.error("Error deleting expense:", error);
+      // Step 6: Handle errors from the backend and inform the user
+      console.error("Error deleting expense:", error.message);
       Alert.alert("Error", "Failed to delete expense. Please try again later.");
     }
-  };
+  };  
 
   const toggleSummary = () => {
     setSummaryVisible(!summaryVisible);
