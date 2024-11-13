@@ -14,7 +14,8 @@ import NavBar from "../components/NavBar";
 const PlannerItinerary = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const { destination, dates } = route.params || {};
+  const { trip } = route.params || {};
+  const destination = trip?.location_name || "Unknown Destination";
   const [expandedDates, setExpandedDates] = useState([]);
 
   // Sample itinerary data

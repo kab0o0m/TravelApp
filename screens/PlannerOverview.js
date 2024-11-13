@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   View,
   Text,
@@ -6,56 +6,48 @@ import {
   TouchableOpacity,
   ScrollView,
   TextInput,
-  FlatList,
   Image,
+  Alert,
 } from "react-native";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import {
+  useNavigation,
+  useRoute,
+  useFocusEffect,
+} from "@react-navigation/native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import PlannerTabs from "../components/PlannerTabs";
 import NavBar from "../components/NavBar";
+import { Swipeable } from "react-native-gesture-handler";
+import {
+  getPlacePhotoByPlaceId,
+  createPlaceInTrip,
+  deletePlaceById,
+} from "../api/places";
+import axios from "axios";
+import BASE_URL from "../config";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { fetchUserData } from "../api/authAPI";
 
 const PlannerOverview = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const { destination, dates } = route.params || {};
+  const { trip } = route.params || {};
+  const destination = trip?.location_name || "Unknown Destination";
 
-  // Tab state
-  const [activeTab, setActiveTab] = useState("Overview");
+  // Directly set `userId` from `trip` data, or initialize it as null if not available
+  const [userId, setUserId] = useState(trip?.userId || trip?.user_id || null);
+  const [places, setPlaces] = useState([]);
 
-  // const [activeTab, setActiveTab] = useState("Overview");
+  console.log("Received trip data:", trip);
+  console.log("Extracted userId:", userId);
+
+  const [notes, setNotes] = useState("");
+  const [tempNotes, setTempNotes] = useState("");
   const [isNotesOpen, setIsNotesOpen] = useState(false);
   const [isEditingNotes, setIsEditingNotes] = useState(false);
   const [isPlacesOpen, setIsPlacesOpen] = useState(false);
-  const [isAddTitleOpen, setIsAddTitleOpen] = useState(false);
-  const [notes, setNotes] = useState("");
-  const [tempNotes, setTempNotes] = useState("");
-  const [places, setPlaces] = useState([]);
   const [titles, setTitles] = useState(["Untitled"]);
-
-  // Tab navigation functions
-  const handleTabPress = (tab) => {
-    setActiveTab(tab);
-    navigation.navigate(tab); // Navigate to the corresponding tab screen
-  };
-
-  // Callback to handle adding a place from Explore
-  const handlePlaceSelect = (selectedPlace) => {
-    setPlaces((prevPlaces) => [
-      ...prevPlaces,
-      {
-        id: (prevPlaces.length + 1).toString(),
-        name: selectedPlace.title,
-        description: selectedPlace.description,
-        image: selectedPlace.photoUrl || "https://via.placeholder.com/150",
-      },
-    ]);
-  };
-
-  const navigateToExplore = () => {
-    navigation.navigate("Explore", {
-      onPlaceSelect: handlePlaceSelect, // Pass the callback to Explore
-    });
-  };
+  const [isAddTitleOpen, setIsAddTitleOpen] = useState(false);
 
   const toggleNotes = () => {
     setIsNotesOpen(!isNotesOpen);
@@ -69,9 +61,122 @@ const PlannerOverview = () => {
     setIsEditingNotes(false);
   };
 
-  const deletePlace = (id) => {
-    setPlaces(places.filter((place) => place.id !== id));
+  useEffect(() => {
+    const loadUserId = async () => {
+      if (userId) return; // Skip loading if userId is already set
+
+      try {
+        let storedUserData = await AsyncStorage.getItem("userData");
+        if (!storedUserData) {
+          console.log("Fetching user data...");
+          storedUserData = await fetchUserData();
+          await AsyncStorage.setItem(
+            "userData",
+            JSON.stringify(storedUserData)
+          );
+        }
+        const userData = JSON.parse(storedUserData);
+        setUserId(userData.id);
+      } catch (error) {
+        console.error("Error loading user data:", error);
+        Alert.alert("Error", "Failed to retrieve user data.");
+      }
+    };
+    loadUserId();
+  }, [userId]);
+
+  const fetchPlaces = async () => {
+    if (!userId || !trip?.id) {
+      console.warn("Warning: Missing userId or trip data.");
+      return;
+    }
+    try {
+      const response = await axios.get(
+        `${BASE_URL}/api/users/${userId}/places`
+      );
+      console.log("Raw places data from API:", response.data); // Ensure data has `location_name` and `description`
+
+      const placesWithPhotos = await Promise.all(
+        response.data.map(async (place) => {
+          const photoUrl = place.places_id
+            ? await getPlacePhotoByPlaceId(place.places_id)
+            : null;
+
+          return {
+            id: place.id,
+            location_name: place.location_name || "Unknown Location",
+            description: place.description || "No description available",
+            photoUrl: photoUrl,
+          };
+        })
+      );
+      setPlaces(placesWithPhotos);
+    } catch (error) {
+      console.error("Error fetching places:", error);
+      Alert.alert("Error", "Failed to load places.");
+    }
   };
+
+  useEffect(() => {
+    console.log("Current places state:", places);
+  }, [places]);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchPlaces();
+    }, [userId, trip])
+  );
+
+  const handlePlaceSelect = async (place) => {
+    console.log("Handling place selection:", place); // Debug log
+    try {
+      const placeId = place.placeId;
+      await createPlaceInTrip(userId, trip.id, { placeId });
+
+      const newPlace = {
+        id: placeId, // Use `placeId` as unique ID
+        location_name: place.location_name,
+        description: place.description,
+        photoUrl: place.photoUrl || "https://via.placeholder.com/150",
+      };
+
+      setPlaces((prevPlaces) => [...prevPlaces, newPlace]);
+      Alert.alert("Success", "Place added to trip!");
+    } catch (error) {
+      console.error("Error handling place selection:", error);
+      Alert.alert("Error", "Failed to add place to trip.");
+    }
+  };
+
+  const navigateToExplore = () => {
+    navigation.navigate("Explore", {
+      trip,
+      onPlaceSelect: handlePlaceSelect,
+    });
+  };
+
+  const handleDeletePlace = async (placeId) => {
+    try {
+      console.log("Attempting to delete place with id:", placeId);
+      await deletePlaceById(placeId);
+      setPlaces((prevPlaces) =>
+        prevPlaces.filter((place) => place.id !== placeId)
+      );
+      Alert.alert("Deleted", "Place deleted successfully.");
+    } catch (error) {
+      console.error("Error deleting place:", error);
+      Alert.alert("Error", "Failed to delete place.");
+    }
+  };
+
+  const renderRightActions = (placeId) => (
+    <TouchableOpacity
+      style={styles.deleteContainer}
+      onPress={() => handleDeletePlace(placeId)}
+    >
+      <Text style={styles.deleteButtonText}>Delete</Text>
+    </TouchableOpacity>
+  );
 
   const addNewTitleSection = () => {
     setTitles([...titles, "Untitled"]);
@@ -79,11 +184,9 @@ const PlannerOverview = () => {
 
   return (
     <View style={styles.container}>
-      {/* Use PlannerTabs with the destination and activeTab="Overview" */}
       <PlannerTabs destination={destination} activeTab="Overview" />
 
       <ScrollView style={styles.contentContainer}>
-        {/* Notes Section */}
         <TouchableOpacity
           onPress={toggleNotes}
           style={styles.sectionHeaderContainer}
@@ -128,7 +231,6 @@ const PlannerOverview = () => {
           </View>
         )}
 
-        {/* Places to Visit Section */}
         <TouchableOpacity
           onPress={() => setIsPlacesOpen(!isPlacesOpen)}
           style={styles.sectionHeaderContainer}
@@ -145,32 +247,35 @@ const PlannerOverview = () => {
             {places.length === 0 ? (
               <Text style={styles.noPlacesText}>No places added yet.</Text>
             ) : (
-              <FlatList
-                data={places}
-                renderItem={({ item }) => (
-                  <View style={styles.placeItem}>
-                    <Image
-                      source={{ uri: item.image }}
-                      style={styles.placeImage}
-                    />
-                    <View>
-                      <Text style={styles.placeTitle}>{item.name}</Text>
-                      <Text style={styles.placeDescription}>
-                        {item.description}
-                      </Text>
+              places.map((place, index) => (
+                <View key={index}>
+                  <Swipeable
+                    key={index}
+                    renderRightActions={() => renderRightActions(place.id)}
+                  >
+                    <View style={styles.placeItem}>
+                      <Image
+                        source={{
+                          uri:
+                            place.photoUrl || "https://via.placeholder.com/150",
+                        }}
+                        style={styles.placeImage}
+                      />
+                      <View style={styles.placeInfo}>
+                        <Text style={styles.placeTitle}>
+                          {place.location_name}
+                        </Text>
+                        <Text style={styles.placeDescription}>
+                          {place.description}
+                        </Text>
+                      </View>
                     </View>
-                  </View>
-                )}
-                keyExtractor={(item) => item.id}
-              />
+                  </Swipeable>
+                </View>
+              ))
             )}
-            {/* Add Place Input Field */}
             <TouchableOpacity
-              onPress={() =>
-                navigation.navigate("Explore", {
-                  onPlaceSelect: handlePlaceSelect,
-                })
-              }
+              onPress={navigateToExplore}
               style={styles.addPlaceInput}
             >
               <Text style={styles.addPlaceInputText}>Add a place</Text>
@@ -178,7 +283,6 @@ const PlannerOverview = () => {
           </View>
         )}
 
-        {/* Add Multiple Titles */}
         <TouchableOpacity
           onPress={() => setIsAddTitleOpen(!isAddTitleOpen)}
           style={styles.sectionHeaderContainer}
@@ -220,20 +324,8 @@ const PlannerOverview = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-
-  picker: {
-    marginTop: 10,
-    alignSelf: "center",
-  },
-
-  contentContainer: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-  },
+  container: { flex: 1, backgroundColor: "#fff" },
+  contentContainer: { paddingHorizontal: 20, paddingVertical: 10 },
   sectionHeaderContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -241,14 +333,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#eee",
   },
-  arrowIcon: {
-    marginRight: 10,
-  },
-  sectionHeader: {
-    fontSize: 18,
-    fontWeight: "bold",
-    paddingLeft: 10,
-  },
+  sectionHeader: { fontSize: 18, fontWeight: "bold", paddingLeft: 10 },
   sectionContentInput: {
     padding: 10,
     borderColor: "#ddd",
@@ -259,55 +344,35 @@ const styles = StyleSheet.create({
   },
   doneButton: {
     alignSelf: "flex-end",
-    marginTop: 5,
     paddingHorizontal: 15,
     paddingVertical: 5,
     backgroundColor: "#FF7043",
     borderRadius: 5,
   },
-  doneButtonText: {
-    color: "#fff",
-    fontSize: 14,
-  },
-  notesDisplay: {
-    padding: 10,
-    color: "#666",
-    fontStyle: "italic",
-  },
+  doneButtonText: { color: "#fff" },
+  notesDisplay: { padding: 10, color: "#666", fontStyle: "italic" },
   addPlaceInput: {
-    flexDirection: "row",
-    alignItems: "center",
     padding: 15,
     marginVertical: 10,
     borderRadius: 8,
-    backgroundColor: "#F3F4F6", // light gray to resemble input field
+    backgroundColor: "#F3F4F6",
   },
-  addPlaceInputText: {
-    fontSize: 16,
-    color: "#9CA3AF", // gray color for placeholder text
-  },
+  addPlaceInputText: { fontSize: 16, color: "#9CA3AF" },
   placeItem: {
     flexDirection: "row",
-    padding: 10,
-    backgroundColor: "#f0f0f0",
-    borderRadius: 8,
-    marginBottom: 10,
     alignItems: "center",
-  },
-  placeImage: {
-    width: 50,
-    height: 50,
+    backgroundColor: "#fff",
+    padding: 10,
     borderRadius: 8,
-    marginRight: 10,
+    marginVertical: 5,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
-  placeTitle: {
-    fontWeight: "bold",
-    fontSize: 16,
-  },
-  placeDescription: {
-    color: "#666",
-    marginTop: 2,
-  },
+  placeImage: { width: 50, height: 50, borderRadius: 8, marginRight: 10 },
+  placeInfo: { flex: 1 },
+  placeTitle: { fontWeight: "bold", fontSize: 16 },
+  placeDescription: { color: "#666", marginTop: 2 },
   newListButton: {
     backgroundColor: "#FF7043",
     borderRadius: 8,
@@ -315,11 +380,17 @@ const styles = StyleSheet.create({
     padding: 10,
     marginVertical: 20,
   },
-  newListButtonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
+  newListButtonText: { color: "#fff", fontSize: 16, fontWeight: "bold" },
+  deleteContainer: {
+    backgroundColor: "#F47966",
+    justifyContent: "center",
+    width: 80,
+    height: "80%",
+    borderRadius: 5,
+    marginTop: 13,
+    alignItems: "center",
   },
+  deleteButtonText: { color: "#fff", fontWeight: "bold" },
 });
 
 export default PlannerOverview;

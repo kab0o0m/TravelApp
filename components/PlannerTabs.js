@@ -20,7 +20,7 @@ const PlannerTabs = ({ destination, activeTab }) => {
       default:
         screenName = "PlannerOverview";
     }
-    navigation.navigate(screenName, { destination });
+    navigation.navigate(screenName, { trip: { location_name: destination } });
   };
   return (
     <View>

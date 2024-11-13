@@ -9,7 +9,7 @@ import {
   Image,
 } from "react-native";
 import { Swipeable } from "react-native-gesture-handler";
-import Toast from 'react-native-toast-message';
+import Toast from "react-native-toast-message";
 import NavBar from "../components/NavBar";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import axios from "axios";
@@ -28,7 +28,7 @@ const Planner = () => {
     if (!userId) return;
     try {
       const response = await axios.get(`${BASE_URL}/api/users/${userId}/trips`);
-      
+
       const tripsWithPhotos = await Promise.all(
         response.data.map(async (trip) => {
           const photoUrl = await getPlacePhotoByPlaceId(trip.places_id);
@@ -48,9 +48,9 @@ const Planner = () => {
       await deleteTripById(tripId);
       setTrips(trips.filter((trip) => trip.id !== tripId));
       Toast.show({
-        type: 'error',
-        text1: 'Deleted',
-        text2: 'Trip deleted successfully.',
+        type: "error",
+        text1: "Deleted",
+        text2: "Trip deleted successfully.",
       });
     } catch (error) {
       console.error("Error deleting trip:", error);
@@ -63,12 +63,12 @@ const Planner = () => {
     const start = new Date(startDate);
     const differenceInTime = start - today;
     const daysLeft = Math.ceil(differenceInTime / (1000 * 3600 * 24));
-  
+
     if (daysLeft <= 0) return "Today"; // Starts today
     if (daysLeft === 1) return "1 day left"; // Only 1 day left
     return `${daysLeft} days left`; // More than 1 day
   };
-  
+
   useFocusEffect(
     useCallback(() => {
       fetchTrips();
@@ -82,7 +82,10 @@ const Planner = () => {
         if (!storedUserData) {
           console.log("Fetching user data...");
           storedUserData = await fetchUserData();
-          await AsyncStorage.setItem("userData", JSON.stringify(storedUserData));
+          await AsyncStorage.setItem(
+            "userData",
+            JSON.stringify(storedUserData)
+          );
         }
         const userData = JSON.parse(storedUserData);
         setUserId(userData.id);
@@ -104,7 +107,12 @@ const Planner = () => {
   };
 
   const handleTripPress = (trip) => {
-    navigation.navigate("PlannerOverview", { trip });
+    console.log("Navigating with trip:", trip);
+    if (userId) {
+      navigation.navigate("PlannerOverview", { trip: { ...trip, userId } });
+    } else {
+      console.warn("User ID is not available");
+    }
   };
 
   const renderRightActions = (tripId) => (
@@ -140,7 +148,10 @@ const Planner = () => {
                   <View style={styles.tripItem}>
                     <View style={styles.tripDetails}>
                       {trip.photoUrl ? (
-                        <Image source={{ uri: trip.photoUrl }} style={styles.tripImage} />
+                        <Image
+                          source={{ uri: trip.photoUrl }}
+                          style={styles.tripImage}
+                        />
                       ) : (
                         <View style={styles.tripImagePlaceholder} />
                       )}
@@ -158,14 +169,18 @@ const Planner = () => {
                           {trip.location_name}
                         </Text>
                         <Text style={styles.tripDates}>
-                          {`${formatDate(trip.start_date)} - ${formatDate(trip.end_date)}`}
+                          {`${formatDate(trip.start_date)} - ${formatDate(
+                            trip.end_date
+                          )}`}
                         </Text>
                       </View>
                     </View>
                   </View>
                 </TouchableOpacity>
               </Swipeable>
-              {index < trips.length - 1 && <View style={styles.tripSeparator} />}
+              {index < trips.length - 1 && (
+                <View style={styles.tripSeparator} />
+              )}
             </View>
           ))
         )}
@@ -180,17 +195,16 @@ const Planner = () => {
         >
           <Text style={styles.addTripButtonText}>+ Add Trip</Text>
         </TouchableOpacity>
-        
+
         <TouchableOpacity
           onPress={() => {
-            navigation.navigate("AIRandomiser")
+            navigation.navigate("AIRandomiser");
           }}
           style={styles.randomButton}
         >
           <Text style={styles.randomButtonText}>🎲 Random</Text>
         </TouchableOpacity>
       </View>
-
 
       <NavBar />
     </View>
@@ -277,7 +291,7 @@ const styles = StyleSheet.create({
     color: "#F47966",
     fontWeight: "bold",
   },
-  
+
   tripItem: {
     flexDirection: "row",
     alignItems: "center",

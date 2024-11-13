@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -33,8 +33,10 @@ const Button = ({
 
 const Explore = () => {
   const route = useRoute();
+  const { trip, onPlaceSelect } = route.params || {};
+  const destination = trip?.location_name || "Unknown Destination";
   const navigation = useNavigation();
-  const { onPlaceSelect } = route.params || {}; // Destructure the callback from route params
+
   const [searchQuery, setSearchQuery] = useState("");
   const [mapRegion, setMapRegion] = useState({
     latitude: 1.3521,
@@ -47,7 +49,6 @@ const Explore = () => {
   const [locationDetails, setLocationDetails] = useState({});
   const [weatherData, setWeatherData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const { destination } = route.params || {};
 
   const dismissKeyboard = () => Keyboard.dismiss();
 
@@ -79,7 +80,6 @@ const Explore = () => {
         setMarkerPosition({ latitude: location.lat, longitude: location.lng });
         setLocationDetails(placeDetails);
 
-        // Fetch the weather data for the selected location
         await fetchWeatherDataForLocation(location.lat, location.lng);
         setIsLoading(false);
       } else {
@@ -95,13 +95,22 @@ const Explore = () => {
 
   const handlePlaceSelection = () => {
     if (onPlaceSelect) {
-      onPlaceSelect({
-        title: locationDetails.title,
+      // Creating the selectedPlace object with consistent property names
+      const selectedPlace = {
+        placeId: locationDetails.placeId || locationDetails.place_id, // Ensure this matches what's used elsewhere in your app
+        location_name: locationDetails.title,
         description: locationDetails.description,
-        photoReference: locationDetails.photoReference,
-      });
+        photoUrl: locationDetails.photoReference
+          ? `${BASE_URL}/api/place-photo?photo_reference=${locationDetails.photoReference}&maxwidth=400`
+          : "https://via.placeholder.com/150", // fallback URL if photoReference is missing
+      };
+
+      console.log("Selected place data being sent:", selectedPlace); // Debugging log to verify all data
+
+      // Send selectedPlace back to PlannerOverview
+      onPlaceSelect(selectedPlace);
+      navigation.goBack();
     }
-    navigation.goBack(); // Return to PlannerOverview
   };
 
   const fetchWeatherDataForLocation = async (latitude, longitude) => {
@@ -125,7 +134,6 @@ const Explore = () => {
   return (
     <TouchableWithoutFeedback onPress={dismissKeyboard}>
       <View style={styles.container}>
-        {/* Use PlannerTabs with the destination and activeTab="Explore" */}
         <PlannerTabs destination={destination} activeTab="Explore" />
 
         {isLoading ? (
@@ -142,7 +150,6 @@ const Explore = () => {
               <Button title="Search" onPress={handleSearch} />
             </View>
 
-            {/* Wrap MapView in a flex container with specific height */}
             <View style={styles.mapContainer}>
               <MapView style={styles.map} region={mapRegion}>
                 {markerPosition && (
@@ -161,12 +168,11 @@ const Explore = () => {
               locationDetails={locationDetails}
               weatherData={weatherData}
               onClose={() => setModalVisible(false)}
-              onAddToPlanner={handlePlaceSelection} // Use handlePlaceSelection to add to PlannerOverview
+              onAddToPlanner={handlePlaceSelection}
             />
           </>
         )}
 
-        {/* NavBar at the bottom */}
         <NavBar />
       </View>
     </TouchableWithoutFeedback>
@@ -192,7 +198,7 @@ const styles = StyleSheet.create({
   },
   mapContainer: {
     flex: 1,
-    height: "80%", // Adjust the height to leave space for the NavBar
+    height: "80%",
   },
   map: { width: "100%", height: "100%" },
   button: {

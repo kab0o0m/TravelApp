@@ -76,7 +76,7 @@ const Startpage = () => {
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={styles.button}
-            onPress={() => navigation.navigate("Planner")}
+            onPress={() => navigation.navigate("Home")}
           >
             <Text style={styles.buttonText}>Start My Journey</Text>
           </TouchableOpacity>
