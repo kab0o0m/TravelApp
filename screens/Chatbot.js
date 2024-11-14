@@ -24,6 +24,7 @@ import { GROQ_KEY } from "@env";
 import { fetchUserData } from "../api/authAPI";
 import BASE_URL from "../config";
 import { format } from "date-fns";
+import { useFonts, Nunito_400Regular, Nunito_700Bold } from "@expo-google-fonts/nunito";
 
 const Chatbot = () => {
   const [messages, setMessages] = useState([]);
@@ -34,6 +35,14 @@ const Chatbot = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [trips, setTrips] = useState([]);
   const [userId, setUserId] = useState(null);
+  const [fontsLoaded] = useFonts({
+    Nunito_400Regular,
+    Nunito_700Bold,
+  });
+
+  if (!fontsLoaded) {
+    return null; // You can add a loading spinner or screen here if needed
+  }
 
   const initialMessage = "Hi! I'm Ribb!t, how can i help you today?";
 

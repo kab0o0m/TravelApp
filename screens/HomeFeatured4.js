@@ -20,6 +20,7 @@ import {
 import * as SplashScreen from "expo-splash-screen";
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
+import Mappit from "../components/Mappit";
 
 const { width: screenWidth } = Dimensions.get("window");
 const { height: screenHeight } = Dimensions.get("window");
@@ -50,35 +51,25 @@ const HomeFeatured4 = () => {
   const handleWebsitePress = () => {
     const url =
       "https://guide.michelin.com/sg/en/singapore-region/singapore/restaurant/lor-9-beef-kway-teow";
-    Linking.openURL(url).catch((err) =>
-      console.error("Failed to open URL:", err)
-    );
+    Linking.openURL(url).catch((err) => console.error("Failed to open URL:", err));
   };
 
   const handlePhonePress = () => {
     const phoneNumber = "tel:+65 9388 0723";
-    Linking.openURL(phoneNumber).catch((err) =>
-      console.error("Failed to open phone dialer:", err)
-    );
+    Linking.openURL(phoneNumber).catch((err) => console.error("Failed to open phone dialer:", err));
   };
 
   const handleMapPress = () => {
     const address = "237 Geylang Rd, Singapore 389296";
-    const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-      address
-    )}`;
-    Linking.openURL(url).catch((err) =>
-      console.error("Failed to open maps:", err)
-    );
+    const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+    Linking.openURL(url).catch((err) => console.error("Failed to open maps:", err));
   };
 
   const navigateToPlannerNewTrip = () => {
     navigation.navigate("PlannerNewTrip", {
-        destination: "Lor 9 Beef Kway Teow" // Pass the destination
+      destination: "Lor 9 Beef Kway Teow", // Pass the destination
     });
   };
-
-  
 
   if (!fontsLoaded) {
     return (
@@ -91,17 +82,11 @@ const HomeFeatured4 = () => {
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => navigation.navigate("Home")}
-        >
-          <Image
-            source={require("../assets/icons/BackArrow.png")}
-            style={styles.arrowIcon}
-          />
+        <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate("Home")}>
+          <Image source={require("../assets/icons/BackArrow.png")} style={styles.arrowIcon} />
           <Text style={styles.backText}>BACK</Text>
         </TouchableOpacity>
-        <Text style={styles.header}>Mapp!t</Text>
+        <Mappit colour="#fff" />
         <Image
           source={require("../assets/images/HomePageBGWaves.png")}
           style={styles.headerImage}
@@ -109,74 +94,51 @@ const HomeFeatured4 = () => {
       </View>
 
       <View style={styles.featuredContainer}>
-        <Image
-          source={require("../assets/Geylang.jpg")}
-          style={styles.featuredImage}
-        />
+        <Image source={require("../assets/Geylang.jpg")} style={styles.featuredImage} />
         <LinearGradient
           colors={["#FFFFFF00", "rgba(0, 0, 0, 0.4)"]} // Linear gradient from white to black with 40% opacity
           style={styles.featuredOverlay}
         />
-        <Text style={styles.featuredTitle}>
-        Beef Kway Teow
-        </Text>
+        <Text style={styles.featuredTitle}>Beef Kway Teow</Text>
       </View>
 
       <View style={styles.infoMainContainer}>
         <Text style={styles.about}>About:</Text>
 
         <Text style={styles.description}>
-        Earning a Michelin Plate, Lor 9 Beef Kway Teow is a must-visit destination with Cantonese & Fujian dishes skillfully adapted to local tastes.
+          Earning a Michelin Plate, Lor 9 Beef Kway Teow is a must-visit destination with Cantonese
+          & Fujian dishes skillfully adapted to local tastes.
         </Text>
 
         <View style={styles.infoContainer}>
-          <Image
-            source={require("../assets/icons/LocationIcon.png")}
-            style={styles.icon}
-          />
+          <Image source={require("../assets/icons/LocationIcon.png")} style={styles.icon} />
           <TouchableOpacity onPress={handleMapPress}>
             <Text style={styles.infoText}>237 Geylang Road, S389296</Text>
           </TouchableOpacity>
-          
-          
         </View>
 
         <View style={styles.infoContainer}>
-          <Image
-            source={require("../assets/icons/PhoneIcon.png")}
-            style={styles.icon}
-          />
+          <Image source={require("../assets/icons/PhoneIcon.png")} style={styles.icon} />
           <TouchableOpacity onPress={handlePhonePress}>
             <Text style={styles.infoText}>+65 9388 0723</Text>
           </TouchableOpacity>
         </View>
 
         <View style={styles.infoContainer}>
-          <Image
-            source={require("../assets/icons/WebsiteIcon.png")}
-            style={styles.icon}
-          />
+          <Image source={require("../assets/icons/WebsiteIcon.png")} style={styles.icon} />
           <TouchableOpacity onPress={handleWebsitePress}>
             <Text style={styles.website}>Our Website</Text>
           </TouchableOpacity>
         </View>
 
         <View style={styles.infoContainer}>
-          <Image
-            source={require("../assets/icons/TimeIcon.png")}
-            style={styles.icon}
-          />
+          <Image source={require("../assets/icons/TimeIcon.png")} style={styles.icon} />
           <Text style={styles.infoText}>Mon - Sun: 11AM - 12.30AM</Text>
         </View>
-
-        
       </View>
 
       <View style={styles.bookNowContainer}>
-        <TouchableOpacity
-          style={styles.bookNowButton}
-          onPress={navigateToPlannerNewTrip}
-        >
+        <TouchableOpacity style={styles.bookNowButton} onPress={navigateToPlannerNewTrip}>
           <Text style={styles.bookNowText}>Add to Planner!</Text>
         </TouchableOpacity>
       </View>

@@ -11,19 +11,20 @@ import {
 import Startpagebackground from "../assets/images/Startpagebackground.png";
 import { useNavigation } from "@react-navigation/native";
 import { useState, useEffect } from "react";
-import Chatbot from "./Chatbot";
-import FrogIcon from "../assets/Frog.png";
-import ArrowLeft from "../assets/icons/ArrowLeft.png";
-import plane from "../assets/images/Plane.png";
-import background from "../assets/images/background.png";
 import * as SplashScreen from "expo-splash-screen";
 import Mappit from "../components/Mappit";
+import { useFonts, Nunito_400Regular, Nunito_700Bold } from "@expo-google-fonts/nunito";
 
 SplashScreen.preventAutoHideAsync(); // Prevent the splash screen from auto-hiding
 
 const Startpage = () => {
   const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(false);
+
+  const [fontsLoaded] = useFonts({
+    Nunito_400Regular,
+    Nunito_700Bold,
+  });
 
   useEffect(() => {
     navigation.setOptions({
@@ -42,44 +43,14 @@ const Startpage = () => {
 
   return (
     <View style={styles.container}>
-      <ImageBackground
-        source={Startpagebackground}
-        style={styles.backgroundImage}
-      >
-        {/* <TouchableOpacity style={styles.iconContainer} onPress={toggleModal}>
-          <Image source={FrogIcon} style={styles.icon} resizeMode="contain" />
-        </TouchableOpacity> */}
-
-        {/* <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={toggleModal}
-        >
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalContainer}>
-              <TouchableOpacity
-                onPress={toggleModal}
-                style={styles.closeButton}
-              >
-                <Image source={ArrowLeft} />
-              </TouchableOpacity>
-
-              <Chatbot />
-            </View>
-          </View>
-        </Modal> */}
-
+      <ImageBackground source={Startpagebackground} style={styles.backgroundImage}>
         <Mappit colour="#fff" />
 
         <View style={styles.headerContainer}>
           <Text style={styles.header}>EXPLORE THE WORLD</Text>
         </View>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => navigation.navigate("Login")}
-          >
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Home")}>
             <Text style={styles.buttonText}>Start My Journey</Text>
           </TouchableOpacity>
         </View>
@@ -110,8 +81,7 @@ const styles = StyleSheet.create({
     paddingBottom: 500,
     width: 250,
     marginRight: 90,
-    fontWeight: "bold",
-    marginTop: 50,
+    fontFamily: "Nunito_700Bold",
   },
   subHeader: {
     position: "absolute",
@@ -125,7 +95,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     position: "absolute",
-    bottom: 30,
+    bottom: 40,
   },
   button: {
     backgroundColor: "#F47966",

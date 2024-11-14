@@ -23,14 +23,12 @@ import {
 import * as SplashScreen from "expo-splash-screen";
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
-import {
-  removeSavedLocation,
-  addSavedLocation,
-  fetchSavedLocations,
-} from "../api/locationAPI";
+import { removeSavedLocation, addSavedLocation, fetchSavedLocations } from "../api/locationAPI";
 import { fetchSublocationsByLocationId } from "../api/subLocationsAPI";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import BASE_URL from "../config";
+import Mappit from "../components/Mappit";
+import Chatbot from "../components/ChatbotButton";
 
 const { width: screenWidth } = Dimensions.get("window");
 
@@ -51,7 +49,7 @@ const HomePopular = ({ route }) => {
   const [loading, setLoading] = useState(true);
   const [skipConfirmation, setSkipConfirmation] = useState(false);
   const [subLocations, setSublocations] = useState([]);
-  
+
   const Images = {
     "spectra.png": require("../assets/sublocations/spectra.png"),
     "shoppes.png": require("../assets/sublocations/shoppes.png"),
@@ -71,22 +69,22 @@ const HomePopular = ({ route }) => {
     const fetchSublocations = async () => {
       const userId = await AsyncStorage.getItem("userData");
       const user = JSON.parse(userId);
-  
+
       if (!user?.id) {
         Alert.alert("User ID missing", "Unable to find user information.");
         return;
       }
-  
+
       try {
         const data = await fetchSublocationsByLocationId(locationId); // Fetch sublocation data first
         const savedData = await fetchSavedLocations(user.id); // Then fetch saved locations
-  
+
         const initialSavedItems = data.reduce((acc, location) => {
           const isSaved = savedData.some((saved) => saved.id === location.id);
           acc[location.id] = isSaved;
           return acc;
         }, {});
-  
+
         setSublocations(data);
         setSavedItems(initialSavedItems);
       } catch (error) {
@@ -96,10 +94,9 @@ const HomePopular = ({ route }) => {
         setLoading(false);
       }
     };
-  
+
     fetchSublocations();
   }, [locationId]);
-  
 
   useEffect(() => {
     if (fontsLoaded) SplashScreen.hideAsync();
@@ -166,19 +163,29 @@ const HomePopular = ({ route }) => {
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <View style={styles.topContainer}>
           <View style={styles.headerContainer}>
-            <TouchableOpacity
-              style={styles.backButton}
-              onPress={() => navigation.navigate("Home")}
-            >
+            <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate("Home")}>
               <Image source={require("../assets/icons/BackArrow.png")} style={styles.arrowIcon} />
               <Text style={styles.backText}>BACK</Text>
             </TouchableOpacity>
-            <Text style={styles.header}>Mapp!t</Text>
-            <Image source={require("../assets/images/HomePageBGWaves.png")} style={styles.headerImage} />
+
+            <Chatbot />
+
+            <Mappit colour="#fff" />
+
+            <Image
+              source={require("../assets/images/HomePageBGWaves.png")}
+              style={styles.headerImage}
+            />
           </View>
           <View style={styles.popularContainer}>
-            <Image source={require("../assets/images/TopPlacesSGBG.png")} style={styles.popularImage} />
-            <LinearGradient colors={["#FFFFFF00", "rgba(0, 0, 0, 0.4)"]} style={styles.popularOverlay} />
+            <Image
+              source={require("../assets/images/TopPlacesSGBG.png")}
+              style={styles.popularImage}
+            />
+            <LinearGradient
+              colors={["#FFFFFF00", "rgba(0, 0, 0, 0.4)"]}
+              style={styles.popularOverlay}
+            />
             <Text style={styles.popularTitle}>Top Places to Visit</Text>
           </View>
         </View>
@@ -193,12 +200,20 @@ const HomePopular = ({ route }) => {
                 <View style={styles.infoHeader}>
                   <Image source={require("../assets/icons/LocationIcon.png")} style={styles.icon} />
                   <Text style={styles.infoTitle}>{subLocation.location_name}</Text>
-                  <TouchableOpacity style={styles.saveButton} onPress={() => toggleSave(subLocation.id)}>
+                  <TouchableOpacity
+                    style={styles.saveButton}
+                    onPress={() => toggleSave(subLocation.id)}>
                     <Image
-                      source={savedItems[subLocation.id] ? require("../assets/icons/SavingIcon.png") : require("../assets/icons/ToSave.png")}
+                      source={
+                        savedItems[subLocation.id]
+                          ? require("../assets/icons/SavingIcon.png")
+                          : require("../assets/icons/ToSave.png")
+                      }
                       style={styles.saveIcon}
                     />
-                    <Text style={styles.saveText}>{savedItems[subLocation.id] ? "Saved" : "Save"}</Text>
+                    <Text style={styles.saveText}>
+                      {savedItems[subLocation.id] ? "Saved" : "Save"}
+                    </Text>
                   </TouchableOpacity>
                 </View>
                 <View style={styles.contentContainer}>
@@ -312,7 +327,7 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 18,
     fontFamily: "Nunito_800ExtraBold",
-    fontWeight: '800',
+    fontWeight: "800",
     zIndex: 2,
   },
   infoContainer: {

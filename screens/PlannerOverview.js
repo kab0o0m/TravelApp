@@ -9,24 +9,17 @@ import {
   Image,
   Alert,
 } from "react-native";
-import {
-  useNavigation,
-  useRoute,
-  useFocusEffect,
-} from "@react-navigation/native";
+import { useNavigation, useRoute, useFocusEffect } from "@react-navigation/native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import PlannerTabs from "../components/PlannerTabs";
 import NavBar from "../components/NavBar";
 import { Swipeable } from "react-native-gesture-handler";
-import {
-  getPlacePhotoByPlaceId,
-  createPlaceInTrip,
-  deletePlaceById,
-} from "../api/places";
+import { getPlacePhotoByPlaceId, createPlaceInTrip, deletePlaceById } from "../api/places";
 import axios from "axios";
 import BASE_URL from "../config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { fetchUserData } from "../api/authAPI";
+import Chatbot from "../components/ChatbotButton";
 
 const PlannerOverview = () => {
   const navigation = useNavigation();
@@ -70,10 +63,7 @@ const PlannerOverview = () => {
         if (!storedUserData) {
           console.log("Fetching user data...");
           storedUserData = await fetchUserData();
-          await AsyncStorage.setItem(
-            "userData",
-            JSON.stringify(storedUserData)
-          );
+          await AsyncStorage.setItem("userData", JSON.stringify(storedUserData));
         }
         const userData = JSON.parse(storedUserData);
         setUserId(userData.id);
@@ -91,9 +81,7 @@ const PlannerOverview = () => {
       return;
     }
     try {
-      const response = await axios.get(
-        `${BASE_URL}/api/users/${userId}/${trip.id}/places`
-      );
+      const response = await axios.get(`${BASE_URL}/api/users/${userId}/${trip.id}/places`);
 
       const placesWithPhotos = await Promise.all(
         response.data.map(async (place) => {
@@ -114,8 +102,7 @@ const PlannerOverview = () => {
     }
   };
 
-  useEffect(() => {
-  }, [places]);
+  useEffect(() => {}, [places]);
 
   useFocusEffect(
     useCallback(() => {
@@ -155,9 +142,7 @@ const PlannerOverview = () => {
     try {
       console.log("Attempting to delete place with id:", placeId);
       await deletePlaceById(placeId);
-      setPlaces((prevPlaces) =>
-        prevPlaces.filter((place) => place.id !== placeId)
-      );
+      setPlaces((prevPlaces) => prevPlaces.filter((place) => place.id !== placeId));
       Alert.alert("Deleted", "Place deleted successfully.");
     } catch (error) {
       console.error("Error deleting place:", error);
@@ -166,10 +151,7 @@ const PlannerOverview = () => {
   };
 
   const renderRightActions = (placeId) => (
-    <TouchableOpacity
-      style={styles.deleteContainer}
-      onPress={() => handleDeletePlace(placeId)}
-    >
+    <TouchableOpacity style={styles.deleteContainer} onPress={() => handleDeletePlace(placeId)}>
       <Text style={styles.deleteButtonText}>Delete</Text>
     </TouchableOpacity>
   );
@@ -183,15 +165,9 @@ const PlannerOverview = () => {
       <PlannerTabs destination={destination} activeTab="Overview" />
 
       <ScrollView style={styles.contentContainer}>
-        <TouchableOpacity
-          onPress={toggleNotes}
-          style={styles.sectionHeaderContainer}
-        >
-          <AntDesign
-            name={isNotesOpen ? "up" : "down"}
-            size={16}
-            color="black"
-          />
+        <Chatbot />
+        <TouchableOpacity onPress={toggleNotes} style={styles.sectionHeaderContainer}>
+          <AntDesign name={isNotesOpen ? "up" : "down"} size={16} color="black" />
           <Text style={styles.sectionHeader}>Notes</Text>
         </TouchableOpacity>
         {isNotesOpen && (
@@ -205,10 +181,7 @@ const PlannerOverview = () => {
                   onChangeText={setTempNotes}
                   multiline
                 />
-                <TouchableOpacity
-                  onPress={handleDoneNotes}
-                  style={styles.doneButton}
-                >
+                <TouchableOpacity onPress={handleDoneNotes} style={styles.doneButton}>
                   <Text style={styles.doneButtonText}>Done</Text>
                 </TouchableOpacity>
               </View>
@@ -217,11 +190,8 @@ const PlannerOverview = () => {
                 onPress={() => {
                   setIsEditingNotes(true);
                   setTempNotes(notes);
-                }}
-              >
-                <Text style={styles.notesDisplay}>
-                  {notes || "No notes added"}
-                </Text>
+                }}>
+                <Text style={styles.notesDisplay}>{notes || "No notes added"}</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -229,13 +199,8 @@ const PlannerOverview = () => {
 
         <TouchableOpacity
           onPress={() => setIsPlacesOpen(!isPlacesOpen)}
-          style={styles.sectionHeaderContainer}
-        >
-          <AntDesign
-            name={isPlacesOpen ? "up" : "down"}
-            size={16}
-            color="black"
-          />
+          style={styles.sectionHeaderContainer}>
+          <AntDesign name={isPlacesOpen ? "up" : "down"} size={16} color="black" />
           <Text style={styles.sectionHeader}>Places to visit</Text>
         </TouchableOpacity>
         {isPlacesOpen && (
@@ -245,40 +210,28 @@ const PlannerOverview = () => {
             ) : (
               places.map((place, index) => (
                 <View key={index}>
-                  <Swipeable
-                    key={index}
-                    renderRightActions={() => renderRightActions(place.id)}
-                  >
+                  <Swipeable key={index} renderRightActions={() => renderRightActions(place.id)}>
                     <View style={styles.placeItem}>
                       <Image
                         source={{
-                          uri:
-                            place.photoUrl || "https://via.placeholder.com/150",
+                          uri: place.photoUrl || "https://via.placeholder.com/150",
                         }}
                         style={styles.placeImage}
                       />
                       <View style={styles.placeInfo}>
-                        <Text style={styles.placeTitle}>
-                          {place.location_name}
-                        </Text>
-                        <Text style={styles.placeDescription}>
-                          {place.description}
-                        </Text>
+                        <Text style={styles.placeTitle}>{place.location_name}</Text>
+                        <Text style={styles.placeDescription}>{place.description}</Text>
                       </View>
                     </View>
                   </Swipeable>
                 </View>
               ))
             )}
-            <TouchableOpacity
-              onPress={navigateToExplore}
-              style={styles.addPlaceInput}
-            >
+            <TouchableOpacity onPress={navigateToExplore} style={styles.addPlaceInput}>
               <Text style={styles.addPlaceInputText}>Add a place</Text>
             </TouchableOpacity>
           </View>
         )}
-
       </ScrollView>
       <NavBar />
     </View>

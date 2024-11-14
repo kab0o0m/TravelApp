@@ -18,11 +18,7 @@ import VectorBackground from "../assets/images/Vector.png";
 import InputField from "../components/InputField.js";
 import PasswordField from "../components/PasswordField.js";
 import Button from "../components/Button";
-import {
-  useFonts,
-  Nunito_400Regular,
-  Nunito_700Bold,
-} from "@expo-google-fonts/nunito";
+import { useFonts, Nunito_400Regular, Nunito_700Bold } from "@expo-google-fonts/nunito";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import Mappit from "../components/Mappit.js";
@@ -84,13 +80,8 @@ const Login = () => {
         resetScrollToCoords={{ x: 0, y: 0 }}
         contentContainerStyle={styles.scrollContainer}
         extraHeight={150} // This extra height helps prevent blocking
-        enableAutomaticScroll={true}
-      >
-        <Image
-          source={VectorBackground}
-          style={styles.cornerImage}
-          resizeMode="cover"
-        />
+        enableAutomaticScroll={true}>
+        <Image source={VectorBackground} style={styles.cornerImage} resizeMode="cover" />
         <View style={styles.headerContainer}>
           <Text style={styles.header}>WELCOME BACK</Text>
         </View>
@@ -110,17 +101,12 @@ const Login = () => {
           />
 
           {/* Password Field */}
-          <PasswordField
-            label="Password"
-            value={password}
-            onChangeText={setPassword}
-          />
+          <PasswordField label="Password" value={password} onChangeText={setPassword} />
 
           {/* Forgot Password */}
           <TouchableOpacity
             style={styles.forgotPasswordContainer}
-            onPress={() => navigation.navigate("ResetPW")}
-          >
+            onPress={() => navigation.navigate("ResetPW")}>
             <Text style={styles.forgotPassword}>Forgot Password?</Text>
           </TouchableOpacity>
 
@@ -138,8 +124,7 @@ const Login = () => {
           <View style={styles.registrationContainer}>
             <TouchableOpacity onPress={() => navigation.navigate("Register")}>
               <Text style={styles.registrationText}>
-                Don’t have an account?{" "}
-                <Text style={styles.registerLink}>Register Here</Text>
+                Don’t have an account? <Text style={styles.registerLink}>Register Here</Text>
               </Text>
             </TouchableOpacity>
           </View>
@@ -170,6 +155,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     height: screenHeight * 0.15,
     width: screenWidth * 0.7,
+    marginTop: 30,
   },
   header: {
     fontSize: 40,

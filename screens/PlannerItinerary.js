@@ -1,15 +1,9 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-  Image,
-} from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import PlannerTabs from "../components/PlannerTabs";
 import NavBar from "../components/NavBar";
+import Chatbot from "../components/ChatbotButton";
 
 const PlannerItinerary = () => {
   const navigation = useNavigation();
@@ -47,6 +41,7 @@ const PlannerItinerary = () => {
       <PlannerTabs destination={destination} activeTab="Itinerary" />
 
       <ScrollView style={styles.contentContainer}>
+        <Chatbot />
         {/* Date selection buttons */}
         <View style={styles.dateButtonContainer}>
           {itineraryData.map((entry) => (
@@ -59,10 +54,7 @@ const PlannerItinerary = () => {
         {/* Itinerary items */}
         {itineraryData.map((entry) => (
           <View key={entry.date}>
-            <TouchableOpacity
-              onPress={() => toggleDate(entry.date)}
-              style={styles.dateContainer}
-            >
+            <TouchableOpacity onPress={() => toggleDate(entry.date)} style={styles.dateContainer}>
               <Text style={styles.dateText}>{entry.date}</Text>
               <Text style={styles.expandIcon}>
                 {expandedDates.includes(entry.date) ? "▲" : "▼"}
@@ -74,14 +66,10 @@ const PlannerItinerary = () => {
                   entry.items.map((item, index) => (
                     <View key={index} style={styles.itemContainer}>
                       {/* Ensure item.image exists before rendering */}
-                      {item.image ? (
-                        <Image source={item.image} style={styles.itemImage} />
-                      ) : null}
+                      {item.image ? <Image source={item.image} style={styles.itemImage} /> : null}
                       <View style={styles.itemContent}>
                         <Text style={styles.itemTitle}>{item.title}</Text>
-                        <Text style={styles.itemDescription}>
-                          {item.description}
-                        </Text>
+                        <Text style={styles.itemDescription}>{item.description}</Text>
                       </View>
                     </View>
                   ))

@@ -20,6 +20,8 @@ import {
 import * as SplashScreen from "expo-splash-screen";
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
+import Mappit from "../components/Mappit";
+import Chatbot from "../components/ChatbotButton";
 
 const { width: screenWidth } = Dimensions.get("window");
 const { height: screenHeight } = Dimensions.get("window");
@@ -48,37 +50,26 @@ const HomeFeatured1 = () => {
   }
 
   const handleWebsitePress = () => {
-    const url =
-      "https://maxwellfoodcentre.com/tian-tian-hainanese-chicken-rice/";
-    Linking.openURL(url).catch((err) =>
-      console.error("Failed to open URL:", err)
-    );
+    const url = "https://maxwellfoodcentre.com/tian-tian-hainanese-chicken-rice/";
+    Linking.openURL(url).catch((err) => console.error("Failed to open URL:", err));
   };
 
   const handlePhonePress = () => {
     const phoneNumber = "tel:+65 9691 4852";
-    Linking.openURL(phoneNumber).catch((err) =>
-      console.error("Failed to open phone dialer:", err)
-    );
+    Linking.openURL(phoneNumber).catch((err) => console.error("Failed to open phone dialer:", err));
   };
 
   const handleMapPress = () => {
     const address = "1 Kadayanallur Street, #01-10/11, S069184";
-    const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-      address
-    )}`;
-    Linking.openURL(url).catch((err) =>
-      console.error("Failed to open maps:", err)
-    );
+    const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+    Linking.openURL(url).catch((err) => console.error("Failed to open maps:", err));
   };
 
   const navigateToPlannerNewTrip = () => {
     navigation.navigate("PlannerNewTrip", {
-        destination: "Tian Tian Chicken Rice" // Pass the destination
+      destination: "Tian Tian Chicken Rice", // Pass the destination
     });
   };
-
-  
 
   if (!fontsLoaded) {
     return (
@@ -91,17 +82,12 @@ const HomeFeatured1 = () => {
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => navigation.navigate("Home")}
-        >
-          <Image
-            source={require("../assets/icons/BackArrow.png")}
-            style={styles.arrowIcon}
-          />
+        <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate("Home")}>
+          <Image source={require("../assets/icons/BackArrow.png")} style={styles.arrowIcon} />
           <Text style={styles.backText}>BACK</Text>
         </TouchableOpacity>
-        <Text style={styles.header}>Mapp!t</Text>
+        <Chatbot />
+        <Mappit colour="#fff" />
         <Image
           source={require("../assets/images/HomePageBGWaves.png")}
           style={styles.headerImage}
@@ -109,74 +95,51 @@ const HomeFeatured1 = () => {
       </View>
 
       <View style={styles.featuredContainer}>
-        <Image
-          source={require("../assets/Chickenrice.jpg")}
-          style={styles.featuredImage}
-        />
+        <Image source={require("../assets/Chickenrice.jpg")} style={styles.featuredImage} />
         <LinearGradient
           colors={["#FFFFFF00", "rgba(0, 0, 0, 0.4)"]} // Linear gradient from white to black with 40% opacity
           style={styles.featuredOverlay}
         />
-        <Text style={styles.featuredTitle}>
-        Hainanese Chicken Rice
-        </Text>
+        <Text style={styles.featuredTitle}>Hainanese Chicken Rice</Text>
       </View>
 
       <View style={styles.infoMainContainer}>
         <Text style={styles.about}>About:</Text>
 
         <Text style={styles.description}>
-        Earning international acclaim, Tian Tian offers a delectable experience worth the wait. Enjoy the authentic taste of this beloved Singaporean dish!
+          Earning international acclaim, Tian Tian offers a delectable experience worth the wait.
+          Enjoy the authentic taste of this beloved Singaporean dish!
         </Text>
 
         <View style={styles.infoContainer}>
-          <Image
-            source={require("../assets/icons/LocationIcon.png")}
-            style={styles.icon}
-          />
+          <Image source={require("../assets/icons/LocationIcon.png")} style={styles.icon} />
           <TouchableOpacity onPress={handleMapPress}>
             <Text style={styles.infoText}>1 Kadayanallur Street, #01-10/11, S069184</Text>
           </TouchableOpacity>
-          
-          
         </View>
 
         <View style={styles.infoContainer}>
-          <Image
-            source={require("../assets/icons/PhoneIcon.png")}
-            style={styles.icon}
-          />
+          <Image source={require("../assets/icons/PhoneIcon.png")} style={styles.icon} />
           <TouchableOpacity onPress={handlePhonePress}>
             <Text style={styles.infoText}>+65 9691 4852</Text>
           </TouchableOpacity>
         </View>
 
         <View style={styles.infoContainer}>
-          <Image
-            source={require("../assets/icons/WebsiteIcon.png")}
-            style={styles.icon}
-          />
+          <Image source={require("../assets/icons/WebsiteIcon.png")} style={styles.icon} />
           <TouchableOpacity onPress={handleWebsitePress}>
             <Text style={styles.website}>Our Website</Text>
           </TouchableOpacity>
         </View>
 
         <View style={styles.infoContainer}>
-          <Image
-            source={require("../assets/icons/TimeIcon.png")}
-            style={styles.icon}
-          />
+          <Image source={require("../assets/icons/TimeIcon.png")} style={styles.icon} />
           <Text style={styles.infoText}>Tue - Sun: 11AM - 8PM</Text>
         </View>
-
-        
       </View>
 
       <View style={styles.bookNowContainer}>
-        <TouchableOpacity
-          style={styles.bookNowButton}
-          onPress={navigateToPlannerNewTrip}
-        >
+        <TouchableOpacity style={styles.bookNowButton} onPress={navigateToPlannerNewTrip}>
           <Text style={styles.bookNowText}>Add to Planner!</Text>
         </TouchableOpacity>
       </View>

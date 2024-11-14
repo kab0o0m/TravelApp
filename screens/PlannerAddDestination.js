@@ -14,6 +14,7 @@ import AddDestinationModal from "./AddDestinationModal";
 import axios from "axios";
 import BASE_URL from "../config";
 import { useNavigation } from "@react-navigation/native";
+import Chatbot from "../components/ChatbotButton";
 
 const PlannerAddDestination = ({ route }) => {
   const navigation = useNavigation();
@@ -41,9 +42,7 @@ const PlannerAddDestination = ({ route }) => {
           title: data[0].name,
           address: data[0].formatted_address,
           placeId: data[0].place_id,
-          photoReference: data[0].photos
-            ? data[0].photos[0].photo_reference
-            : null,
+          photoReference: data[0].photos ? data[0].photos[0].photo_reference : null,
         };
 
         setMapRegion({
@@ -55,18 +54,13 @@ const PlannerAddDestination = ({ route }) => {
         setMarkerPosition({ latitude: location.lat, longitude: location.lng });
         Keyboard.dismiss();
 
-        const detailsResponse = await axios.get(
-          `${BASE_URL}/api/place-details`,
-          {
-            params: { place_id: placeDetails.placeId },
-          }
-        );
+        const detailsResponse = await axios.get(`${BASE_URL}/api/place-details`, {
+          params: { place_id: placeDetails.placeId },
+        });
 
         setLocationDetails({
           ...placeDetails,
-          description:
-            detailsResponse.data.description ||
-            "No additional description available",
+          description: detailsResponse.data.description || "No additional description available",
         });
       } else {
         Alert.alert("No results found", "Please try a different location.");
@@ -91,10 +85,7 @@ const PlannerAddDestination = ({ route }) => {
       <View style={styles.searchContainer}>
         <View style={styles.headerContainer}>
           {/* Exit Button */}
-          <TouchableOpacity
-            style={styles.exitButton}
-            onPress={() => navigation.goBack()}
-          >
+          <TouchableOpacity style={styles.exitButton} onPress={() => navigation.goBack()}>
             <Image source={require("../assets/icons/BackArrow.png")} />
           </TouchableOpacity>
           <Text style={styles.backText}>Where to?</Text>
@@ -133,6 +124,8 @@ const PlannerAddDestination = ({ route }) => {
         onClose={() => setModalVisible(false)}
         onAdd={handleAddLocation}
       />
+
+      <Chatbot />
     </View>
   );
 };
@@ -186,7 +179,7 @@ const styles = StyleSheet.create({
   },
   searchSubContainer: {
     marginHorizontal: 15,
-  }
+  },
 });
 
 export default PlannerAddDestination;

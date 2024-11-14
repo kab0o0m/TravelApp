@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, TouchableOpacity, Modal, Image, StyleSheet } from "react-native";
 import Chatbot from "../screens/Chatbot"; // Adjust the path based on your project structure
-import FrogIcon from "../assets/images/FrogHead.png";
+import FrogIcon from "../assets/Frog.png";
 import ArrowLeft from "../assets/icons/ArrowLeft.png";
 import * as SplashScreen from "expo-splash-screen";
 
@@ -33,8 +33,7 @@ const ChatbotButton = () => {
         animationType="slide"
         transparent={true}
         visible={modalVisible}
-        onRequestClose={toggleModal}
-      >
+        onRequestClose={toggleModal}>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
             <TouchableOpacity onPress={toggleModal} style={styles.closeButton}>
@@ -57,11 +56,18 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     zIndex: 999,
     right: 30,
-    bottom: 200,
+    bottom: 110,
+    // Shadow for iOS
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    // Shadow for Android
+    elevation: 5,
   },
   icon: {
-    height: 40,
-    width: 40,
+    height: 42,
+    width: 42,
   },
   modalOverlay: {
     flex: 1,
