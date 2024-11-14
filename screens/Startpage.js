@@ -13,7 +13,12 @@ import { useNavigation } from "@react-navigation/native";
 import { useState, useEffect } from "react";
 import * as SplashScreen from "expo-splash-screen";
 import Mappit from "../components/Mappit";
-import { useFonts, Nunito_400Regular, Nunito_700Bold } from "@expo-google-fonts/nunito";
+import {
+  useFonts,
+  Nunito_400Regular,
+  Nunito_700Bold,
+  Nunito_800ExtraBold,
+} from "@expo-google-fonts/nunito";
 
 SplashScreen.preventAutoHideAsync(); // Prevent the splash screen from auto-hiding
 
@@ -24,6 +29,7 @@ const Startpage = () => {
   const [fontsLoaded] = useFonts({
     Nunito_400Regular,
     Nunito_700Bold,
+    Nunito_800ExtraBold,
   });
 
   useEffect(() => {
@@ -81,7 +87,7 @@ const styles = StyleSheet.create({
     paddingBottom: 500,
     width: 250,
     marginRight: 90,
-    fontFamily: "Nunito_700Bold",
+    fontFamily: "Nunito_800ExtraBold",
   },
   subHeader: {
     position: "absolute",
