@@ -19,12 +19,11 @@ import axios from "axios";
 import ArrowUp from "../assets/icons/ArrowUp.png";
 import pause from "../assets/pause.png";
 import FrogHead from "../assets/BigFrogHead.png";
-import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect } from "@react-navigation/native";
 import { GROQ_KEY } from "@env";
 import { fetchUserData } from "../api/authAPI";
 import BASE_URL from "../config";
 import { format } from "date-fns";
-import { useFonts, Nunito_400Regular, Nunito_700Bold } from "@expo-google-fonts/nunito";
 
 const Chatbot = () => {
   const [messages, setMessages] = useState([]);
@@ -35,47 +34,39 @@ const Chatbot = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [trips, setTrips] = useState([]);
   const [userId, setUserId] = useState(null);
-  const [fontsLoaded] = useFonts({
-    Nunito_400Regular,
-    Nunito_700Bold,
-  });
-
-  if (!fontsLoaded) {
-    return null; // You can add a loading spinner or screen here if needed
-  }
 
   const initialMessage = "Hi! I'm Ribb!t, how can i help you today?";
 
   useEffect(() => {
+    loadUserId();
     getDate();
     getWeather();
     setMessages([...messages, { text: initialMessage, from: "ai" }]);
   }, []);
 
-  useEffect(() => {
-    const loadUserId = async () => {
-      try {
-        let storedUserData = await AsyncStorage.getItem("userData");
-        if (!storedUserData) {
-          console.log("Fetching user data...");
-          storedUserData = await fetchUserData();
-          await AsyncStorage.setItem("userData", JSON.stringify(storedUserData));
-        }
-        const userData = JSON.parse(storedUserData);
-        setUserId(userData.id);
-      } catch (error) {
-        console.error("Error loading user data:", error);
-        Alert.alert("Error", "Failed to retrieve user data.");
-      }
-    };
-    loadUserId();
-  }, []);
-
   useFocusEffect(
     useCallback(() => {
-      fetchTrips();
+      if (userId) {
+        fetchTrips(); // Only fetch if userId is available
+      }
     }, [userId])
   );
+
+  const loadUserId = async () => {
+    try {
+      let storedUserData = await AsyncStorage.getItem("userData");
+      if (!storedUserData) {
+        console.log("Fetching user data...");
+        storedUserData = await fetchUserData();
+        await AsyncStorage.setItem("userData", JSON.stringify(storedUserData));
+      }
+      const userData = JSON.parse(storedUserData);
+      setUserId(userData.id);
+    } catch (error) {
+      console.error("Error loading user data:", error);
+      Alert.alert("Error", "Failed to retrieve user data.");
+    }
+  };
 
   const fetchTrips = async () => {
     if (!userId) return;
