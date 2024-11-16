@@ -57,8 +57,7 @@ const Account = () => {
             </View>
             <View style={styles.userTextContainer}>
               <Text style={styles.userName}>
-                {firstName}
-                {lastName}
+                {firstName} {lastName}
               </Text>
               <TouchableOpacity
                 style={styles.userInfoSectionProfileContainer}

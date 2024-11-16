@@ -56,7 +56,7 @@ const Startpage = () => {
           <Text style={styles.header}>EXPLORE THE WORLD</Text>
         </View>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Home")}>
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Login")}>
             <Text style={styles.buttonText}>Start My Journey</Text>
           </TouchableOpacity>
         </View>
@@ -87,6 +87,7 @@ const styles = StyleSheet.create({
     paddingBottom: 500,
     width: 250,
     marginRight: 90,
+    lineHeight: 55,
     fontFamily: "Nunito_800ExtraBold",
   },
   subHeader: {
