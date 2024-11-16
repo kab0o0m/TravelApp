@@ -125,7 +125,8 @@ export const updateProfile = async (
 // Function to logout and remove JWT token from storage
 export const logoutUser = async () => {
   try {
-    await AsyncStorage.removeItem("token");
+    // await AsyncStorage.removeItem("token");
+    await AsyncStorage.clear();
     console.log("Logged out successfully");
   } catch (error) {
     console.error("Error during logout: ", error.message);
