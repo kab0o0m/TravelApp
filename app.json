@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "idp",
-    "slug": "idp",
+    "name": "Mappit",
+    "slug": "mappit",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/FrogIcon.png",
+    "icon": "./assets/MappitIcon.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
@@ -12,20 +12,20 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "newArchEnabled": true
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.travelapp"
+      "package": "com.travelapp",
+      "newArchEnabled": true
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": [
-      "expo-font"
-    ]
+    "plugins": ["expo-font"]
   }
 }

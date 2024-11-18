@@ -49,14 +49,20 @@ const Startpage = () => {
 
   return (
     <View style={styles.container}>
-      <ImageBackground source={Startpagebackground} style={styles.backgroundImage}>
+      <ImageBackground
+        source={Startpagebackground}
+        style={styles.backgroundImage}
+      >
         <Mappit colour="#fff" />
 
         <View style={styles.headerContainer}>
           <Text style={styles.header}>EXPLORE THE WORLD</Text>
         </View>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Login")}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => navigation.navigate("Home")}
+          >
             <Text style={styles.buttonText}>Start My Journey</Text>
           </TouchableOpacity>
         </View>

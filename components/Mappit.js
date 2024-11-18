@@ -1,6 +1,10 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { useFonts, Nunito_400Regular, Nunito_700Bold } from "@expo-google-fonts/nunito";
+import {
+  useFonts,
+  Nunito_400Regular,
+  Nunito_700Bold,
+} from "@expo-google-fonts/nunito";
 
 const Mappit = ({ colour }) => {
   const [fontsLoaded] = useFonts({
@@ -27,7 +31,7 @@ const styles = StyleSheet.create({
     zIndex: 10, // ensures it stays above other content
   },
   text: {
-    fontSize: 30,
+    fontSize: 24,
     fontFamily: "Nunito_700Bold",
   },
 });

@@ -9,17 +9,26 @@ import {
   Image,
   Alert,
 } from "react-native";
-import { useNavigation, useRoute, useFocusEffect } from "@react-navigation/native";
+import {
+  useNavigation,
+  useRoute,
+  useFocusEffect,
+} from "@react-navigation/native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import PlannerTabs from "../components/PlannerTabs";
 import NavBar from "../components/NavBar";
 import { Swipeable } from "react-native-gesture-handler";
-import { getPlacePhotoByPlaceId, createPlaceInTrip, deletePlaceById } from "../api/places";
+import {
+  getPlacePhotoByPlaceId,
+  createPlaceInTrip,
+  deletePlaceById,
+} from "../api/places";
 import axios from "axios";
 import BASE_URL from "../config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { fetchUserData } from "../api/authAPI";
 import Chatbot from "../components/ChatbotButton";
+import Toast from "react-native-toast-message";
 
 const PlannerOverview = () => {
   const navigation = useNavigation();
@@ -27,20 +36,13 @@ const PlannerOverview = () => {
   const { trip } = route.params || {};
   const destination = trip?.location_name || "Unknown Destination";
 
-  // Directly set `userId` from `trip` data, or initialize it as null if not available
   const [userId, setUserId] = useState(trip?.userId || trip?.user_id || null);
   const [places, setPlaces] = useState([]);
-
-  // console.log("Received trip data:", trip);
-  console.log("Extracted userId:", userId);
-
   const [notes, setNotes] = useState("");
   const [tempNotes, setTempNotes] = useState("");
   const [isNotesOpen, setIsNotesOpen] = useState(false);
   const [isEditingNotes, setIsEditingNotes] = useState(false);
   const [isPlacesOpen, setIsPlacesOpen] = useState(false);
-  const [titles, setTitles] = useState(["Untitled"]);
-  const [isAddTitleOpen, setIsAddTitleOpen] = useState(false);
 
   const toggleNotes = () => {
     setIsNotesOpen(!isNotesOpen);
@@ -56,14 +58,17 @@ const PlannerOverview = () => {
 
   useEffect(() => {
     const loadUserId = async () => {
-      if (userId) return; // Skip loading if userId is already set
+      if (userId) return;
 
       try {
         let storedUserData = await AsyncStorage.getItem("userData");
         if (!storedUserData) {
           console.log("Fetching user data...");
           storedUserData = await fetchUserData();
-          await AsyncStorage.setItem("userData", JSON.stringify(storedUserData));
+          await AsyncStorage.setItem(
+            "userData",
+            JSON.stringify(storedUserData)
+          );
         }
         const userData = JSON.parse(storedUserData);
         setUserId(userData.id);
@@ -81,7 +86,9 @@ const PlannerOverview = () => {
       return;
     }
     try {
-      const response = await axios.get(`${BASE_URL}/api/users/${userId}/${trip.id}/places`);
+      const response = await axios.get(
+        `${BASE_URL}/api/users/${userId}/${trip.id}/places`
+      );
 
       const placesWithPhotos = await Promise.all(
         response.data.map(async (place) => {
@@ -90,7 +97,9 @@ const PlannerOverview = () => {
           return {
             id: place.id,
             location_name: placeDetails.placeDetails.name || "Unknown Location",
-            description: placeDetails.placeDetails.formatted_address || "No description available",
+            description:
+              placeDetails.placeDetails.formatted_address ||
+              "No description available",
             photoUrl: placeDetails.photoUrl,
           };
         })
@@ -102,8 +111,6 @@ const PlannerOverview = () => {
     }
   };
 
-  useEffect(() => {}, [places]);
-
   useFocusEffect(
     useCallback(() => {
       fetchPlaces();
@@ -111,20 +118,23 @@ const PlannerOverview = () => {
   );
 
   const handlePlaceSelect = async (place) => {
-    console.log("Handling place selection:", place); // Debug log
     try {
       const placeId = place.placeId;
       await createPlaceInTrip(userId, trip.id, { placeId });
 
       const newPlace = {
-        id: placeId, // Use `placeId` as unique ID
+        id: placeId,
         location_name: place.location_name,
         description: place.description,
         photoUrl: place.photoUrl || "https://via.placeholder.com/150",
       };
 
       setPlaces((prevPlaces) => [...prevPlaces, newPlace]);
-      Alert.alert("Success", "Place added to trip!");
+      Toast.show({
+        type: "success",
+        text1: "Added",
+        text2: "Place added successfully.",
+      });
     } catch (error) {
       console.error("Error handling place selection:", error);
       Alert.alert("Error", "Failed to add place to trip.");
@@ -140,10 +150,15 @@ const PlannerOverview = () => {
 
   const handleDeletePlace = async (placeId) => {
     try {
-      console.log("Attempting to delete place with id:", placeId);
       await deletePlaceById(placeId);
-      setPlaces((prevPlaces) => prevPlaces.filter((place) => place.id !== placeId));
-      Alert.alert("Deleted", "Place deleted successfully.");
+      setPlaces((prevPlaces) =>
+        prevPlaces.filter((place) => place.id !== placeId)
+      );
+      Toast.show({
+        type: "error",
+        text1: "Deleted",
+        text2: "Place deleted successfully.",
+      });
     } catch (error) {
       console.error("Error deleting place:", error);
       Alert.alert("Error", "Failed to delete place.");
@@ -151,23 +166,29 @@ const PlannerOverview = () => {
   };
 
   const renderRightActions = (placeId) => (
-    <TouchableOpacity style={styles.deleteContainer} onPress={() => handleDeletePlace(placeId)}>
+    <TouchableOpacity
+      style={styles.deleteContainer}
+      onPress={() => handleDeletePlace(placeId)}
+    >
       <Text style={styles.deleteButtonText}>Delete</Text>
     </TouchableOpacity>
   );
 
-  const addNewTitleSection = () => {
-    setTitles([...titles, "Untitled"]);
-  };
-
   return (
     <View style={styles.container}>
-      <PlannerTabs destination={destination} activeTab="Overview" />
+      <PlannerTabs trip={trip} activeTab="Overview" />
 
       <ScrollView style={styles.contentContainer}>
         <Chatbot />
-        <TouchableOpacity onPress={toggleNotes} style={styles.sectionHeaderContainer}>
-          <AntDesign name={isNotesOpen ? "up" : "down"} size={16} color="black" />
+        <TouchableOpacity
+          onPress={toggleNotes}
+          style={styles.sectionHeaderContainer}
+        >
+          <AntDesign
+            name={isNotesOpen ? "up" : "down"}
+            size={16}
+            color="black"
+          />
           <Text style={styles.sectionHeader}>Notes</Text>
         </TouchableOpacity>
         {isNotesOpen && (
@@ -181,7 +202,10 @@ const PlannerOverview = () => {
                   onChangeText={setTempNotes}
                   multiline
                 />
-                <TouchableOpacity onPress={handleDoneNotes} style={styles.doneButton}>
+                <TouchableOpacity
+                  onPress={handleDoneNotes}
+                  style={styles.doneButton}
+                >
                   <Text style={styles.doneButtonText}>Done</Text>
                 </TouchableOpacity>
               </View>
@@ -190,8 +214,16 @@ const PlannerOverview = () => {
                 onPress={() => {
                   setIsEditingNotes(true);
                   setTempNotes(notes);
-                }}>
-                <Text style={styles.notesDisplay}>{notes || "No notes added"}</Text>
+                }}
+              >
+                <Text
+                  style={[
+                    styles.notesDisplay,
+                    notes ? styles.normalText : styles.italicText,
+                  ]}
+                >
+                  {notes || "No notes added"}
+                </Text>
               </TouchableOpacity>
             )}
           </View>
@@ -199,35 +231,51 @@ const PlannerOverview = () => {
 
         <TouchableOpacity
           onPress={() => setIsPlacesOpen(!isPlacesOpen)}
-          style={styles.sectionHeaderContainer}>
-          <AntDesign name={isPlacesOpen ? "up" : "down"} size={16} color="black" />
+          style={styles.sectionHeaderContainer}
+        >
+          <AntDesign
+            name={isPlacesOpen ? "up" : "down"}
+            size={16}
+            color="black"
+          />
           <Text style={styles.sectionHeader}>Places to visit</Text>
         </TouchableOpacity>
         {isPlacesOpen && (
           <View>
             {places.length === 0 ? (
-              <Text style={styles.noPlacesText}>No places added yet.</Text>
+              <Text style={[styles.notesDisplay, styles.italicText]}>
+                No places added yet.
+              </Text>
             ) : (
               places.map((place, index) => (
-                <View key={index}>
-                  <Swipeable key={index} renderRightActions={() => renderRightActions(place.id)}>
-                    <View style={styles.placeItem}>
-                      <Image
-                        source={{
-                          uri: place.photoUrl || "https://via.placeholder.com/150",
-                        }}
-                        style={styles.placeImage}
-                      />
-                      <View style={styles.placeInfo}>
-                        <Text style={styles.placeTitle}>{place.location_name}</Text>
-                        <Text style={styles.placeDescription}>{place.description}</Text>
-                      </View>
+                <Swipeable
+                  key={index}
+                  renderRightActions={() => renderRightActions(place.id)}
+                >
+                  <View style={styles.placeItem}>
+                    <Image
+                      source={{
+                        uri:
+                          place.photoUrl || "https://via.placeholder.com/150",
+                      }}
+                      style={styles.placeImage}
+                    />
+                    <View style={styles.placeInfo}>
+                      <Text style={styles.placeTitle}>
+                        {place.location_name}
+                      </Text>
+                      <Text style={styles.placeDescription}>
+                        {place.description}
+                      </Text>
                     </View>
-                  </Swipeable>
-                </View>
+                  </View>
+                </Swipeable>
               ))
             )}
-            <TouchableOpacity onPress={navigateToExplore} style={styles.addPlaceInput}>
+            <TouchableOpacity
+              onPress={navigateToExplore}
+              style={styles.addPlaceInput}
+            >
               <Text style={styles.addPlaceInputText}>Add a place</Text>
             </TouchableOpacity>
           </View>
@@ -261,11 +309,21 @@ const styles = StyleSheet.create({
     alignSelf: "flex-end",
     paddingHorizontal: 15,
     paddingVertical: 5,
-    backgroundColor: "#FF7043",
+    backgroundColor: "#F47966",
     borderRadius: 5,
   },
   doneButtonText: { color: "#fff" },
-  notesDisplay: { padding: 10, color: "#666", fontStyle: "italic" },
+  notesDisplay: {
+    padding: 10,
+    color: "#666",
+  },
+  italicText: {
+    fontStyle: "italic",
+  },
+  normalText: {
+    fontStyle: "normal",
+    color: "black",
+  },
   addPlaceInput: {
     padding: 15,
     marginVertical: 10,
@@ -288,14 +346,6 @@ const styles = StyleSheet.create({
   placeInfo: { flex: 1 },
   placeTitle: { fontWeight: "bold", fontSize: 16 },
   placeDescription: { color: "#666", marginTop: 2 },
-  newListButton: {
-    backgroundColor: "#FF7043",
-    borderRadius: 8,
-    alignItems: "center",
-    padding: 10,
-    marginVertical: 20,
-  },
-  newListButtonText: { color: "#fff", fontSize: 16, fontWeight: "bold" },
   deleteContainer: {
     backgroundColor: "#F47966",
     justifyContent: "center",
