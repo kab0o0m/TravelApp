@@ -8,11 +8,26 @@ import {
   Image,
   ActivityIndicator,
 } from "react-native";
-import BASE_URL from "../config"; // Ensure this points to your backend URL
+import BASE_URL from "../config";
+import {
+  useFonts,
+  Nunito_600SemiBold,
+  Nunito_700Bold,
+  Nunito_800ExtraBold,
+} from "@expo-google-fonts/nunito";
+import * as SplashScreen from "expo-splash-screen";
+
+SplashScreen.preventAutoHideAsync();
 
 const AddDestinationModal = ({ visible, locationDetails, onClose, onAdd }) => {
   const [photoUrl, setPhotoUrl] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  const [fontsLoaded] = useFonts({
+    Nunito_600SemiBold,
+    Nunito_700Bold,
+    Nunito_800ExtraBold,
+  });
 
   useEffect(() => {
     const fetchPhoto = async () => {
@@ -40,6 +55,21 @@ const AddDestinationModal = ({ visible, locationDetails, onClose, onAdd }) => {
     }
   }, [visible, locationDetails?.photoReference]);
 
+  useEffect(() => {
+    if (fontsLoaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#F47966" />
+        <Text style={styles.loadingText}>Loading...</Text>
+      </View>
+    );
+  }
+
   return (
     <Modal
       transparent={true}
@@ -53,10 +83,12 @@ const AddDestinationModal = ({ visible, locationDetails, onClose, onAdd }) => {
             <ActivityIndicator size="large" color="#F47966" />
           ) : (
             <>
-              {/* Location Title and Description */}
+              {/* Location Title */}
               <Text style={styles.title}>
                 {locationDetails?.title || "No Title"}
               </Text>
+
+              {/* Location Address and Description */}
               <Text style={styles.address}>
                 {locationDetails?.address || "No address available"}
               </Text>
@@ -105,15 +137,24 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 10,
+    fontFamily: "Nunito_800ExtraBold",
+    marginBottom: 4,
     textAlign: "center",
+    color: "#333",
+  },
+  address: {
+    fontSize: 16,
+    fontFamily: "Nunito_600SemiBold",
+    color: "black",
+    marginBottom: 8,
+    textAlign: "center", // Aligns to the left
   },
   description: {
     fontSize: 16,
+    fontFamily: "Nunito_600SemiBold",
     color: "#666",
     marginBottom: 20,
-    textAlign: "center",
+    textAlign: "justify", // Aligns to the left
   },
   locationImage: {
     width: "100%",
@@ -123,6 +164,7 @@ const styles = StyleSheet.create({
   },
   noImageText: {
     textAlign: "center",
+    fontFamily: "Nunito_600SemiBold",
     color: "#888",
     fontSize: 16,
     marginBottom: 20,
@@ -137,7 +179,7 @@ const styles = StyleSheet.create({
   addButtonText: {
     color: "white",
     fontSize: 16,
-    fontWeight: "bold",
+    fontFamily: "Nunito_700Bold",
   },
   closeButton: {
     backgroundColor: "#ccc",
@@ -148,6 +190,18 @@ const styles = StyleSheet.create({
   closeButtonText: {
     color: "black",
     fontSize: 16,
+    fontFamily: "Nunito_600SemiBold",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    fontFamily: "Nunito_600SemiBold",
+    color: "#666",
   },
 });
 

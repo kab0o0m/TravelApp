@@ -3,8 +3,8 @@ import Toast from "react-native-toast-message";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 
+//Screens start here oh
 import Startpage from "./screens/Startpage";
 import AuthCheck from "./screens/AuthCheck";
 import Login from "./screens/Login";
@@ -33,37 +33,6 @@ import Test from "./screens/Test";
 import Expenses from "./screens/Expenses";
 
 const Stack = createNativeStackNavigator();
-const TopTab = createMaterialTopTabNavigator();
-
-// Define the Top Tab Navigator for Planner screens
-// function PlannerTopTabs() {
-//   return (
-//     <TopTab.Navigator
-//       initialRouteName="PlannerOverview"
-//       screenOptions={{
-//         tabBarActiveTintColor: "#F47966",
-//         tabBarInactiveTintColor: "gray",
-//         tabBarIndicatorStyle: { backgroundColor: "#F47966" },
-//       }}
-//     >
-//       <TopTab.Screen
-//         name="PlannerOverview"
-//         component={PlannerOverview}
-//         options={{ title: "Overview" }}
-//       />
-//       <TopTab.Screen
-//         name="PlannerItinerary"
-//         component={PlannerItinerary}
-//         options={{ title: "Itinerary" }}
-//       />
-//       <TopTab.Screen
-//         name="Explore"
-//         component={Explore}
-//         options={{ title: "Explore" }}
-//       />
-//     </TopTab.Navigator>
-//   );
-// }
 
 export default function App() {
   return (
@@ -71,9 +40,21 @@ export default function App() {
       <NavigationContainer>
         <StatusBar hidden={true} />
         <Stack.Navigator initialRouteName="Startpage">
-          <Stack.Screen name="AuthCheck" component={AuthCheck} options={{ headerShown: false }} />
-          <Stack.Screen name="Startpage" component={Startpage} options={{ headerShown: false }} />
-          <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
+          <Stack.Screen
+            name="AuthCheck"
+            component={AuthCheck}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Startpage"
+            component={Startpage}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Home"
+            component={Home}
+            options={{ headerShown: false }}
+          />
           <Stack.Screen
             name="HomeFeatured1"
             component={HomeFeatured1}
@@ -99,11 +80,31 @@ export default function App() {
             component={HomePopular}
             options={{ headerShown: false }}
           />
-          <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
-          <Stack.Screen name="Register" component={Register} options={{ headerShown: false }} />
-          <Stack.Screen name="Chatbot" component={Chatbot} options={{ headerShown: false }} />
-          <Stack.Screen name="Account" component={Account} options={{ headerShown: false }} />
-          <Stack.Screen name="Profile" component={Profile} options={{ headerShown: false }} />
+          <Stack.Screen
+            name="Login"
+            component={Login}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Register"
+            component={Register}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Chatbot"
+            component={Chatbot}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Account"
+            component={Account}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Profile"
+            component={Profile}
+            options={{ headerShown: false }}
+          />
           <Stack.Screen
             name="AIRandomiser"
             component={AIRandomiser}
@@ -114,8 +115,16 @@ export default function App() {
             component={EditProfile}
             options={{ headerShown: false }}
           />
-          <Stack.Screen name="ResetPW" component={ResetPW} options={{ headerShown: false }} />
-          <Stack.Screen name="Planner" component={Planner} options={{ headerShown: false }} />
+          <Stack.Screen
+            name="ResetPW"
+            component={ResetPW}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Planner"
+            component={Planner}
+            options={{ headerShown: false }}
+          />
           <Stack.Screen
             name="PlannerNewTrip"
             component={PlannerNewTrip}
@@ -146,9 +155,21 @@ export default function App() {
             component={SavedLocation}
             options={{ headerShown: false }}
           />
-          <Stack.Screen name="Explore" component={Explore} options={{ headerShown: false }} />
-          <Stack.Screen name="Test" component={Test} options={{ headerShown: false }} />
-          <Stack.Screen name="Expenses" component={Expenses} options={{ headerShown: false }} />
+          <Stack.Screen
+            name="Explore"
+            component={Explore}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Test"
+            component={Test}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Expenses"
+            component={Expenses}
+            options={{ headerShown: false }}
+          />
           {/* Use the Top Tab Navigator for Planner screens */}
           {/* <Stack.Screen
             name="PlannerTabs"

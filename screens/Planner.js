@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   View,
   Text,
@@ -21,6 +21,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { fetchUserData } from "../api/authAPI";
 import { getPlacePhotoByPlaceId } from "../api/places";
 import { deleteTripById } from "../api/tripsAPI";
+import {
+  useFonts,
+  Nunito_400Regular,
+  Nunito_600SemiBold,
+  Nunito_700Bold,
+  Nunito_800ExtraBold,
+} from "@expo-google-fonts/nunito";
+import * as SplashScreen from "expo-splash-screen";
 
 const Planner = () => {
   const navigation = useNavigation();
@@ -28,6 +36,19 @@ const Planner = () => {
   const [userId, setUserId] = useState(null);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [selectedTrip, setSelectedTrip] = useState(null);
+
+  const [fontsLoaded] = useFonts({
+    Nunito_400Regular,
+    Nunito_600SemiBold,
+    Nunito_700Bold,
+    Nunito_800ExtraBold,
+  });
+
+  useEffect(() => {
+    if (fontsLoaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
 
   useEffect(() => {
     const loadUserId = async () => {
@@ -64,7 +85,6 @@ const Planner = () => {
         response.data.map(async (trip) => {
           const placeDetails = await getPlacePhotoByPlaceId(trip.places_id);
           return { ...trip, photoUrl: placeDetails.photoUrl };
-
         })
       );
       setTrips(sortTrips(tripsWithPhotos));
@@ -149,15 +169,6 @@ const Planner = () => {
     const date = new Date(isoDate);
     return isNaN(date.getTime()) ? "Invalid Date" : format(date, "d MMM yyyy");
   };
-
-  const renderRightActions = (tripId) => (
-    <TouchableOpacity
-      style={styles.deleteContainer}
-      onPress={() => confirmDeleteTrip(tripId)}
-    >
-      <Text style={styles.deleteButtonText}>Delete</Text>
-    </TouchableOpacity>
-  );
 
   const handleAddTrip = (newTrip) => {
     setTrips((prevTrips) => sortTrips([...prevTrips, newTrip]));
@@ -295,11 +306,10 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     padding: 20,
-    backgroundColor: "#fff",
   },
   headerText: {
     fontSize: 32,
-    fontWeight: "bold",
+    fontFamily: "Nunito_800ExtraBold", // Nunito Extra Bold for the header text
     color: "#333",
     paddingTop: 40,
   },
@@ -315,11 +325,12 @@ const styles = StyleSheet.create({
   },
   tripHeaderText: {
     fontSize: 20,
-    fontWeight: "bold",
+    fontFamily: "Nunito_700Bold", // Nunito Bold for section headers
     color: "#333",
   },
   noTripsText: {
     fontSize: 16,
+    fontFamily: "Nunito_400Regular", // Nunito Regular for empty state text
     color: "#666",
     textAlign: "center",
     marginTop: 20,
@@ -351,8 +362,8 @@ const styles = StyleSheet.create({
   },
   addTripButtonText: {
     fontSize: 18,
+    fontFamily: "Nunito_700Bold", // Nunito Bold for button text
     color: "#fff",
-    fontWeight: "bold",
   },
   randomButton: {
     backgroundColor: "#fff",
@@ -367,8 +378,8 @@ const styles = StyleSheet.create({
   },
   randomButtonText: {
     fontSize: 18,
+    fontFamily: "Nunito_700Bold", // Nunito Bold for button text
     color: "#F47966",
-    fontWeight: "bold",
   },
   tripItem: {
     flexDirection: "row",
@@ -399,7 +410,7 @@ const styles = StyleSheet.create({
   },
   daysLeftText: {
     color: "#FF512B",
-    fontWeight: "600",
+    fontFamily: "Nunito_600SemiBold", // Nunito SemiBold for emphasized text
     fontSize: 12,
   },
   tripImage: {
@@ -420,12 +431,13 @@ const styles = StyleSheet.create({
   },
   tripDestination: {
     fontSize: 15,
-    fontWeight: "bold",
+    fontFamily: "Nunito_600SemiBold", // Nunito SemiBold for trip destinations
     color: "#333",
     flexShrink: 1,
   },
   tripDates: {
     fontSize: 16,
+    fontFamily: "Nunito_400Regular", // Nunito Regular for less emphasized text
     color: "#666",
   },
   deleteContainer: {
@@ -439,7 +451,8 @@ const styles = StyleSheet.create({
   },
   deleteButtonText: {
     color: "#fff",
-    fontWeight: "bold",
+    fontFamily: "Nunito_700Bold", // Nunito Bold for delete button text
+    fontSize: 14,
   },
   dropdownMenu: {
     position: "absolute",
@@ -454,6 +467,7 @@ const styles = StyleSheet.create({
   },
   dropdownItemText: {
     fontSize: 16,
+    fontFamily: "Nunito_600SemiBold", // Nunito SemiBold for menu items
     color: "#F47966",
     padding: 8,
   },

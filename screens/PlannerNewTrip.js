@@ -16,6 +16,14 @@ import CustomCalendar from "../components/CustomCalendar"; // Import your Custom
 import BASE_URL from "../config"; // Assuming BASE_URL is defined in a config file
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { fetchUserData } from "../api/authAPI";
+import {
+  useFonts,
+  Nunito_400Regular,
+  Nunito_600SemiBold,
+  Nunito_700Bold,
+  Nunito_800ExtraBold,
+} from "@expo-google-fonts/nunito";
+import * as SplashScreen from "expo-splash-screen";
 
 const PlannerNewTrip = ({ route }) => {
   const navigation = useNavigation();
@@ -29,6 +37,19 @@ const PlannerNewTrip = ({ route }) => {
   const [userId, setUserId] = useState(null); // State to store dynamic user ID
 
   const { selectedLocation, mode } = route.params || {};
+
+  const [fontsLoaded] = useFonts({
+    Nunito_400Regular,
+    Nunito_600SemiBold,
+    Nunito_700Bold,
+    Nunito_800ExtraBold,
+  });
+
+  useEffect(() => {
+    if (fontsLoaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
 
   useEffect(() => {
     if (selectedLocation) {
@@ -69,8 +90,8 @@ const PlannerNewTrip = ({ route }) => {
 
   const formatDate = (isoDate) => {
     const date = new Date(isoDate);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
   };
@@ -226,11 +247,12 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontSize: 32,
-    fontWeight: "bold",
+    fontFamily: "Nunito_800ExtraBold", // Nunito Extra Bold for the main header
     color: "#333",
   },
   subheaderText: {
     fontSize: 18,
+    fontFamily: "Nunito_400Regular", // Nunito Regular for the subheader
     color: "#666",
     marginTop: 10,
   },
@@ -248,6 +270,7 @@ const styles = StyleSheet.create({
   },
   inputText: {
     fontSize: 20,
+    fontFamily: "Nunito_600SemiBold", // Nunito SemiBold for input text
   },
   confirmButton: {
     backgroundColor: "#F47966",
@@ -257,9 +280,9 @@ const styles = StyleSheet.create({
     marginTop: 30,
   },
   confirmButtonText: {
-    color: "#fff",
     fontSize: 20,
-    fontWeight: "bold",
+    fontFamily: "Nunito_700Bold", // Nunito Bold for button text
+    color: "#fff",
   },
   modalContainer: {
     flex: 1,

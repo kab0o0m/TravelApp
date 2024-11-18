@@ -17,6 +17,15 @@ import { fetchWeatherData } from "../api/weather";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import PlannerTabs from "../components/PlannerTabs";
 import NavBar from "../components/NavBar";
+import {
+  useFonts,
+  Nunito_600SemiBold,
+  Nunito_700Bold,
+  Nunito_800ExtraBold,
+} from "@expo-google-fonts/nunito";
+import * as SplashScreen from "expo-splash-screen";
+
+SplashScreen.preventAutoHideAsync();
 
 const Button = ({
   title,
@@ -26,7 +35,15 @@ const Button = ({
 }) => (
   <TouchableWithoutFeedback onPress={onPress}>
     <View style={[styles.button, { backgroundColor }]}>
-      <Text style={{ color: textColor, textAlign: "center" }}>{title}</Text>
+      <Text
+        style={{
+          color: textColor,
+          textAlign: "center",
+          fontFamily: "Nunito_700Bold",
+        }}
+      >
+        {title}
+      </Text>
     </View>
   </TouchableWithoutFeedback>
 );
@@ -49,6 +66,18 @@ const Explore = () => {
   const [locationDetails, setLocationDetails] = useState({});
   const [weatherData, setWeatherData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  const [fontsLoaded] = useFonts({
+    Nunito_600SemiBold,
+    Nunito_700Bold,
+    Nunito_800ExtraBold,
+  });
+
+  useEffect(() => {
+    if (fontsLoaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
 
   const dismissKeyboard = () => Keyboard.dismiss();
 
@@ -82,6 +111,7 @@ const Explore = () => {
 
         await fetchWeatherDataForLocation(location.lat, location.lng);
         setIsLoading(false);
+        setModalVisible(true); // Automatically show the modal after search
       } else {
         setIsLoading(false);
         Alert.alert("No results found", "Please try a different location.");
@@ -90,26 +120,6 @@ const Explore = () => {
       Alert.alert("Error", "Failed to search for the location");
       console.error("Error fetching location:", error);
       setIsLoading(false);
-    }
-  };
-
-  const handlePlaceSelection = () => {
-    if (onPlaceSelect) {
-      // Creating the selectedPlace object with consistent property names
-      const selectedPlace = {
-        placeId: locationDetails.placeId || locationDetails.place_id, // Ensure this matches what's used elsewhere in your app
-        location_name: locationDetails.title,
-        description: locationDetails.description,
-        photoUrl: locationDetails.photoReference
-          ? `${BASE_URL}/api/place-photo?photo_reference=${locationDetails.photoReference}&maxwidth=400`
-          : "https://via.placeholder.com/150", // fallback URL if photoReference is missing
-      };
-
-      console.log("Selected place data being sent:", selectedPlace); // Debugging log to verify all data
-
-      // Send selectedPlace back to PlannerOverview
-      onPlaceSelect(selectedPlace);
-      navigation.goBack();
     }
   };
 
@@ -127,23 +137,31 @@ const Explore = () => {
     }
   };
 
-  const openDetailsModal = () => {
-    setModalVisible(true);
-  };
+  if (!fontsLoaded) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#F47966" />
+        <Text style={styles.loadingText}>Loading...</Text>
+      </View>
+    );
+  }
 
   return (
     <TouchableWithoutFeedback onPress={dismissKeyboard}>
       <View style={styles.container}>
-        <PlannerTabs destination={destination} activeTab="Explore" />
-
+        <PlannerTabs trip={trip} activeTab="Explore" />
         {isLoading ? (
-          <ActivityIndicator size="large" />
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#F47966" />
+            <Text style={styles.loadingText}>Searching...</Text>
+          </View>
         ) : (
           <>
             <View style={styles.searchContainer}>
               <TextInput
                 style={styles.searchInput}
                 placeholder="Search for a location..."
+                placeholderTextColor="#A9A9A9"
                 value={searchQuery}
                 onChangeText={setSearchQuery}
               />
@@ -157,7 +175,7 @@ const Explore = () => {
                     coordinate={markerPosition}
                     title={locationDetails.title}
                     description={locationDetails.description}
-                    onPress={openDetailsModal}
+                    onPress={() => setModalVisible(true)}
                   />
                 )}
               </MapView>
@@ -168,11 +186,15 @@ const Explore = () => {
               locationDetails={locationDetails}
               weatherData={weatherData}
               onClose={() => setModalVisible(false)}
-              onAddToPlanner={handlePlaceSelection}
+              onAddToPlanner={() => {
+                if (onPlaceSelect) {
+                  onPlaceSelect(locationDetails);
+                  navigation.goBack();
+                }
+              }}
             />
           </>
         )}
-
         <NavBar />
       </View>
     </TouchableWithoutFeedback>
@@ -195,6 +217,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 10,
     marginBottom: 10,
+    fontFamily: "Nunito_600SemiBold",
   },
   mapContainer: {
     flex: 1,
@@ -206,6 +229,17 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingVertical: 15,
     borderRadius: 25,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 18,
+    color: "#666",
+    fontFamily: "Nunito_700Bold",
   },
 });
 

@@ -9,6 +9,15 @@ import {
   ActivityIndicator,
 } from "react-native";
 import BASE_URL from "../config";
+import {
+  useFonts,
+  Nunito_600SemiBold,
+  Nunito_700Bold,
+  Nunito_800ExtraBold,
+} from "@expo-google-fonts/nunito";
+import * as SplashScreen from "expo-splash-screen";
+
+SplashScreen.preventAutoHideAsync();
 
 const LocationDetailsModal = ({
   visible,
@@ -65,8 +74,8 @@ const LocationDetailsModal = ({
           ) : (
             <>
               <Text style={styles.title}>{locationDetails.title}</Text>
-              <Text style={styles.description}>
-                {locationDetails.description}
+              <Text style={styles.address}>
+                {locationDetails.description || "No address available"}
               </Text>
 
               {/* Location Photo */}
@@ -79,20 +88,15 @@ const LocationDetailsModal = ({
 
               {/* Weather Data Section */}
               <View style={styles.weatherContainer}>
-                <Text style={styles.weatherTitle}>Weather Forecast</Text>
                 {weatherData ? (
-                  <>
-                    <Text style={styles.weatherText}>
-                      Area: {weatherData.area}
-                    </Text>
-                    <Text style={styles.weatherText}>
-                      Forecast: {weatherData.forecast}
-                    </Text>
-                    <Text style={styles.weatherText}>
-                      Last Updated:{" "}
-                      {new Date(weatherData.timestamp).toLocaleString()}
-                    </Text>
-                  </>
+                  <Text style={styles.weatherText}>
+                    Forecast: {weatherData.forecast || "N/A"}
+                    {"\n"}
+                    Last Updated:{" "}
+                    {weatherData.timestamp
+                      ? new Date(weatherData.timestamp).toLocaleString()
+                      : "N/A"}
+                  </Text>
                 ) : (
                   <Text style={styles.weatherText}>
                     Weather data not available
@@ -135,29 +139,30 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 10,
+    fontFamily: "Nunito_800ExtraBold",
+    marginBottom: 15,
+    textAlign: "center",
+    color: "#333",
   },
-  description: {
+  address: {
     fontSize: 16,
-    marginBottom: 20,
+    fontFamily: "Nunito_600SemiBold",
+    color: "black",
+    marginBottom: 15,
+    textAlign: "center",
   },
   locationImage: {
     width: "100%",
     height: 200,
-    marginBottom: 20,
+    marginBottom: 15,
     borderRadius: 10,
-  },
-  weatherContainer: {
-    marginBottom: 20,
-  },
-  weatherTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 10,
   },
   weatherText: {
     fontSize: 16,
+    fontFamily: "Nunito_600SemiBold",
+    color: "#444",
+    textAlign: "left",
+    marginBottom: 20,
   },
   addButton: {
     backgroundColor: "#F47966",
@@ -169,6 +174,7 @@ const styles = StyleSheet.create({
   addButtonText: {
     color: "white",
     fontSize: 16,
+    fontFamily: "Nunito_700Bold",
   },
   closeButton: {
     backgroundColor: "#ccc",
@@ -177,8 +183,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   closeButtonText: {
-    color: "white",
+    color: "#333",
     fontSize: 16,
+    fontFamily: "Nunito_600SemiBold",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 

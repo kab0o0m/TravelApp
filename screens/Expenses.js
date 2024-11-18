@@ -24,7 +24,7 @@ import Button from "../components/Button";
 import AddExpenseModal from "./AddExpenseModal";
 import * as Progress from "react-native-progress";
 import RoundedSquareIcon from "../components/RoundedSquareIcon";
-import Toast from 'react-native-toast-message';
+import Toast from "react-native-toast-message";
 import {
   addExpense,
   fetchExpenses,
@@ -196,9 +196,9 @@ const Expenses = () => {
         await setBudgetByTripId(selectedTripId, budget);
         setBudget(budget); // Update local state with the new budget
         Toast.show({
-          type: 'success',
-          text1: 'Success',
-          text2: 'Budget Set successfully.',
+          type: "success",
+          text1: "Success",
+          text2: "Budget Set successfully.",
         });
       }
     } catch (error) {
@@ -245,13 +245,12 @@ const Expenses = () => {
     return null;
   }
 
-
   const populateExpenses = async (tripId) => {
     try {
       // Fetch budget for the selected
       const tripBudget = await getBudgetByTripId(tripId);
       setBudget(tripBudget); // Set the fetched budget in state
-  
+
       const tripExpenses = await getExpensesByTripId(tripId);
       setExpenses(tripExpenses);
       console.log("populate Expenses", tripExpenses);
@@ -260,16 +259,14 @@ const Expenses = () => {
         0
       );
       setTotalSpent(totalSpentAmount);
-  
+
       // Update pie chart data with newly fetched expenses
       updatePieChartData(tripExpenses);
-  
     } catch (error) {
       console.error("Error fetching budget:", error);
       Alert.alert("Error", "Failed to fetch budget. Please try again.");
     }
   };
-  
 
   const handleAddExpense = async (expense) => {
     setExpenses([...expenses, expense]);
@@ -302,33 +299,32 @@ const Expenses = () => {
     try {
       // Step 1: Attempt to delete the expense from the backend
       await deleteExpense(id);
-  
+
       // Step 2: If API call is successful, update the local state
       const updatedExpenses = expenses.filter((expense) => expense.id !== id);
       setExpenses(updatedExpenses);
-  
+
       // Step 3: Update the total spent
       const deletedExpense = expenses.find((expense) => expense.id === id);
       if (deletedExpense) {
         setTotalSpent((prevTotal) => prevTotal - deletedExpense.amount);
       }
-  
+
       // Step 4: Update the Pie Chart data to reflect the deleted expense
       updatePieChartData(updatedExpenses);
-  
+
       // Step 5: Optionally, show a success toast message
       Toast.show({
-        type: 'success',
-        text1: 'Deleted',
-        text2: 'Expense deleted successfully.',
+        type: "success",
+        text1: "Deleted",
+        text2: "Expense deleted successfully.",
       });
-  
     } catch (error) {
       // Step 6: Handle errors from the backend and inform the user
       console.error("Error deleting expense:", error.message);
       Alert.alert("Error", "Failed to delete expense. Please try again later.");
     }
-  };  
+  };
 
   const toggleSummary = () => {
     setSummaryVisible(!summaryVisible);
@@ -648,7 +644,7 @@ const styles = StyleSheet.create({
   budgetText: {
     fontSize: screenHeight * 0.025,
     fontFamily: "Nunito_400Regular",
-    color: "#f47866",
+    color: "#fff",
     textDecorationLine: "underline",
   },
   progressContainer: {
@@ -875,8 +871,8 @@ const styles = StyleSheet.create({
   },
   unselectedTripText: {
     fontSize: 20,
-    fontWeight: '500', // Regular weight for unselected text
-    color: '#f47966', // Light gray for unselected text
-    fontStyle: 'italic', // Differentiates unselected visually
+    fontWeight: "500", // Regular weight for unselected text
+    color: "#f47966", // Light gray for unselected text
+    fontStyle: "italic", // Differentiates unselected visually
   },
 });
